@@ -17,6 +17,6 @@ Deno.serve((req: Request) => {
 
     console.log(`App was started at ${Deno.env.get("APP-START")}`);
 
-    return new Response("Hello, world! I'm a Deno TEST page...");
+    return new Response("Hello, World! I'm a Deno TEST page...");
 
 });
