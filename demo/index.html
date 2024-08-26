@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="UTF-8" />
+  <title>last.fm widget demo and play site</title>
+  <link rel="stylesheet" href="demo.css" />
+  <script src="widgets/lastfm.js" type="module"></script>
+  <script src="demo.js" type="module"></script>
+
+  <meta property="og:site_name" content="last.fm widget demo and play site" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lastfm-widgets.deno.dev/" />
+  <meta name="description" content="Customizable last.fm scrobbles widget. Show your last played tracks on your homepage or blog using this easy to use and configurable website widget." />
+  <meta name="keywords" content="last.fm,lastfm,scrobbles,scrobble,scrobbling,audioscrobbler,playlist,tracks,tracklist,recently played,play history,listening to,now playing,widget,webcomponent,javascript,Stig Nygaard,music,web-development,deno,deno deploy" />
+  <meta name="dc.creator.name" content="Stig Nygaard" />
+  <meta name="dc.language" content="en" />
+  <meta name="author" content="Stig Nygaard" />
+  <meta name="publisher" content="Stig Nygaard" />
+</head>
+<body>
+
+<div class="demo">
+  <div class="info">
+    <h1>🔴 Last.fm <em>Tracks</em> widget</h1>
+    <p><i>By <a href="https://www.rockland.dk/" title="Homepage of Stig Nygaard">Stig Nygaard</a>.</i></p>
+    <p><strong><em>BETA-VERSION - Work In Progress!...</em></strong></p>
+
+    <p>This page is a simple demonstration of
+      <a href="https://github.com/StigNygaard/lastfm-widgets" title="GitHub repository">my Last.fm <em>Tracks</em> widget</a>
+      showing recent "scrobbles" from a last.fm account. I plan to make this page a place where you can play with
+      configuration of the widget, but that is not fully ready yet. The widget itself is also still a "beta-version".
+      So for now, just some quick basics...</p>
+
+    <p>To use the widget, you need to import <code>lastfm.js</code> as a module. If you do that from html, remember
+      the <code>type</code> attribute:</p>
+
+    <code>&lt;script src="lastfm.js" type="module"&gt;&lt;/script&gt;</code>
+
+    <p>The script defines/registers the custom html-element <code>&lt;lastfm-tracks/&gt;</code>. Simply insert such
+      element on a webpage where you want a <em>Tracks</em> widget to be.</p>
+
+    <p>When creating a widget, the script will read the <code>tracks.css</code> stylesheet file, which it expects
+      to find at same location as the script file itself.</p>
+
+    <p>The widget has 3 modes. The <em>Demo</em> and <em>Basic</em> modes are "standalone" (pure frontend) modes
+      where widget communicates <em>directly</em> with last.fm's API. The third mode is <em>Backend-supported</em>
+      mode where you need to have a backend "proxy-api" that the widget can communicate with. The idea is that the
+      proxy-api should mirror/forward the two methods(*) from last.fm's audioscrobbler 2.0 api that the widget
+      needs to function. Your own backend proxy-api is a very good idea, if widget is to be placed on a page with
+      <em>more</em> than <em>absolute minimal</em> amount of traffic, because you can implement "throttling" in the
+      proxy-api to prevent overwhelming volumes of requests being sent directly to last.fm's API.</p>
+
+    <ol>
+      <li>
+        <h3>"Demo" mode</h3>
+        <p>
+          <code>&lt;lastfm-tracks user="your username"&gt;&lt;/lastfm-tracks&gt;</code>
+        </p>
+        <p>In the "standalone" <em>Demo</em> mode, the widget is "static". Latest "scrobbles" will be loaded upon
+          creation of the widget, but tracklist will <em>not</em> be refreshed after that.</p>
+      </li>
+      <li>
+        <h3>"Basic" mode</h3>
+        <p>
+          <code>&lt;lastfm-tracks user="your username" apikey="your own api key" interval="60"&gt;&lt;/lastfm-tracks&gt;</code>
+        </p>
+        <p>Adding your own API-key - which you can <a href="https://www.last.fm/api/authentication">get for free</a> -
+          puts the widget into the <em>Basic</em> mode where it supports periodically refresh of the tracks-list.
+          The <code>interval</code> attribute sets the widget's track-list refresh-rate in seconds.</p>
+      </li>
+      <li>
+        <h3>"Backend-supported" mode</h3>
+        <p>
+          <code>&lt;lastfm-tracks backend="/proxy-api" interval="35"&gt;&lt;/lastfm-tracks&gt;</code>
+        </p>
+        <p>Add the <code>backend</code> attribute pointing to a custom "proxy API" to enable <em>Backend-supported</em>
+          mode. Depending on your proxy-api, you could also add other attributes like <code>user</code> and
+          <code>apikey</code>, but you don't have to. Usually it will be smarter (and simpler) to have fixed values
+          for these defined in the backend.</p>
+      </li>
+    </ol>
+
+    <p>(*) The two API methods that needs to be available in a proxy-api for widget to work in
+      <em>Backend-supported</em> mode, are
+      <em><a href="https://www.last.fm/api/show/user.getInfo">user.getinfo</a></em> and
+      <em><a href="https://www.last.fm/api/show/user.getRecentTracks">user.getrecenttracks</a></em>.</p>
+
+  </div>
+  <div class="widget">
+    <div class="resizeable">
+      <!-- my own backend: -->
+      <lastfm-tracks backend="/proxy-api" interval="35" ></lastfm-tracks>
+      <!-- demo mode: -->
+<!--      <lastfm-tracks user="rockland"></lastfm-tracks> -->
+      <!-- basic mode: -->
+<!--      <lastfm-tracks user="rockland" interval="65" apikey="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" ></lastfm-tracks> -->
+
+    </div>
+    <button>Stop updating</button>
+  </div>
+  <div class="options">
+    <pre>
+    </pre>
+    <p><label><input type="checkbox" /> "Dynamic" widget header</label></p>
+  </div>
+</div>
+
+</body>
+</html>

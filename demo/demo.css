@@ -1,0 +1,42 @@
+:root {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.demo {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+}
+.info {
+  min-width: 22rem;
+  max-width: 42rem;
+}
+.widget {
+}
+.options pre {
+  overflow:auto;
+  font-size: 85%;
+  padding: 0 0 1em 0;
+  border-bottom: 1px #eee solid;
+}
+
+.resizeable {
+  border: none;
+  padding: 1.2rem;
+  width: 18em;
+  min-width: 14em;
+  height: 70vh;
+  min-height: 7em;
+  overflow: auto;
+  resize: both;
+}
+lastfm-tracks {
+  box-sizing: border-box;
+  border: 1px solid #000;
+  height: 100%;
+}
+button {
+  margin: 1em 0;
+}

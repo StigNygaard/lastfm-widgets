@@ -1,6 +1,7 @@
 {
   "tasks": {
-    "start": "deno run --allow-net --allow-env --allow-read=./.env main.ts"
+    "dev": "deno run --allow-net --allow-env --allow-read=./demo,./widgets,./.env --watch main.ts",
+    "start": "deno run --allow-net --allow-env --allow-read=./demo,./widgets,./.env  main.ts"
   },
   "deploy": {
     "exclude": [

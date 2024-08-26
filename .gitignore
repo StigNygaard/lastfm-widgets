@@ -32,6 +32,7 @@ nb-configuration.xml
 # Local environment
 .env
 
+.misc
 notes.txt
 
 node_modules
