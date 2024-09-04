@@ -51,7 +51,7 @@ export async function audioscrobbler(searchParams: URLSearchParams, reqHeaders: 
     }
     const nextTime = parseInt(cache.get(`${method}-NextTime`) || '0', 10);
     if (Date.now() <= nextTime) {
-        console.warn(`Too early for '${method}'. Will use cached data instead...`);
+        console.log(`Too early for '${method}'. Will use cached data instead...`);
         return fallback(method, respHeaders);
     }
     const fUrl = new URL('https://ws.audioscrobbler.com/2.0');
@@ -119,7 +119,7 @@ function success(method: string, status: string|number, statusText: string, json
         cache.set(`${method}-OkResponse`,json);
         console.log(`Updating the cached json for '${method}'...`);
     } else {
-        console.log(`SKIP updating cached json - there's no change in data for '${method}'`);
+        // console.log(`SKIP updating cached json - there's no change in data for '${method}'`);
     }
     cache.set(`${method}-OkTime`, Date.now().toString());
     cache.set(`${method}-NextTime`, String(waitUntil(method).ok));
