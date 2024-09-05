@@ -44,17 +44,18 @@
   display: none;
 }
 
+.wrap::-webkit-scrollbar {
+  -webkit-appearance: none; /* Non-standard, but currently needed for Safari */
+}
 .wrap {
   margin: 0;
   padding: 0;
   border: none;
   max-height: inherit;
   overflow-y: auto;
-  scrollbar-width: none; /* Firefox & Chromium, but NOT yet Safari - https://caniuse.com/?search=scrollbar-width */
+  scrollbar-width: none; /* Standard supported by Firefox & Chromium, but NOT yet Safari - https://caniuse.com/?search=scrollbar-width */
 }
-.wrap::-webkit-scrollbar {
-  -webkit-appearance: none; /* For Safari */
-}
+
 a {
   text-decoration: none;
 }

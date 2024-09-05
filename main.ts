@@ -3,11 +3,8 @@ import 'jsr:@std/dotenv/load';
 import {audioscrobbler} from './proxy-api/audioscrobbler.ts';
 
 /**
- * SET DENO_FUTURE=1
- * @run --allow-net --allow-env --allow-read <url>
+ * @run --allow-net --allow-env --allow-read=./demo,./widgets,./.env main.ts
  */
-
-// Deno.env.set('APP-START', (new Date()).toString());
 
 Deno.serve(async (req: Request) => {
 
@@ -16,11 +13,11 @@ Deno.serve(async (req: Request) => {
 
     // The "Router"...
     if (pathname === '/proxy-api' || pathname === '/proxy-api/') {
-        // The "proxy API":
+        // The "proxy API" - https://lastfm-widgets.deno.dev/proxy-api
         const result = await audioscrobbler(url.searchParams, req.headers);
         return new Response(result.body, result.options);
     } else if (pathname.startsWith('/widgets/')) {
-        // The static served widgets code:
+        // The statically served widgets code - https://lastfm-widgets.deno.dev/widgets/*
         return serveDir(req, {
             urlRoot: 'widgets',
             fsRoot: 'widgets',
@@ -32,7 +29,7 @@ Deno.serve(async (req: Request) => {
             headers: []
         });
     } else {
-        // The static served demo-page:
+        // The statically served demo-page - https://lastfm-widgets.deno.dev/*
         return serveDir(req, {
             urlRoot: '',
             fsRoot: 'demo',

@@ -18,9 +18,7 @@ proxy-api is made in [Deno](https://deno.com/) (server-side typescript/javascrip
 up as a [Deno Deploy](https://deno.com/deploy) project. Any updates in main-branch are immediately
 deployed to https://lastfm-widgets.deno.dev/.
 
-The backend code is my first simple experiments/experience with Deno. Comments are welcome if you have tips to make
-better code or better use of Deno features. So far it is on purpose I have kept it pretty basic and avoided
-libraries/frameworks. I like to start that way to get a feeling for the standard features.
+The backend code is my first simple experiments/experience with Deno. Tested with Deno 2.0.0-rc.0.
 
 #### /widgets/ folder
 
