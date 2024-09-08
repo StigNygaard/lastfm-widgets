@@ -9,6 +9,7 @@
   gap: 2rem;
   padding: 2rem;
 }
+
 .info {
   min-width: 22rem;
   max-width: 42rem;
@@ -20,6 +21,26 @@
   font-size: 85%;
   padding: 0 0 1em 0;
   border-bottom: 1px #eee solid;
+}
+
+h1 {
+  font-size: 1.85rem;
+}
+h2 {
+  font-size: 1.25rem;
+}
+h3 {
+  font-size: 1.05rem;
+}
+
+.keyshot a {
+  display: block;
+}
+.keyshot img {
+  display: block;
+  width: calc(100% - 2px);
+  max-width: max-content;
+  border: 1px solid #000;
 }
 
 .resizeable {

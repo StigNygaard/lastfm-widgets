@@ -18,11 +18,11 @@ proxy-api is made in [Deno](https://deno.com/) (server-side typescript/javascrip
 up as a [Deno Deploy](https://deno.com/deploy) project. Any updates in main-branch are immediately
 deployed to https://lastfm-widgets.deno.dev/.
 
-I believe the widget (frontend code) is compatible with at least Firefox 115 and Chromium 109 based browsers, which
-are the last versions of these running on Windows 7/8 installations. I have also seen widget run in Safari, but
-unsure which version.
-The backend code is my first simple experiments/experience with Deno. The backend has been tested with the first
-Release Candidate version of Deno 2.
+The widget (frontend code) should be compatible back to at least Firefox 115 and Chromium 109 based web-browsers
+(which are the last versions of these running on Windows 7/8 installations). It also runs in Safari, but unsure
+how old versions are supported (I'm not able to test that myself).
+The backend code is my first simple experiments/experience with Deno. It has been tested with the first Release
+Candidate version of Deno 2.
 
 #### /widgets/ folder
 

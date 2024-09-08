@@ -42,13 +42,16 @@
     <p>When creating a widget, the script will read the <code>tracks.css</code> stylesheet file, which it expects
       to find at same location as the script file itself.</p>
 
-    <p>The widget has 3 modes. The <em>Demo</em> and <em>Basic</em> modes are "standalone" (pure frontend) modes
-      where widget communicates <em>directly</em> with last.fm's API. The third mode is <em>Backend-supported</em>
-      mode where you need to have a backend "proxy-api" that the widget can communicate with. The idea is that the
-      proxy-api should mirror/forward the two methods(*) from last.fm's audioscrobbler 2.0 api that the widget
-      needs to function. Your own backend proxy-api is a very good idea, if widget is to be placed on a page with
-      <em>more</em> than <em>absolute minimal</em> amount of traffic, because you can implement "throttling" in the
-      proxy-api to prevent overwhelming volumes of requests being sent directly to last.fm's API.</p>
+    <p>The widget has 3 modes. The <em>Demo</em> and <em>Basic</em> modes are "standalone" (pure frontend)
+      modes where widget communicates <em>directly</em> with last.fm's API. The third mode is
+      <em>Backend-supported</em> mode where you need to have a backend "proxy-api" that the widget can
+      communicate with. The idea is that the proxy-api should mirror/forward the two methods
+      (<em><a href="https://www.last.fm/api/show/user.getInfo">user.getinfo</a></em> and
+      <em><a href="https://www.last.fm/api/show/user.getRecentTracks">user.getrecenttracks</a></em>)
+      from last.fm's audioscrobbler 2.0 api that the widget needs to function. Your own backend proxy-api is
+      a very good idea, if widget is to be placed on a page with <em>more</em> than <em>absolute minimal</em>
+      amount of traffic, because you can implement "throttling" in the proxy-api to prevent overwhelming
+      volumes of requests being sent directly to last.fm's API.</p>
 
     <ol>
       <li>
@@ -80,10 +83,18 @@
       </li>
     </ol>
 
-    <p>(*) The two API methods that needs to be available in a proxy-api for widget to work in
-      <em>Backend-supported</em> mode, are
-      <em><a href="https://www.last.fm/api/show/user.getInfo">user.getinfo</a></em> and
-      <em><a href="https://www.last.fm/api/show/user.getRecentTracks">user.getrecenttracks</a></em>.</p>
+    <h2>Getting your own API key for <em>Basic</em> or <em>Backend-supported</em> mode</h2>
+    <p>First go to
+      <a href="https://www.last.fm/api/authentication" target="_blank">https://www.last.fm/api/authentication</a>.
+      Though this page talks about <em>authentication</em> and <em>secrets</em>, you can largely ignore that. For our
+      non-authenticated use of the API, you don't need a secret, but you still need an API-key connected to your
+      Last.fm account. So follow the
+      <a href="https://www.last.fm/api/account/create" target="_blank">"apply for a key" link</a>.
+      Here you should enter an application name and description. I imagine something like this is very fine:
+    </p>
+    <div class="keyshot"><a href="https://www.last.fm/api/account/create"><img src="apply-apikey.png" alt=" [screenshot] " /></a></div>
+    <p>Once submitted, you should get a personal API-key which can be used for the Tracks widget, to either enable
+      the widget's <em>Basic</em> mode, or use it in a proxy-api with widget in <em>Backend-supported</em> mode.</p>
 
   </div>
   <div class="widget">
