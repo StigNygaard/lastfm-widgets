@@ -6,6 +6,8 @@ other configuration options. But that is not fully ready yet.
 
 As name of this repository hints, I might have more than one Last.fm widget planned for this space 🙂
 
+![Tracks screenshot](Tracks.png "Tracks widget example")
+
 ## The technical...
 
 The *Tracks* widget itself is made as a *webcomponent* using pure standard web client-side technologies (no frameworks
