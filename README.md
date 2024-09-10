@@ -1,12 +1,16 @@
 # 🔴 lastfm-widgets
 
 See *Tracks* widget in action on https://lastfm-widgets.deno.dev/ and https://www.rockland.dk/. At the first site,
-the plan is you should be able to try widget showing scrobbles from your own Last-fm account, and play with various
-other configuration options. But that is not fully ready yet.
+the plan is you should be able to try widget showing scrobbles from your own [Last-fm](https://www.last.fm/) account,
+and play with various other configuration options. But that is not fully ready yet.
+
+[![Tracks screenshot](Tracks.png "Tracks widget example")](https://www.last.fm/user/rockland)
+
+Long time Last.fm users might get a déjà vu feeling by the red album header-lines. As primarily an album listener
+myself, I missed them. So I brought them back in this widget (The plan is you should be able to disable them if you
+don't want them - but that's not ready yet).
 
 As name of this repository hints, I might have more than one Last.fm widget planned for this space 🙂
-
-![Tracks screenshot](Tracks.png "Tracks widget example")
 
 ## The technical...
 
@@ -23,8 +27,8 @@ deployed to https://lastfm-widgets.deno.dev/.
 The widget (frontend code) should be compatible back to at least Firefox 115 and Chromium 109 based web-browsers
 (which are the last versions of these running on Windows 7/8 installations). It also runs in Safari, but unsure
 how old versions are supported (I'm not able to test that myself).
-The backend code is my first simple experiments/experience with Deno. It has been tested with the first Release
-Candidate version of Deno 2.
+The backend code is my first simple experiments/experience with Deno. It has been tested with Release Candidate
+versions of Deno 2.
 
 #### /widgets/ folder
 
