@@ -7,8 +7,7 @@ and play with various other configuration options. But that is not fully ready y
 [![Tracks screenshot](Tracks.png "Tracks widget example")](https://www.last.fm/user/rockland)
 
 Long time Last.fm users might get a déjà vu feeling by the red album header-lines. As primarily an album listener
-myself, I missed them. So I brought them back in this widget (The plan is you should be able to disable them if you
-don't want them - but that's not ready yet).
+myself, I have missed them. So I brought them (optionally) back in this widget.
 
 As name of this repository hints, I might have more than one Last.fm widget planned for this space 🙂
 

@@ -234,6 +234,10 @@ a.username {
   background-color: #fbe9e9;
   padding-right: 4px;
 }
+:host(.hide-albums) #playlist > div.albuminfo {
+  display: none;
+}
+
 #playlist > div.trackinfo {
   display: grid;
   grid-template-columns: [coverstart] 32px [trackstart] auto [timestart] 5.7em [end];

@@ -67,13 +67,17 @@ window.addEventListener(
     function () {  // TODO run when widget is inserted...
         const widget = document.querySelector('lastfm-tracks');
         const stopButton = document.querySelector('button');
-        const toggleDynaHeader = document.querySelector('input');
+        const toggleDynaHeader = document.querySelector('input.dynaheader');
+        const toggleHideAlbums = document.querySelector('input.hidealbums');
         if (widget) {
             stopButton?.addEventListener('click', () => {
                 widget.stopUpdating()
             });
             toggleDynaHeader?.addEventListener('change', () => {
                 widget.classList.toggle('dynaheader', this.checked);
+            });
+            toggleHideAlbums?.addEventListener('change', () => {
+                widget.classList.toggle('hide-albums', this.checked);
             });
             new ResizeObserver(handleResizedWidget).observe(widget);
         }
