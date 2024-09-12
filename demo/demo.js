@@ -1,12 +1,6 @@
 
 function styleDefString(width, height) {
-    return `
-lastfm-tracks {
-  box-sizing: border-box;
-  border: 1px solid #000;
-  width: ${width}px;
-  height: ${height}px;
-}`;
+    return `lastfm-tracks {\n  box-sizing: border-box;\n  border: 1px solid #000;\n  width: ${width}px;\n  height: ${height}px;\n}`;
 }
 
 /**
@@ -50,17 +44,30 @@ function debounce(func, delay) {
  * @param {ResizeObserverEntry[]} [roea] - ResizeObserverEntry Array
  */
 function updateStyleDef(roea) {
-    const styling = document.querySelector(('.options pre'));
+    const styleDef = document.querySelector(('.options pre.style'));
     const widget = document.querySelector('lastfm-tracks');
-    if (styling && widget) {
+    if (styleDef && widget) {
         const { offsetWidth, offsetHeight } = widget;
-        styling.textContent = styleDefString(offsetWidth, offsetHeight);
+        styleDef.textContent = styleDefString(offsetWidth, offsetHeight);
     }
 }
 /**
  * A "throttled" ResizeObserverCallback function
  */
 const handleResizedWidget = throttle(updateStyleDef, 100);
+
+function updateTagDef() {
+    const widget = document.querySelector('lastfm-tracks');
+    const tagDef = document.querySelector(('.options pre.tag'));
+    const attribs = [];
+    widget.getAttributeNames().forEach(name => {
+        const val = widget.getAttribute(name);
+        if (name!=='style' && !(name === 'class' && val === '')) {
+            attribs.push(`\n  ${name}="${val}"`);
+        }
+    })
+    tagDef.textContent = `<lastfm-tracks ${attribs.join(' ')}>\n</lastfm-tracks>`;
+}
 
 window.addEventListener(
     'DOMContentLoaded',
@@ -69,17 +76,25 @@ window.addEventListener(
         const stopButton = document.querySelector('button');
         const toggleDynaHeader = document.querySelector('input.dynaheader');
         const toggleHideAlbums = document.querySelector('input.hidealbums');
+        const dynaHeaderChanged = () => {
+            widget.classList.toggle('dynaheader', toggleDynaHeader.checked);
+            updateTagDef();
+        }
+        const hideAlbumsChanged = () => {
+            widget.classList.toggle('no-albums', toggleHideAlbums.checked);
+            updateTagDef();
+        }
         if (widget) {
             stopButton?.addEventListener('click', () => {
                 widget.stopUpdating()
             });
-            toggleDynaHeader?.addEventListener('change', () => {
-                widget.classList.toggle('dynaheader', this.checked);
-            });
-            toggleHideAlbums?.addEventListener('change', () => {
-                widget.classList.toggle('hide-albums', this.checked);
-            });
+            toggleDynaHeader?.addEventListener('change', dynaHeaderChanged);
+            toggleHideAlbums?.addEventListener('change', hideAlbumsChanged);
             new ResizeObserver(handleResizedWidget).observe(widget);
+
+            // init
+            dynaHeaderChanged();
+            hideAlbumsChanged();
         }
     },
     false

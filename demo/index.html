@@ -23,28 +23,27 @@
   <div class="info">
     <h1>🔴 Last.fm <em>Tracks</em> widget</h1>
     <p><i>By <a href="https://www.rockland.dk/" title="Homepage of Stig Nygaard">Stig Nygaard</a>.</i></p>
-    <p><strong><em>BETA-VERSION - Work In Progress!...</em></strong></p>
+    <p><strong>This page is <em>Work In Progress!...</em></strong></p>
 
     <p>This page is a simple demonstration of
       <a href="https://github.com/StigNygaard/lastfm-widgets" title="GitHub repository">my Last.fm <em>Tracks</em> widget</a>
       showing recent "scrobbles" from a last.fm account. I plan to make this page a place where you can play with
-      configuration of the widget, but that is not fully ready yet. The widget itself is also still a "beta-version".
-      So for now, just some quick basics...</p>
+      configuration of the widget, but that is not fully ready yet. For now, just some quick basics...</p>
 
     <p>To use the widget, you need to import <code>lastfm.js</code> as a module. If you do that from html, remember
       the <code>type</code> attribute:</p>
 
     <code>&lt;script src="lastfm.js" type="module"&gt;&lt;/script&gt;</code>
 
-    <p>The script defines/registers the custom html-element <code>&lt;lastfm-tracks/&gt;</code>. Simply insert such
+    <p>The script defines the custom html-element <code>&lt;lastfm-tracks/&gt;</code>. Simply insert such
       element on a webpage where you want a <em>Tracks</em> widget to be.</p>
 
-    <p>When creating a widget, the script will read the <code>tracks.css</code> stylesheet file, which it expects
+    <p>When creating widget, the script will read the <code>tracks.css</code> stylesheet file, which it expects
       to find at same location as the script file itself.</p>
 
     <p>The widget has 3 modes. The <em>Demo</em> and <em>Basic</em> modes are "standalone" (pure frontend)
-      modes where widget communicates <em>directly</em> with last.fm's API. The third mode is
-      <em>Backend-supported</em> mode where you need to have a backend "proxy-api" that the widget can
+      modes where widget communicates <em>directly</em> with last.fm's API to get the "scrobbles". The third
+      mode is <em>Backend-supported</em> mode where you need to have a backend "proxy-api" that the widget can
       communicate with. The idea is that the proxy-api should mirror/forward the two methods
       (<em><a href="https://www.last.fm/api/show/user.getInfo">user.getinfo</a></em> and
       <em><a href="https://www.last.fm/api/show/user.getRecentTracks">user.getrecenttracks</a></em>)
@@ -57,7 +56,7 @@
       <li>
         <h3>"Demo" mode</h3>
         <p>
-          <code>&lt;lastfm-tracks user="your username"&gt;&lt;/lastfm-tracks&gt;</code>
+          <code>&lt;lastfm-tracks user="your username"&gt;<wbr />&lt;/lastfm-tracks&gt;</code>
         </p>
         <p>In the "standalone" <em>Demo</em> mode, the widget is "static". Latest "scrobbles" will be loaded upon
           creation of the widget, but tracklist will <em>not</em> be refreshed after that.</p>
@@ -65,7 +64,7 @@
       <li>
         <h3>"Basic" mode</h3>
         <p>
-          <code>&lt;lastfm-tracks user="your username" apikey="your own api key" interval="60"&gt;&lt;/lastfm-tracks&gt;</code>
+          <code>&lt;lastfm-tracks user="your username" apikey="your own api key" interval="60"&gt;<wbr />&lt;/lastfm-tracks&gt;</code>
         </p>
         <p>Adding your own API-key - which you can <a href="https://www.last.fm/api/authentication">get for free</a> -
           puts the widget into the <em>Basic</em> mode where it supports periodically refresh of the tracks-list.
@@ -74,7 +73,7 @@
       <li>
         <h3>"Backend-supported" mode</h3>
         <p>
-          <code>&lt;lastfm-tracks backend="/proxy-api" interval="35"&gt;&lt;/lastfm-tracks&gt;</code>
+          <code>&lt;lastfm-tracks backend="/proxy-api" interval="35"&gt;<wbr />&lt;/lastfm-tracks&gt;</code>
         </p>
         <p>Add the <code>backend</code> attribute pointing to a custom "proxy API" to enable <em>Backend-supported</em>
           mode. Depending on your proxy-api, you could also add other attributes like <code>user</code> and
@@ -90,9 +89,13 @@
       non-authenticated use of the API, you don't need a secret, but you still need an API-key connected to your
       Last.fm account. So follow the
       <a href="https://www.last.fm/api/account/create" target="_blank">"apply for a key" link</a>.
-      Here you should enter an application name and description. I imagine something like this is very fine:
+      Here you should enter an application name and description.
     </p>
-    <div class="keyshot"><a href="https://www.last.fm/api/account/create"><img src="apply-apikey.png" alt=" [screenshot] " /></a></div>
+    <details class="keyshot">
+      <summary>I imagine something like this will be very fine:...</summary>
+      <a href="https://www.last.fm/api/account/create"><img src="apply-apikey.png" alt=" [screenshot] " /></a>
+    </details>
+
     <p>Once submitted, you should get a personal API-key which can be used for the Tracks widget, to either enable
       the widget's <em>Basic</em> mode, or use it in a proxy-api with widget in <em>Backend-supported</em> mode.</p>
 
@@ -110,7 +113,9 @@
     <button>Stop updating</button>
   </div>
   <div class="options">
-    <pre>
+    <pre class="style">
+    </pre>
+    <pre class="tag">
     </pre>
     <p><label><input type="checkbox" class="dynaheader" /> "Dynamic" <em>widget header</em></label></p>
     <p><label><input type="checkbox" class="hidealbums" /> Hide <em>album header-lines</em></label></p>

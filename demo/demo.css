@@ -12,15 +12,19 @@
 
 .info {
   min-width: 22rem;
-  max-width: 42rem;
+  max-width: 40rem;
 }
 .widget {
 }
 .options pre {
-  overflow:auto;
+  overflow: auto;
   font-size: 85%;
   padding: 0 0 1em 0;
   border-bottom: 1px #eee solid;
+}
+.options pre.style {
+  padding-top: 1em;
+  border-top: 1px #eee solid;
 }
 
 h1 {
@@ -33,6 +37,9 @@ h3 {
   font-size: 1.05rem;
 }
 
+.keyshot summary {
+  cursor: pointer;
+}
 .keyshot a {
   display: block;
 }
