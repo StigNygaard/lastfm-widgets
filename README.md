@@ -19,7 +19,7 @@ supported by a custom backend "proxy-api". The latter is recommended because it 
 throttling of requests to Last.fm's API.
 
 This repository not only holds the widget itself, but also a demo page and an example backend proxy-api. The
-proxy-api is made in [Deno](https://deno.com/) (server-side typescript/javascript). Also, this repository is set
+proxy-api is made in [Deno](https://deno.com/) (server-side javascript/typescript). Also, this repository is set
 up as a [Deno Deploy](https://deno.com/deploy) project. Any updates in main-branch are immediately
 deployed to https://lastfm-widgets.deno.dev/.
 
