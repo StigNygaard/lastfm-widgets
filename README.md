@@ -1,8 +1,9 @@
 # 🔴 lastfm-widgets
 
-See *Tracks* widget in action on https://lastfm-widgets.deno.dev/ and https://www.rockland.dk/. At the first site,
-the plan is you should be able to try widget showing scrobbles from your own [Last-fm](https://www.last.fm/) account,
-and play with various other configuration options. But that is not fully ready yet.
+*Tracks* is a web-widget to see "scrobbles" (tracked play history) from a Last.fm account. See *Tracks* in action
+on https://lastfm-widgets.deno.dev/ and https://www.rockland.dk/. At the first site, the plan is you should be able
+to see the widget showing scrobbles from your own (or any) [Last-fm](https://www.last.fm/) account, and try various
+other configuration options. But that is not fully ready yet.
 
 [![Tracks screenshot](Tracks.png "Tracks widget example")](https://www.last.fm/user/rockland)
 
@@ -13,15 +14,15 @@ As name of this repository hints, I might have more than one Last.fm widget plan
 
 ## The technical...
 
-The *Tracks* widget itself is made as a *webcomponent* using pure standard web client-side technologies (no frameworks
-or build tools needed). It can work "alone" communicating directly with Last.fm's Audioscrobbler v2 API, or it can be
-supported by a custom backend "proxy-api". The latter is recommended because it makes it possible to implement
-throttling of requests to Last.fm's API.
+The *Tracks* widget itself is made as a *webcomponent* using pure standard web client-side technologies
+(no frameworks or build tools needed). It can work "alone" communicating directly with Last.fm's
+Audioscrobbler v2 API, or it can be supported by a custom backend "proxy-api". The latter is encouraged
+because it makes it possible to implement throttling of requests to Last.fm's API.
 
 This repository not only holds the widget itself, but also a demo page and an example backend proxy-api. The
 proxy-api is made in [Deno](https://deno.com/) (server-side javascript/typescript). Also, this repository is set
 up as a [Deno Deploy](https://deno.com/deploy) project. Any updates in main-branch are immediately
-deployed to https://lastfm-widgets.deno.dev/.
+deployed to the demo-site at https://lastfm-widgets.deno.dev/.
 
 The widget (frontend code) should be compatible back to at least Firefox 115 and Chromium 109 based web-browsers
 (which are the last versions of these running on Windows 7/8 installations). It also runs in Safari, but unsure
