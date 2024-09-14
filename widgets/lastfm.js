@@ -157,6 +157,7 @@ class Tracks extends HTMLElement {
     get #apiRoot() {
         return '//ws.audioscrobbler.com/2.0';
     }
+
     #apikey = null; // this.#demoKey;
     #user= null;
     #backend = null;
@@ -164,6 +165,18 @@ class Tracks extends HTMLElement {
     #interval = 65;
     #maxUpdates = 1; // only 1 in basic-mode. 0 default in basic and backend-mode (0 = unlimited/"forever")
     #widgetMode = 'demo';  // backend, basic or demo
+    get state() {
+        return {
+            apikey: this.#apikey,
+            user: this.#user,
+            backend: this.#backend,
+            tracks: this.#tracks,
+            interval: this.#interval,
+            maxUpdates: this.#maxUpdates,
+            widgetMode: this.#widgetMode
+        }
+    }
+
     #userAgent = navigator.userAgent.toLowerCase();
     #okUserAgent = this.#notBot(this.#userAgent);
 
@@ -261,6 +274,7 @@ class Tracks extends HTMLElement {
             }
         }
 
+        window.dispatchEvent(new CustomEvent('stateChange', {detail: this.state}));
     }
 
     #getWidgetMode() {
