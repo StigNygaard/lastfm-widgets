@@ -1,10 +1,11 @@
 import 'jsr:@std/dotenv/load';
 
-// Get the fixed values from environment variables (or .env file):
+// Get the fixed values from environment variables (or .env file): ( todo: maybe use KV instead? )
 const apikey = Deno.env.get('audioscrobbler_apikey');
 const user = Deno.env.get('audioscrobbler_user') || 'rockland';
 const trackslimit = Deno.env.get('audioscrobbler_trackslimit');
-const corsAllowHostname = Deno.env.get('audioscrobbler_cors_allow_hostname')?.toLowerCase(); // Allow CORS for given hostname (and subdomains)
+// Allow CORS for given hostname(s) and related subdomains. Multiple hostnames must be separated by semicolon:
+const corsAllowHostnames = Deno.env.get('audioscrobbler_cors_allow_hostnames')?.toLowerCase()?.split(/\s*(?:;|$)\s*/) ?? [];
 
 // TODO *IF* I wanted to use Deno (Deploy) KV database for response caching, I needed something like:
 //      const database = Deno.env.get('audioscrobbler_database');
@@ -22,20 +23,9 @@ export async function audioscrobbler(searchParams: URLSearchParams, reqHeaders: 
 
     const origin = reqHeaders.get('Origin');
     const respHeaders = new Headers({'content-type': 'application/json'});
-    if (origin) {
-        let originHostname = null;
-        try {
-            originHostname = new URL(origin).hostname.toLowerCase();
-            // Unfortunately it is too early to use URL.parse() instead https://caniuse.com/mdn-api_url_parse_static
-        } catch (_e) {
-            // ignore
-        }
-        if (originHostname === corsAllowHostname || originHostname?.endsWith(`.${corsAllowHostname}`)) {
-            respHeaders.set('Access-Control-Allow-Origin', origin);
-            respHeaders.set('Vary', 'Origin');
-        } else {
-            // in principle, I guess I should/could just fail here(?)...
-        }
+    if (origin && allowedForCors(origin)) {
+        respHeaders.set('Access-Control-Allow-Origin', origin);
+        respHeaders.set('Vary', 'Origin');
     }
 
     // console.log(`audioscrobbler() proxy called with parameters-string: '${searchParams}' and header values:`);
@@ -112,6 +102,25 @@ export async function audioscrobbler(searchParams: URLSearchParams, reqHeaders: 
 
 }
 
+
+function allowedForCors(origin: string) {
+    let originHostname = null;
+    try {
+        originHostname = new URL(origin).hostname.toLowerCase();
+        // Unfortunately it is too early to use URL.parse() instead https://caniuse.com/mdn-api_url_parse_static
+    } catch (_e) {
+        return false;
+    }
+    for (const corsAllowedHostname of corsAllowHostnames) {
+        if (
+            corsAllowedHostname.length &&
+            (originHostname === corsAllowedHostname || originHostname?.endsWith(`.${corsAllowedHostname}`))
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
 
 function success(method: string, status: string|number, statusText: string, jsonObj: object, headers: Headers): {body: string, options: object} {
     const json = JSON.stringify(jsonObj);
