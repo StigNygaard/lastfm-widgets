@@ -3,8 +3,10 @@
 <head prefix="og: http://ogp.me/ns#">
   <meta charset="UTF-8" />
   <title>last.fm widget demo and play site</title>
+  <meta name="viewport" content="width=device-width, initial-scale=2">
+  <meta name="google-site-verification" content="JmHUvheHQClDK983oeALxiV75Ea_Wri5R8YnYh5RQHo" />
   <link rel="stylesheet" href="demo.css" />
-  <script src="widgets/lastfm.js" type="module"></script>
+  <script src="/widgets/lastfm.js" type="module"></script>
   <script src="demo.js" type="module"></script>
 
   <meta property="og:site_name" content="last.fm widget demo and play site" />
@@ -23,27 +25,29 @@
   <div class="info">
     <h1>🔴 Last.fm <em>Tracks</em> widget</h1>
     <p><i>By <a href="https://www.rockland.dk/" title="Homepage of Stig Nygaard">Stig Nygaard</a>.</i></p>
-    <p><strong>This page is <em>Work In Progress!...</em></strong></p>
 
-    <p>This page is a simple demonstration of
-      <a href="https://github.com/StigNygaard/lastfm-widgets" title="GitHub repository">my Last.fm <em>Tracks</em> widget</a>
-      showing recent "scrobbles" from a last.fm account. I plan to make this page a place where you can play with
-      configuration of the widget, but that is not fully ready yet. For now, just some quick basics...</p>
+    <p>This page is a simple demonstration of the
+      <a href="https://github.com/StigNygaard/lastfm-widgets" title="GitHub repository">Last.fm <em>Tracks</em> widget</a>
+      showing recent "scrobbles" from a last.fm account. Here you'll also find instructions on how to insert the widget
+      on a webpage. But for a start, you can also just try customizing the widget shown here, including making it show
+      scrobbles from your own (or any) Last.fm account with public scrobbles.</p>
 
-    <p>To use the widget, you need to import <code>lastfm.js</code> as a module. If you do that from html, remember
-      the <code>type</code> attribute:</p>
+    <h2>The essential</h2>
+
+    <p>To use the widget on a webpage, you need to import <code>lastfm.js</code> as a module. If you do that from html,
+      remember the <code>type</code> attribute:</p>
 
     <code>&lt;script src="lastfm.js" type="module"&gt;&lt;/script&gt;</code>
 
-    <p>The script defines the custom html-element <code>&lt;lastfm-tracks/&gt;</code>. Simply insert such
-      element on a webpage where you want a <em>Tracks</em> widget to be.</p>
+    <p>The script defines the custom html-element <code>&lt;lastfm-tracks/&gt;</code>. Insert such element on a
+      webpage where you want a <em>Tracks</em> widget to be.</p>
 
     <p>When creating widget, the script will read the <code>tracks.css</code> stylesheet file, which it expects
       to find at same location as the script file itself.</p>
 
-    <p>The widget has 3 modes. The <em>Demo</em> and <em>Basic</em> modes are "standalone" (pure frontend)
-      modes where widget communicates <em>directly</em> with last.fm's API to get the "scrobbles". The third
-      mode is <em>Backend-supported</em> mode where you need to have a backend "proxy-api" that the widget can
+    <p>The widget has 3 modes. The <em>Demo</em> and <em>Basic</em> modes are "standalone" modes where widget
+      communicates <em>directly</em> with last.fm's API to get the "scrobbles". The third mode is
+      <em>Backend-supported</em> mode where you need to have a backend "proxy-api" that the widget can
       communicate with. The idea is that the proxy-api should mirror/forward the two methods
       (<em><a href="https://www.last.fm/api/show/user.getInfo">user.getinfo</a></em> and
       <em><a href="https://www.last.fm/api/show/user.getRecentTracks">user.getrecenttracks</a></em>)
@@ -68,7 +72,7 @@
         </p>
         <p>Adding your own API-key - which you can <a href="https://www.last.fm/api/authentication">get for free</a> -
           puts the widget into the <em>Basic</em> mode where it supports periodically refresh of the tracks-list.
-          The <code>interval</code> attribute sets the widget's track-list refresh-rate in seconds.</p>
+          With the <code>interval</code> attribute, you can set the track-list's refresh-rate in seconds.</p>
       </li>
       <li>
         <h3>"Backend-supported" mode</h3>
@@ -76,49 +80,81 @@
           <code>&lt;lastfm-tracks backend="/proxy-api" interval="35"&gt;<wbr />&lt;/lastfm-tracks&gt;</code>
         </p>
         <p>Add the <code>backend</code> attribute pointing to a custom "proxy API" to enable <em>Backend-supported</em>
-          mode. Depending on your proxy-api, you could also add other attributes like <code>user</code> and
-          <code>apikey</code>, but you don't have to. Usually it will be smarter (and simpler) to have fixed values
-          for these defined in the backend.</p>
+          mode. Depending on your proxy-api, you could (or should?) also add other attributes like <code>user</code>
+          and <code>apikey</code>. But usually it will be smarter - and simpler - to have fixed values for these
+          defined in the backend.</p>
       </li>
     </ol>
 
-    <h2>Getting your own API key for <em>Basic</em> or <em>Backend-supported</em> mode</h2>
+    <h2>Attributes</h2>
+
+    <p>Potential attributes to set on the <code>&lt;lastfm-tracks/&gt;</code> element:</p>
+    <ul>
+      <li><em>user</em> - last.fm username.</li>
+      <li><em>apikey</em> - last.fm api-key.</li>
+      <li><em>backend</em> - address of a backend proxy-api.</li>
+      <li><em>interval</em> - update interval in seconds for the tracks-list. On Last.fm profile pages, an update
+        interval of 30 seconds is used. So you should probably never go lower than that. Default value is 60 in
+        <em>Basic</em> and <em>Backend-supported</em> mode, and the widget doesn't allow lower than 30 in Basic mode.
+        The value is ignored in <em>Demo</em> mode.</li>
+      <li><em>tracks</em> - max number of tracks to show. Widget default is 50 (but overridden to 100 in the
+        proxy-api used in this demo when in <em>Backend-supported</em> mode).</li>
+      <li><em>updates</em> - max. number of times to update tracks-list (0&nbsp;=&nbsp;unlimited,
+        1&nbsp;=&nbsp;initial&nbsp;only). Default value is 0 in <em>Basic</em>
+        and <em>Backend-supported</em> mode. The attribute is ignored in <em>Demo</em> mode.</li>
+      <li>css classes:
+        <ul>
+          <li><em>dynaheader</em> - When added, the profile-widget header becomes "dynamic"
+            (shown only when mouse is over widget)</li>
+          <li><em>no-albums</em> - When added, the red album header-lines will <em>not</em> be shown</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Get your own API key for <em>Basic</em> or <em>Backend-supported</em> mode</h2>
+
     <p>First go to
       <a href="https://www.last.fm/api/authentication" target="_blank">https://www.last.fm/api/authentication</a>.
-      Though this page talks about <em>authentication</em> and <em>secrets</em>, you can largely ignore that. For our
+      Though this page talks about <em>authentication</em> and <em>secrets</em>, you can ignore that. For our
       non-authenticated use of the API, you don't need a secret, but you still need an API-key connected to your
       Last.fm account. So follow the
       <a href="https://www.last.fm/api/account/create" target="_blank">"apply for a key" link</a>.
       Here you should enter an application name and description.
     </p>
     <details class="keyshot">
-      <summary>I imagine something like this will be very fine:...</summary>
-      <a href="https://www.last.fm/api/account/create"><img src="apply-apikey.png" alt=" [screenshot] " /></a>
+      <summary>I imagine something like this will be fine...</summary>
+      <a href="https://www.last.fm/api/account/create"><img src="apply-apikey.png" alt=" [screenshot] " loading="lazy" /></a>
     </details>
 
     <p>Once submitted, you should get a personal API-key which can be used for the Tracks widget, to either enable
-      the widget's <em>Basic</em> mode, or use it in a proxy-api with widget in <em>Backend-supported</em> mode.</p>
+      the widget's <em>Basic</em> mode, or use it via a proxy-api with widget in <em>Backend-supported</em> mode.</p>
 
   </div>
   <div class="widget">
     <div class="resizeable">
-      <!-- my own backend: -->
-      <lastfm-tracks backend="/proxy-api" interval="35" ></lastfm-tracks>
-      <!-- demo mode: -->
-<!--      <lastfm-tracks user="rockland"></lastfm-tracks> -->
-      <!-- basic mode: -->
-<!--      <lastfm-tracks user="rockland" interval="65" apikey="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" ></lastfm-tracks> -->
-
     </div>
-    <button>Stop updating</button>
+<!--    <button id="stopBtn">Stop updating</button>-->
+<!--    <button id="incIntervalBtn">Increase interval</button>-->
   </div>
   <div class="options">
+    <h2 id="config">Customize widget...</h2>
+    <p>Note, if your browser-window is wide enough, this column is conveniently shown next to the widget for easy
+      experimenting🙂</p>
+    <p>Current widget mode:<br/><span id="show-mode"></span></p>
+    <p>Enter <em>user</em> and <em>apikey</em> to try widget in <em>Demo</em> and <em>Basic</em> mode with any
+      Last.fm user:</p>
+    <p class="textinput"><label for="username-input">user:</label><input type="text" class="username"
+                                                                         id="username-input" value=""/></p>
+    <p class="textinput"><label for="apikey-input">apikey:</label><input type="text" class="apikey" id="apikey-input"
+                                                                         value=""/></p>
+    <p><label><input type="checkbox" class="dynaheader"/> "Dynamic" <em>widget header</em></label></p>
+    <p><label><input type="checkbox" class="hidealbums"/> Hide <em>album header-lines</em></label></p>
+    <p title="You'll find the handle next to lower right corner of the widget">ℹ️ Also drag the shown <em>handle</em>
+      to resize the widget.</p>
     <pre class="style">
     </pre>
     <pre class="tag">
     </pre>
-    <p><label><input type="checkbox" class="dynaheader" /> "Dynamic" <em>widget header</em></label></p>
-    <p><label><input type="checkbox" class="hidealbums" /> Hide <em>album header-lines</em></label></p>
   </div>
 </div>
 

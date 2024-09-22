@@ -6,43 +6,66 @@
 
 .demo {
   display: flex;
-  gap: 2rem;
-  padding: 2rem;
+  flex-wrap: wrap;
+  column-gap: 1.5rem;
+  padding: 1.8rem;
 }
 
 .info {
-  min-width: 22rem;
-  max-width: 40rem;
+  flex: 0 1 38rem;
 }
+
 .widget {
 }
-.options pre {
-  overflow: auto;
-  font-size: 85%;
-  padding: 0 0 1em 0;
-  border-bottom: 1px #eee solid;
+
+.options {
+  flex: 0 1 16rem;
 }
-.options pre.style {
-  padding-top: 1em;
-  border-top: 1px #eee solid;
-}
+
 
 h1 {
   font-size: 1.85rem;
 }
+
 h2 {
   font-size: 1.25rem;
 }
+
 h3 {
   font-size: 1.05rem;
+}
+
+
+a[href^='https://github.com/StigNygaard/']::after {
+  content: '';
+  background-image: url(./GitHub-Mark-Light-32px.png);
+  background-size: 1lh 1lh;
+  background-repeat: no-repeat;
+  background-position: right;
+  display: inline-block;
+  width: 1.2lh;
+  height: 1lh;
+  filter: invert(1);
+  vertical-align: bottom;
+}
+
+ul {
+  margin-inline-start: 0;
+  padding-inline-start: 20px;
+}
+
+ul ul {
+  margin-block-start: .2em;
 }
 
 .keyshot summary {
   cursor: pointer;
 }
+
 .keyshot a {
   display: block;
 }
+
 .keyshot img {
   display: block;
   width: calc(100% - 2px);
@@ -50,21 +73,46 @@ h3 {
   border: 1px solid #000;
 }
 
+
 .resizeable {
   border: none;
-  padding: 1.2rem;
+  padding: 1rem;
   width: 18em;
   min-width: 14em;
-  height: 70vh;
+  height: min(714px, 75svh);
   min-height: 7em;
   overflow: auto;
   resize: both;
 }
+
 lastfm-tracks {
   box-sizing: border-box;
   border: 1px solid #000;
   height: 100%;
 }
+
 button {
   margin: 1em 0;
+}
+
+
+#show-mode {
+  font-weight: bold;
+}
+
+.textinput {
+  display: flex;
+  flex-direction: column;
+}
+
+.options pre {
+  overflow: auto;
+  font-size: 85%;
+  padding: 0 0 1em 0;
+  border-bottom: 1px #eee solid;
+}
+
+.options pre.style {
+  padding-top: 1em;
+  border-top: 1px #eee solid;
 }
