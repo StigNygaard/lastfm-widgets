@@ -1,6 +1,6 @@
 /**
  *    Tracks, a Last-fm scrobbles widget.
- *    Except when in "demo"-mode, it is able to show a continuously updated tracklist.
+ *    Except when in "demo"-mode, widget is able to show a continuously updated tracklist.
  *
  *    Stig Nygaard, 2024.
  *    https://www.rockland.dk/
@@ -162,8 +162,8 @@ class Tracks extends HTMLElement {
     #user= null;
     #backend = null;
     #tracks = 50;
-    #interval = 65;
-    #maxUpdates = 1; // only 1 in basic-mode. 0 default in basic and backend-mode (0 = unlimited/"forever")
+    #interval = 60;
+    #updates = 1; // 1 in demo-mode (initial only). 0 default in basic and backend-mode (unlimited/"forever")
     #widgetMode = 'demo';  // backend, basic or demo
     get state() {
         return {
@@ -172,11 +172,12 @@ class Tracks extends HTMLElement {
             backend: this.#backend,
             tracks: this.#tracks,
             interval: this.#interval,
-            maxUpdates: this.#maxUpdates,
+            updates: this.#updates,
             widgetMode: this.#widgetMode
         }
     }
 
+    #initiated = false;
     #userAgent = navigator.userAgent.toLowerCase();
     #okUserAgent = this.#notBot(this.#userAgent);
 
@@ -186,7 +187,6 @@ class Tracks extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-        // Could potentially fetch user info (profile image url) already here? But do we see attributes already here?
     }
 
     // Fires when an instance was inserted into the document
@@ -198,6 +198,7 @@ class Tracks extends HTMLElement {
         }
         this.shadowRoot.appendChild(create('link', {rel: 'stylesheet', id: 'basestyles', href: basestyles.href}));
         this.#init();
+        this.#dispatchStateChange();
     }
 
     // Fires when an instance was removed from the document
@@ -209,17 +210,20 @@ class Tracks extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['user', 'backend', 'apikey', 'tracks', 'maxupdates', 'interval'];
+        return ['user', 'apikey', 'backend', 'tracks', 'updates', 'interval'];
     }
 
-    // Fires when an attribute was added, removed, or updated
+    // Fires when an observed attribute was added, removed, or updated
     attributeChangedCallback(attrName, oldVal, newVal) {
-        LOG && console.log(`Attributes: backend=${this.getAttribute('backend')}, apikey=${this.getAttribute('apikey')}, 
+        LOG && console.log(
+            `Attributes: backend=${this.getAttribute('backend')}, apikey=${this.getAttribute('apikey')},
+            user=${this.getAttribute('user')}, tracks=${this.getAttribute('tracks')}, 
+            updates=${this.getAttribute('updates')}, interval=${this.getAttribute('interval')}.`
+        );
 
-        user=${this.getAttribute('user')}, tracks=${this.getAttribute('tracks')}, 
-        maxupdates=${this.getAttribute('maxupdates')}, interval=${this.getAttribute('interval')}.`);
-
-        this.#widgetMode = this.#getWidgetMode(); // demo | basic | backend
+        const newWidgetMode = this.#getWidgetMode(); // demo | basic | backend
+        const widgetModeChanged = this.#widgetMode !== newWidgetMode;
+        this.#widgetMode = newWidgetMode; // demo | basic | backend
 
         LOG && console.log(`Widget mode "${this.#widgetMode}" - Attribute ${attrName} changing from ${oldVal} to ${newVal}...`);
 
@@ -232,7 +236,10 @@ class Tracks extends HTMLElement {
             this.#apikey = null;
         }
 
-        this.#user = this.getAttribute('user')?.trim() || null; // or "rockland" (but only if demo-mode?) ?
+        let newUser = this.getAttribute('user')?.trim();
+        if (!newUser?.length) newUser = null;
+        const userChanged = this.#user !== newUser;
+        this.#user = newUser;
 
         const potential_tracks = Math.abs(parseInt(this.getAttribute('tracks'), 10));
         if (!potential_tracks) { // null, NaN or 0
@@ -241,20 +248,20 @@ class Tracks extends HTMLElement {
             this.#tracks = Math.min(potential_tracks, 200);
         }
 
-        const potential_updates = Math.abs(parseInt(this.getAttribute('maxupdates'), 10));
+        const potential_updates = Math.abs(parseInt(this.getAttribute('updates'), 10));
         if (this.#widgetMode === 'demo') {
-            this.#maxUpdates = 1;
+            this.#updates = 1;
         } else { // 'basic' or 'backend' mode
             if (!potential_updates) { // null, NaN or 0
-                this.#maxUpdates = 0;
+                this.#updates = 0;
             } else {
-                this.#maxUpdates = Math.max(0, potential_updates);
+                this.#updates = Math.max(0, potential_updates);
             }
         }
 
         const potential_interval = Math.abs(parseInt(this.getAttribute('interval'), 10)); // number | NaN
         if (this.#widgetMode === 'demo') {
-            // Actually not relevant, because doesn't refresh in demo mode
+            // Actually not relevant, because currently we don't allow refresh in demo mode
             if (!potential_interval) { // null, NaN or 0
                 this.#interval = 120;
             } else {
@@ -262,7 +269,7 @@ class Tracks extends HTMLElement {
             }
         } else if (this.#widgetMode === 'basic') {
             if (!potential_interval) { // null, NaN or 0
-                this.#interval = 90;
+                this.#interval = 60;
             } else {
                 this.#interval = Math.max(potential_interval, 30);
             }
@@ -274,7 +281,43 @@ class Tracks extends HTMLElement {
             }
         }
 
-        window.dispatchEvent(new CustomEvent('stateChange', {detail: this.state}));
+        const dataValid = () => {
+            if (this.#widgetMode === 'demo') {
+                return !!this.#user?.length
+            } else if (this.#widgetMode === 'basic') {
+                return !!(this.#user?.length && this.#apikey?.length);
+            } else if (this.#widgetMode === 'backend') {
+                return !!this.#backend?.length;
+            }
+            LOG && console.warn(`Data is not valid! ${this.#user}/${this.#apikey}/${this.#widgetMode}`);
+            return false;
+        }
+
+
+        if (this.#initiated && dataValid()) {
+            this.#dispatchStateChange();
+            if (userChanged || widgetModeChanged) {
+                this.#scrobbles.clearUpdatesState();
+                console.log(`Tracks User/WidgetMode has changed to ${this.#user}/${this.#widgetMode} - Update profile-header and tracklist now...`);
+                this.#profile.setup();
+                this.#scrobbles.update();
+            }
+        }
+
+    }
+
+    #dispatchStateChange() {
+        LOG && console.log('DISPATCH stateChange', this.state);
+        this.dispatchEvent(
+            new CustomEvent(
+                'stateChange',
+                {
+                    bubbles: true,
+                    cancelable: false,
+                    detail: this.state
+                }
+            )
+        );
     }
 
     #getWidgetMode() {
@@ -339,7 +382,7 @@ class Tracks extends HTMLElement {
             create('div', {'class': 'footer'},
                 create('a', {
                         href: 'https://github.com/StigNygaard/lastfm-widgets',
-                        title: 'Widget by Stig Nygaard. Configure it to show tracks "scrobbled" to your last.fm account!...'
+                        title: 'Widget by Stig Nygaard. Configure it to show tracks "scrobbled" to your own last.fm account!...'
                     },
                     'Widget by Stig Nygaard'
                 )
@@ -347,18 +390,18 @@ class Tracks extends HTMLElement {
         );
         this.shadowRoot.appendChild(skeleton);
 
-        console.log(`Tracks widget: Initializing in '${this.#widgetMode}'-mode. ${this.#maxUpdates || 'Forever'} times getting ${this.#tracks} tracks for user ${this.#user ?? '(unknown)'} every ${this.#interval} seconds.`);
-
         // TODO: Maybe use the Intersection Observer API and not start until into view?:
         //  https://usefulangle.com/post/113/javascript-detecting-element-visible-during-scroll
         //  https://caniuse.com/intersectionobserver
-        this.#profile.setup();
-        this.#scrobbles.update();
-
+        Promise.all([this.#profile.setup(), this.#scrobbles.update()]).then(
+            () => this.#initiated = true
+        );
         // TODO Also might pause updates when page is not visible?
         //  https://developer.mozilla.org/en-US/blog/using-the-page-visibility-api/
         //  https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
         //  https://developer.mozilla.org/en-US/docs/Web/API/Element/checkVisibility
+
+        console.log(`Tracks widget initializing in '${this.#widgetMode}'-mode. ${this.#updates || 'Forever'} times getting ${this.#tracks} tracks for user ${this.#user ?? '(unknown)'} every ${this.#interval} seconds.`);
     }
 
 
@@ -377,12 +420,14 @@ class Tracks extends HTMLElement {
             } else if (it.#apikey) {
                 url.searchParams.append('api_key', it.#apikey);
             }
-            if (it.#user?.length) url.searchParams.append('user', it.#user);
+            if (it.#user?.length) {
+                url.searchParams.append('user', it.#user);
+            }
 
             if (it.#widgetMode === 'backend' || it.#okUserAgent) {
-                LOG && console.log(`Ready to get Profile with: ${url.href} ...`);
+                LOG && console.log(`Getting Profile with: ${url.href} ...`);
                 if (!fetcher.isRunning(url.href)) {
-                    it.#fetcher(url.href)
+                    return it.#fetcher(url.href)
                         .then((o) => {
                             if (o.error) {
                                 if ([26,29].includes(o.error)) {
@@ -399,7 +444,7 @@ class Tracks extends HTMLElement {
                         .finally(() => {
                         });
                 } else {
-                    console.warn(` - but skipping Profile with ${url.href} because already running...`);
+                    console.warn(`Skipping Profile with ${url.href} because already running...`);
                 }
             }
         }
@@ -409,12 +454,12 @@ class Tracks extends HTMLElement {
                 const avatar = o.user.image[2]['#text']; // TODO: filter on size=large !?
                 const sinceDt = new Date(Number(o.user.registered.unixtime) * 1000);
                 const scrobbleHistory = `Scrobbling since ${dtfDateMonthLong.format(sinceDt)}`;
-                const actual = `${o.user.realname} on Last.fm`;
+                const title = `${o.user.realname} (${o?.user?.name}) on Last.fm`;
 
                 it.style.setProperty('--header-background', `url("${avatar}")`);
                 it.shadowRoot.querySelectorAll('a.userlink').forEach((a) => {
                     a.href = o.user.url;
-                    a.title = actual;
+                    a.title = title;
                 });
                 it.shadowRoot.querySelectorAll('.username').forEach((e) => {
                     e.textContent = o.user.name;
@@ -441,7 +486,7 @@ class Tracks extends HTMLElement {
     #scrobbles = (function (it) {
         let timer;
         let updatesCanceled = false;
-        let updates = 0;
+        let updateCount = 0;
         let successiveErrors = 0;
         const fixedParams = {
             method: 'user.getrecenttracks',
@@ -449,9 +494,15 @@ class Tracks extends HTMLElement {
             format: 'json'
         }
 
+        function clearUpdatesState() {
+            updateCount = 0;
+            updatesCanceled = false;
+            successiveErrors = 0;
+        }
+
         function update() {
             const url = it.#widgetMode === 'backend' ? new URL(it.#backend, it.baseURI) : new URL(`https:${it.#apiRoot}`);
-
+            clearTimeout(timer);
             for (const param in fixedParams) {
                 url.searchParams.append(param, fixedParams[param]);
             }
@@ -464,14 +515,15 @@ class Tracks extends HTMLElement {
             url.searchParams.append('limit', it.#tracks);
 
             if (it.#widgetMode === 'backend' || it.#okUserAgent) {
-                LOG && console.log(`Ready [${updates+1}] to get Scrobbles with: ${url.href} ...`);
+                LOG && console.log(`[${updateCount+1}] Getting Scrobbles with: ${url.href} ...`);
+
                 if (!fetcher.isRunning(url.href)) {
-                    it.#fetcher(url.href)
+                    return it.#fetcher(url.href)
                         .then((o) => {
                             if (o.error) {
-                                if ([26,29].includes(o.error)) {
+                                if ([10,26,29].includes(o.error)) {
                                     updatesCanceled = true;
-                                    console.err(`Tracks widget: ⛔ Updates has stopped because error: ${o.error} - ${o.message} !`)
+                                    console.error(`Tracks widget: ⛔ Updates has stopped because error: ${o.error} - ${o.message} !`)
                                 }
                                 throw new Error(`${url.href} Returned: \n${JSON.stringify(o)}`);
                             }
@@ -483,22 +535,21 @@ class Tracks extends HTMLElement {
                             successiveErrors++;
                         })
                         .finally(() => {
-                            updates++;
-                            if (updates === 1) { // initial update
+                            updateCount++;
+                            if (updateCount === 1) { // initial
                                 it.scrollTop = 0;
                             }
                             if ((it.#widgetMode !== 'backend' && successiveErrors >= 3) || (successiveErrors >= 10)) {
                                 updatesCanceled = true;
                                 console.warn(`Updates stopped in ${it.#widgetMode}-mode, because of ${successiveErrors} successive errors occurring.`)
                             }
-                            clearTimeout(timer);
-                            if (!updatesCanceled && (it.#maxUpdates === 0 || updates < it.#maxUpdates)) {
+                            if (!updatesCanceled && (it.#updates === 0 || updateCount < it.#updates)) {
                                 LOG && console.log(`Waiting ${it.#interval} seconds until next update...`);
                                 timer = setTimeout(update, it.#interval * 1000);
                             }
                         });
                 } else {
-                    console.warn(` - but skipping Scrobbles with ${url.href} because already running...`);
+                    console.warn(`Skipping fetching scrobbles with ${url.href} because already running...`);
                 }
             }
         }
@@ -513,12 +564,13 @@ class Tracks extends HTMLElement {
 
         return {
             update: update,
+            clearUpdatesState: clearUpdatesState,
             stop: stop
         }
     })(this);
 
     /**
-     * Engine for processing received scrobbles data
+     * Engine for "pre-processing" received scrobbles data. Making album-lines etc.
      */
     #scrobblesProcessor = (function () {
         const items = [];
@@ -697,9 +749,13 @@ class Tracks extends HTMLElement {
         LOG && console.log(`o data stringify: \n${JSON.stringify(o)}`);
 
         const scrobbles = o?.recenttracks?.track;
-        if (scrobbles?.length) {
 
-            const lines = [];
+        const lines = [];
+        if (scrobbles?.length === 0) {
+            // TODO Make a nice "There are no recent tracks scrobbled for this user" message!?
+            console.warn('Tracks: The user has no recent tracks!');
+        } else if (scrobbles?.length) {
+
             this.#scrobblesProcessor.process(scrobbles).getItems().forEach(item => {
                     if (item.type === 'track') {
                         lines.push(create('div', {class: item.pinfo.text === 'playing' ? 'trackinfo nowplaying' : 'trackinfo'},
@@ -778,7 +834,7 @@ class Tracks extends HTMLElement {
             this.shadowRoot.getElementById('playlist').replaceChildren(...lines);
 
         } else {
-            console.error('Error or aborted getting scrobbles - or no recent tracks!');
+            console.error('Error or aborted getting scrobbles!');
         }
         this.#scrobblesProcessor.clearItems();
     }

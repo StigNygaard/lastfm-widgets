@@ -1,6 +1,6 @@
 /**
  * Tracks, a Last-fm scrobbles widget.
- * Except when in "demo"-mode, it is able to show a continuously updated tracklist.
+ * Except when in "demo"-mode, widget is able to show a continuously updated tracklist.
  *
  *    Stig Nygaard, 2024.
  *    https://www.rockland.dk/
@@ -108,6 +108,9 @@ a:hover {
   border: none;
   padding: 0;
 }
+.header .userlink {
+  display: block;
+}
 .header .avatar {
   position: absolute;
   border-radius: 50%;
@@ -117,6 +120,7 @@ a:hover {
   aspect-ratio: 1 / 1;
   background-image: var(--header-avatar-background);
   background-size: cover;
+  display: inline-block;
 }
 :host(.dynaheader) .header .avatar {
   top: 26px;
@@ -135,9 +139,13 @@ a:hover {
   font-size: 19px;
   text-align: right;
   margin-right: 65px;
+  white-space: nowrap;
+
 }
 a.username {
   color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .scrobblehistory {
   font-size: smaller;
