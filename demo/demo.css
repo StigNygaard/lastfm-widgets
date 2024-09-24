@@ -93,6 +93,8 @@ ul ul {
   height: min(714px, 75svh);
   min-height: 7em;
   overflow: auto;
+}
+body.desktop-mode .resizeable {
   resize: both;
 }
 
@@ -114,6 +116,13 @@ button {
 .textinput {
   display: flex;
   flex-direction: column;
+}
+
+.drag-info {
+  display: none;
+}
+body.desktop-mode .drag-info {
+  display: block;
 }
 
 .options pre {
