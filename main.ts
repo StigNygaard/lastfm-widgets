@@ -6,15 +6,15 @@ import {audioscrobbler} from './proxy-api/audioscrobbler.ts';
  * @run --allow-net --allow-env --allow-read=./demo,./widgets,./.env main.ts
  */
 
-Deno.serve(async (req: Request) => {
+Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
 
     const url = new URL(req.url);
     const pathname = url.pathname;
 
     // The "Router"...
-    if (pathname === '/proxy-api' || pathname === '/proxy-api/') {
+    if (/^\/proxy-api\/?$/.test(pathname)) {
         // The "proxy API" - https://lastfm-widgets.deno.dev/proxy-api
-        const result = await audioscrobbler(url.searchParams, req.headers);
+        const result = await audioscrobbler(url.searchParams, req.headers, info);
         return new Response(result.body, result.options);
     } else if (pathname.startsWith('/widgets/')) {
         // The statically served widgets code - https://lastfm-widgets.deno.dev/widgets/*
@@ -25,7 +25,7 @@ Deno.serve(async (req: Request) => {
             showDotfiles: false,
             showIndex: true, // index.html
             enableCors: false, // CORS not allowed/enabled (no CORS headers)
-            quiet: false, // logging of errors
+            quiet: true, // logging of errors
             headers: []
         });
     } else {
@@ -37,7 +37,7 @@ Deno.serve(async (req: Request) => {
             showDotfiles: false,
             showIndex: true, // index.html
             enableCors: false, // CORS not allowed/enabled (no CORS headers)
-            quiet: false, // logging of errors
+            quiet: true, // logging of errors
             headers: []
         });
     }

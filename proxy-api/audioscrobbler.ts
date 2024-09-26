@@ -1,10 +1,10 @@
 import 'jsr:@std/dotenv/load';
 
-// Get the fixed values from environment variables (or .env file): ( todo: maybe use KV instead? )
+// Get the fixed values from .env file or environment variables ( todo: or maybe from KV? )
 const apikey = Deno.env.get('audioscrobbler_apikey');
 const user = Deno.env.get('audioscrobbler_user') || 'rockland';
-const trackslimit = Deno.env.get('audioscrobbler_trackslimit');
-// Allow CORS for given hostname(s) and related subdomains. Multiple hostnames must be separated by semicolon:
+const tracks = Deno.env.get('audioscrobbler_trackslimit');
+// Allow CORS for given hostname(s) and their subdomains. Multiple hostnames separated by semicolon:
 const corsAllowHostnames = Deno.env.get('audioscrobbler_cors_allow_hostnames')?.toLowerCase()?.split(/\s*(?:;|$)\s*/) ?? [];
 
 // TODO *IF* I wanted to use Deno (Deploy) KV database for response caching, I needed something like:
@@ -16,10 +16,13 @@ const cache = new Map([
     ['user.getinfo-OkResponse', ''],
     ['user.getrecenttracks-OkResponse', '']
 ]);
+let fetchSuccessCount = 0;
+let fetchErrorCount = 0;
+// TODO: Also a returned-cached-content count?
 
 let hibernate = false; // In case of error 26 or 29, enter Hibernate mode
 
-export async function audioscrobbler(searchParams: URLSearchParams, reqHeaders: Headers) : Promise<{body: string, options: object}> {
+export async function audioscrobbler(searchParams: URLSearchParams, reqHeaders: Headers, info: Deno.ServeHandlerInfo) : Promise<{body: string, options: object}> {
 
     const origin = reqHeaders.get('Origin');
     const respHeaders = new Headers({'content-type': 'application/json'});
@@ -27,9 +30,6 @@ export async function audioscrobbler(searchParams: URLSearchParams, reqHeaders: 
         respHeaders.set('Access-Control-Allow-Origin', origin);
         respHeaders.set('Vary', 'Origin');
     }
-
-    // console.log(`audioscrobbler() proxy called with parameters-string: '${searchParams}' and header values:`);
-    // console.log(` Origin: ${origin}\n User-Agent: ${reqHeaders.get('User-Agent')}\n Referer: ${reqHeaders.get('Referer')}`);
 
     if (!apikey) {
         return apiKeyMissing(respHeaders);
@@ -39,9 +39,21 @@ export async function audioscrobbler(searchParams: URLSearchParams, reqHeaders: 
     if (!['user.getrecenttracks', 'user.getinfo'].includes(method)) {
         return methodError(method, respHeaders);
     }
+    if (method === 'user.getinfo') {
+        // log for getinfo only, because few (oftest only one) requests pr visitor
+        let logData = {
+            method: method,
+            date: new Date().toISOString(),
+            userAgent: reqHeaders.get('User-Agent') ?? '',
+            origin: reqHeaders.get('Origin') ?? '',
+            referer: reqHeaders.get('Referer') ?? '',
+            remoteAddr: remoteAddr(info)
+        };
+        console.log(`[${fetchSuccessCount}/${fetchErrorCount}] logData: `, logData);
+    }
     const nextTime = parseInt(cache.get(`${method}-NextTime`) || '0', 10);
     if (Date.now() <= nextTime) {
-        console.log(`Too early for '${method}'. Will use cached data instead...`);
+        // console.log(`Too early for '${method}'. Will use cached data instead...`);
         return fallback(method, respHeaders);
     }
     const fUrl = new URL('https://ws.audioscrobbler.com/2.0');
@@ -53,13 +65,13 @@ export async function audioscrobbler(searchParams: URLSearchParams, reqHeaders: 
     let json;
 
     if (method === 'user.getrecenttracks') {
-        if (trackslimit) {
-            fUrl.searchParams.append('limit', trackslimit);
+        if (tracks) {
+            fUrl.searchParams.append('limit', tracks);
         }
         fUrl.searchParams.append('extended', '1');
     }
 
-    console.log(`Last.fm fetch: ${fUrl.href}`);
+    // console.log(`Last.fm fetch: ${fUrl.href}`);
 
     cache.set(`${method}-NextTime`, String(waitUntil(method).ok)); // temporary update to prevent multiple concurrent fetches
     try {
@@ -69,17 +81,17 @@ export async function audioscrobbler(searchParams: URLSearchParams, reqHeaders: 
             }
         });
     } catch (e) {
-        console.error(`await fetch() error ${result?.status} - ${result?.statusText} \n `, e);
+        console.error(`[${fetchSuccessCount}/${++fetchErrorCount}] await fetch() error ${result?.status} - ${result?.statusText} \n `, e);
         return fallback(method, respHeaders);
     }
     try {
         json = await result.json(); // result.headers.get('content-type')?.includes('application/json')
     } catch (e) {
-        console.error('await result.json() error ', e);
+        console.error(`[${fetchSuccessCount}/${++fetchErrorCount}] await result.json() error `, e);
         return fallback(method, respHeaders);
     }
     if (!result.ok && json.error) {
-        console.error(`[${fUrl.href}] ${result.status} - ${result.statusText} \n${JSON.stringify(json)}`);
+        console.error(`[${fetchSuccessCount}/${++fetchErrorCount}] [${fUrl.href}] ${result.status} - ${result.statusText} \n${JSON.stringify(json)}`);
         if ([26, 29].includes(json.error)) {
             hibernate = true;
             console.error(`⛔ Going into *Hibernate* mode because: ${json.error} - ${json.message} !`);
@@ -93,15 +105,22 @@ export async function audioscrobbler(searchParams: URLSearchParams, reqHeaders: 
             hibernate = false;
             console.log('🟢 Leaving *Hibernate* mode - seems to work again');
         }
-        console.log(`Last.fm '${method}' fetch OK! Status : ${result.status} - ${result.statusText}`);
+        // console.log(`Last.fm '${method}' fetch OK! Status : ${result.status} - ${result.statusText}`); // TODO
+        fetchSuccessCount++;
         return success(method, result.status, result.statusText, json, respHeaders);
     } else {
-        console.error(`Last.fm fetch FAILED: ${result?.status} - ${result?.statusText}`);
+        console.error(`[${fetchSuccessCount}/${++fetchErrorCount}] Last.fm fetch FAILED: ${result?.status} - ${result?.statusText}`);
         return fail(method, respHeaders);
     }
 
 }
 
+function remoteAddr(info: Deno.ServeHandlerInfo): string {
+    if ('hostname' in info.remoteAddr) {
+        return `${info.remoteAddr.hostname}:${info.remoteAddr.port}`;
+    }
+    return '';
+}
 
 function allowedForCors(origin: string) {
     let originHostname = null;
@@ -126,7 +145,7 @@ function success(method: string, status: string|number, statusText: string, json
     const json = JSON.stringify(jsonObj);
     if (json !== cache.get(`${method}-OkResponse`)) { // If we used KV or other database, we would try to avoid unnecessary writes
         cache.set(`${method}-OkResponse`,json);
-        console.log(`Updating the cached json for '${method}'...`);
+        // console.log(`Updating the cached json for '${method}'...`); // TODO
     } else {
         // console.log(`SKIP updating cached json - there's no change in data for '${method}'`);
     }

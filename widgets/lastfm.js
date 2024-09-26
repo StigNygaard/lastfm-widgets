@@ -439,7 +439,7 @@ class Tracks extends HTMLElement {
                             update(o);
                         })
                         .catch((e) => {
-                            console.error(`Error calling audioscrobbler user.getinfo: \n`, e);
+                            console.error(`Error calling audioscrobbler user.getinfo. \n`, e);
                         })
                         .finally(() => {
                         });
@@ -531,7 +531,7 @@ class Tracks extends HTMLElement {
                             successiveErrors = 0;
                         })
                         .catch((e) => {
-                            console.error(`Error calling audioscrobbler user.getrecenttracks: \n`, e);
+                            console.error(`Error calling audioscrobbler user.getrecenttracks. \n`, e);
                             successiveErrors++;
                         })
                         .finally(() => {
