@@ -34,20 +34,20 @@ export async function audioscrobbler(searchParams: URLSearchParams, reqHeaders: 
     if (!apikey) {
         return apiKeyMissing(respHeaders);
     }
-    // Ignore all incoming parameters but 'method'. Using fixed (env) values for the rest...
+    // Ignore all incoming parameters but 'method'. Using fixed values for the rest...
     const method = (searchParams.get('method') ?? '').trim().toLowerCase();
     if (!['user.getrecenttracks', 'user.getinfo'].includes(method)) {
         return methodError(method, respHeaders);
     }
     if (method === 'user.getinfo') {
         // log for getinfo only, because few (oftest only one) requests pr visitor
-        let logData = {
+        const logData = {
             method: method,
             date: new Date().toISOString(),
             userAgent: reqHeaders.get('User-Agent') ?? '',
             origin: reqHeaders.get('Origin') ?? '',
             referer: reqHeaders.get('Referer') ?? '',
-            remoteAddr: remoteAddr(info)
+            ...remoteAddr(info)
         };
         console.log(`[${fetchSuccessCount}/${fetchErrorCount}] logData: `, logData);
     }
@@ -115,11 +115,14 @@ export async function audioscrobbler(searchParams: URLSearchParams, reqHeaders: 
 
 }
 
-function remoteAddr(info: Deno.ServeHandlerInfo): string {
+function remoteAddr(info: Deno.ServeHandlerInfo): object {
     if ('hostname' in info.remoteAddr) {
-        return `${info.remoteAddr.hostname}:${info.remoteAddr.port}`;
+        return {
+            remoteIp: info.remoteAddr.hostname,
+            remotePort: info.remoteAddr.port
+        }
     }
-    return '';
+    return {};
 }
 
 function allowedForCors(origin: string) {
