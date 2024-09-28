@@ -67,6 +67,10 @@ function create(tagName, attributes = {}, ...content) {
     return element;
 }
 
+function caseInsensitiveIdenticalStrings(str1, str2) {
+    return str1.localeCompare(str2, undefined, { sensitivity: 'base' }) === 0;
+}
+
 /**
  * A "fetcher" that works similar for "real" (json) endpoints and for
  * "endpoints" implemented as a "jsonp script" to avoid CORS issues.
@@ -519,7 +523,7 @@ class Tracks extends HTMLElement {
                 LOG && console.log(`[${updateCount+1}] Getting Scrobbles with: ${url.href} ...`);
 
                 if (!fetcher.isRunning(url.href)) {
-                    return it.#fetcher(url.href)
+                    return it.#fetcher(url.href)  /* or '/widgets/test.json' */
                         .then((o) => {
                             if (o.error) {
                                 if ([10,17,26,29].includes(o.error)) { // 17: "Login: User required to be logged in"
@@ -620,8 +624,8 @@ class Tracks extends HTMLElement {
         }
 
         function potentiallyAlbumHeaderItem() {
-            if (items[0].type === 'track' && items[1].type === 'track' && items[0].albumTitle === items[1].albumTitle) {
-                if (albumHeaderData.albumTitle) {
+            if (items[0].type === 'track' && items[1].type === 'track' && caseInsensitiveIdenticalStrings(items[0].albumTitle, items[1].albumTitle)) {
+                if (albumHeaderData.albumTitle?.length) {
                     const item = {type: 'album', splitTitle: splitAlbumTitle(albumHeaderData.albumTitle)};
                     items.unshift(Object.assign(item, albumHeaderData))
                 }
@@ -680,28 +684,28 @@ class Tracks extends HTMLElement {
             const item = {type: 'track'};
             item.pinfo = playedInfo(t);
             item.loved = t.loved === '1';
-            item.trackName = t.name;
-            item.trackUrl = t.url;
-            item.artistName = t.artist?.name;
-            item.artistUrl = t.artist?.url;
+            item.trackName = (t.name ?? '').trim();
+            item.trackUrl = (t.url ?? '').trim();
+            item.artistName = (t.artist?.name ?? '').trim();
+            item.artistUrl = (t.artist?.url ?? '').trim();
             item.albumCover = t.image?.find(i => i.size === 'medium')['#text']; // 64px
             // item.albumCover = t.image?.find(i => i.size === 'large')['#text']; // 174px
-            item.albumTitle = t.album['#text'];
+            item.albumTitle = (t.album['#text'] ?? '').trim();
             item.albumUrl = t.artist?.url + '/' + encodeURIComponent(item.albumTitle).replaceAll('%20', '+');
             if (items.length > 1) {
-                if (item.albumTitle !== items[0].albumTitle) {
+                if (!caseInsensitiveIdenticalStrings(item.albumTitle, items[0].albumTitle)) {
                     potentiallyAlbumHeaderItem();
                     albumHeaderData = {};
                 }
             }
             // update potential albumHeaderData with data from track t !
-            if (item.albumTitle && !albumHeaderData.albumTitle) {
+            if (item.albumTitle?.length && !(albumHeaderData.albumTitle?.length)) {
                 albumHeaderData.albumTitle = item.albumTitle;
                 albumHeaderData.albumUrl = item.albumUrl;
                 albumHeaderData.albumCover = item.albumCover;
                 albumHeaderData.artistName = item.artistName;
                 albumHeaderData.artistUrl = item.artistUrl;
-            } else if (item.albumTitle && item.albumTitle === albumHeaderData.albumTitle) {
+            } else if (item.albumTitle?.length && caseInsensitiveIdenticalStrings(item.albumTitle, albumHeaderData.albumTitle)) {
                 if (item.artistName !== albumHeaderData.artistName && albumHeaderData.artistName !== 'Various Artists') {
                     if (containing(albumHeaderData.artistName, item.artistName)) {
                         albumHeaderData.albumTitle = item.albumTitle;
