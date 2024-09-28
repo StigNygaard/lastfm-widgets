@@ -141,6 +141,7 @@ window.addEventListener(
         const incIntervalButton = document.querySelector('button#incIntervalBtn');
         const toggleDynaHeader = document.querySelector('input.dynaheader');
         const toggleHideAlbums = document.querySelector('input.hidealbums');
+        const toggleNoScroll = document.querySelector('input.noscroll');
         const usernameInput = document.querySelector('input.username');
         const apiKeyInput = document.querySelector('input.apikey');
         const dynaHeaderChanged = () => {
@@ -151,6 +152,10 @@ window.addEventListener(
             widget.classList.toggle('no-albums', toggleHideAlbums.checked);
             updateTagDef();
         };
+        const noScrollChanged = () => {
+            widget.classList.toggle('no-scroll', toggleNoScroll.checked);
+            updateTagDef();
+        }
         const userChanged = () => {
             const username = usernameInput.value?.trim();
             if (username.length) {
@@ -180,6 +185,7 @@ window.addEventListener(
             });
             toggleDynaHeader?.addEventListener('change', dynaHeaderChanged);
             toggleHideAlbums?.addEventListener('change', hideAlbumsChanged);
+            toggleNoScroll?.addEventListener('change', noScrollChanged);
             usernameInput?.addEventListener('change', userChanged);
             apiKeyInput?.addEventListener('change', apiKeyChanged);
             new ResizeObserver(handleResizedWidget).observe(widget);
@@ -189,6 +195,7 @@ window.addEventListener(
             apiKeyChanged();
             dynaHeaderChanged();
             hideAlbumsChanged();
+            noScrollChanged();
         }
     },
     false
