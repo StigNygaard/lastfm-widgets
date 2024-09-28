@@ -135,7 +135,7 @@ const fetcher = (function() {
             )
     }
 
-    let running = new Set();
+    const running = new Set();
     function isRunning(uri) {
         return running.has(uri);
     }

@@ -74,9 +74,9 @@ function styleDefString(width, height) {
 /**
  * ResizeObserverCallback function
  *
- * @param {ResizeObserverEntry[]} [roea] - ResizeObserverEntry Array
+ * @param {ResizeObserverEntry[]} [_roea] - ResizeObserverEntry Array
  */
-function updateStyleDef(roea) {
+function updateStyleDef(_roea) {
     const styleDef = document.querySelector(('.options pre.style'));
     const widget = document.querySelector('lastfm-tracks');
     if (styleDef && widget) {
@@ -168,7 +168,7 @@ window.addEventListener(
             // updateTagDef() will be called from stateChangeHandler()
         };
         const apiKeyChanged = () => {
-            let apiKey = apiKeyInput.value?.trim();
+            const apiKey = apiKeyInput.value?.trim();
             if (apiKey?.length) {
                 widget.setAttribute('apikey', apiKey);
             } else {
