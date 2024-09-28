@@ -18,7 +18,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   column-gap: 1.5rem;
-  padding: 2rem;
+  padding: 1.8rem;
 }
 
 .info {
@@ -29,7 +29,7 @@ body {
 }
 
 .options {
-  flex: 0 1 16rem;
+  flex: 0 1 19.2rem;
 }
 
 
