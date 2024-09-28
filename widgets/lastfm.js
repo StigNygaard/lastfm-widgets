@@ -298,6 +298,7 @@ class Tracks extends HTMLElement {
             this.#dispatchStateChange();
             if (userChanged || widgetModeChanged) {
                 this.#scrobbles.clearUpdatesState();
+                this.shadowRoot.getElementById('playlist')?.replaceChildren(); // clear currently shown tracks
                 console.log(`Tracks User/WidgetMode has changed to ${this.#user}/${this.#widgetMode} - Update profile-header and tracklist now...`);
                 this.#profile.setup();
                 this.#scrobbles.update();
@@ -521,7 +522,7 @@ class Tracks extends HTMLElement {
                     return it.#fetcher(url.href)
                         .then((o) => {
                             if (o.error) {
-                                if ([10,26,29].includes(o.error)) {
+                                if ([10,17,26,29].includes(o.error)) { // 17: "Login: User required to be logged in"
                                     updatesCanceled = true;
                                     console.error(`Tracks widget: ⛔ Updates has stopped because error: ${o.error} - ${o.message} !`)
                                 }
