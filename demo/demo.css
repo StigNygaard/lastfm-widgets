@@ -1,24 +1,25 @@
 :root {
+  height: 100%;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 15px;
   line-height: 1.4;
   color: rgb(34,34,34);
 }
 
-a {
-  color: rgb(34,34,34);
-}
-
 body {
+  height: 100%;
   margin: 0;
   padding: 0;
+  display: flex; /* main.demo & footer */
+  flex-direction: column;
 }
 
 .demo {
-  display: flex;
+  flex: 1 0 auto;
+  padding: 1.8rem;
+  display: flex; /* .info, .widget & .options */
   flex-wrap: wrap;
   column-gap: 1.5rem;
-  padding: 1.8rem;
 }
 
 .info {
@@ -32,6 +33,11 @@ body {
   flex: 0 1 19.2rem;
 }
 
+footer {
+  flex-shrink: 0;
+  padding: 1rem 2rem;
+  background-color: #fadcdc;
+}
 
 h1 {
   font-size: 1.85rem;
@@ -45,6 +51,9 @@ h3 {
   font-size: 1.05rem;
 }
 
+a {
+  color: rgb(34,34,34);
+}
 
 a[href^='https://github.com/StigNygaard/']::after {
   content: '';
@@ -135,9 +144,4 @@ body.desktop-mode .drag-info {
 .options pre.style {
   padding-top: 1em;
   border-top: 1px #eee solid;
-}
-
-footer {
-  padding: 1rem 2rem;
-  background-color: #fadcdc;
 }
