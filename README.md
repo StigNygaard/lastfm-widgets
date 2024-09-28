@@ -1,6 +1,6 @@
 # 🔴 lastfm-widgets
 
-*Tracks* is a web-widget to show "scrobbles" (play history) from a [Last-fm](https://www.last.fm/) account.
+*Tracks* is a javascript web-widget to show "scrobbles" (play history) from a [Last-fm](https://www.last.fm/) account.
 See *Tracks* in action on https://www.rockland.dk/ and https://lastfm-widgets.deno.dev/. At the latter site, you
 can not only find some more information and instructions for use, you can also play with some of the customization
 options, including setting the user to show scrobbles from. 
@@ -56,6 +56,5 @@ What could future updates bring? *Maybe*:
 - A layout that adapt nicer to wider display dimensions of widget
 - Dark mode
 - Refactoring code *if* I'm in the mood for that kind of thing 🙂
-- More documentation
-- Generally fixing and tuning...
+- More documentation (especially on the example proxy-api when it is a bit more mature)
 - Another widget
