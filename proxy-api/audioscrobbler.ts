@@ -144,7 +144,7 @@ function allowedForCors(origin: string) {
     return false;
 }
 
-function success(method: string, status: string|number, statusText: string, jsonObj: object, headers: Headers): {body: string, options: object} {
+function success(method: string, _status: string|number, _statusText: string, jsonObj: object, headers: Headers): {body: string, options: object} {
     const json = JSON.stringify(jsonObj);
     if (json !== cache.get(`${method}-OkResponse`)) { // If we used KV or other database, we would try to avoid unnecessary writes
         cache.set(`${method}-OkResponse`,json);

@@ -407,7 +407,7 @@ class Tracks extends HTMLElement {
 
 
     #profile = (function (it) {
-        function setup(secondTry = false) {
+        function setup(_secondTry = false) {
             const fixedParams = {
                 method: 'user.getinfo',
                 format: 'json'
