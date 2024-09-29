@@ -45,4 +45,4 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
 });
 
 
-console.log(`${new Date().toISOString()} - main.ts running on Deno ${Deno.version.deno}`);
+console.log(`${new Date().toISOString()} - main.ts running on Deno ${Deno.version.deno} (${navigator.userAgent.toLowerCase()})`);
