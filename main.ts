@@ -45,4 +45,5 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
 });
 
 
+// https://github.com/denoland/deploy_feedback/issues/705
 console.log(`${new Date().toISOString()} - main.ts running on Deno ${Deno.version.deno} (${navigator.userAgent.toLowerCase()})`);
