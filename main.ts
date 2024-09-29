@@ -23,7 +23,7 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
             fsRoot: 'widgets',
             showDirListing: false,
             showDotfiles: false,
-            showIndex: true, // index.html
+            showIndex: false, // index.html
             enableCors: false, // CORS not allowed/enabled (no CORS headers)
             quiet: true, // logging of errors
             headers: []
@@ -43,3 +43,6 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
     }
 
 });
+
+
+console.log(`${new Date().toISOString()} - main.ts running on Deno ${Deno.version.deno}`);

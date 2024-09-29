@@ -268,3 +268,6 @@ function methodError(method: string, headers: Headers) {
         }
     }
 }
+
+
+console.log('audioscrobbler.ts was initiated.');

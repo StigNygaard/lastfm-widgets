@@ -115,6 +115,11 @@ lastfm-tracks {
 
 button {
   margin: 1em 0;
+  display: none;
+}
+
+body.local-mode #stopBtn {
+  display: initial;
 }
 
 

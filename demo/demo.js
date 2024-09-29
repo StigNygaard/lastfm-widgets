@@ -122,11 +122,18 @@ function isMobile() {
     return /mobile|tablet|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
+function isLocalhost() {
+    return window.location.href.startsWith('http://localhost');
+}
+
 window.addEventListener(
     'DOMContentLoaded',
     function () {
         if (!isMobile()) {
             document.body.classList.add('desktop-mode');
+        }
+        if (isLocalhost()) {
+            document.body.classList.add('local-mode');
         }
         const widgetContainer = document.querySelector('div.widget');
         const widgetResizeable = widgetContainer.querySelector('div.resizeable');

@@ -67,8 +67,12 @@ function create(tagName, attributes = {}, ...content) {
     return element;
 }
 
+
+// https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator/Collator#sensitivity
+const RelaxedComparator = new Intl.Collator(undefined, { sensitivity: "base" });
+
 function caseInsensitiveIdenticalStrings(str1, str2) {
-    return str1.localeCompare(str2, undefined, { sensitivity: 'base' }) === 0;
+    return RelaxedComparator.compare(str1, str2) === 0;
 }
 
 /**

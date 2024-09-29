@@ -27,15 +27,14 @@ immediately deployed to the demo-site at https://lastfm-widgets.deno.dev/.
 The widget (frontend code) should be compatible back to at least Firefox 115 and Chromium 109 based web-browsers
 (which are the last versions of these running on Windows 7/8 installations). It also runs in Safari, but unsure
 how old versions are supported (I'm not able to test that myself).
-The backend code is my first simple experiments/experience with Deno. It has been tested with Release Candidate
-versions of Deno 2.
+The backend code is my first simple experiments/experience with Deno. It has been tested with Deno 1.46 and
+Release Candidate versions of Deno 2.
 
 #### /widgets/ folder
 
 The widget frontend code. *All* that is needed for widget to work in *Demo* or *Basic* mode. See
 [Releases](https://github.com/StigNygaard/lastfm-widgets/releases) to get latest "release-version" of this folder's
-content. And see https://lastfm-widgets.deno.dev/ for an explanation of the modes and customizations the widget
-supports.
+content. And see https://lastfm-widgets.deno.dev/ for more about widget *modes* and how to use and customize the widget.
 
 #### /demo/ folder
 
@@ -56,5 +55,5 @@ What could future updates bring? *Maybe*:
 - A layout that adapt nicer to wider display dimensions of widget
 - Dark mode
 - Refactoring code *if* I'm in the mood for that kind of thing 🙂
-- More documentation (especially on the example proxy-api when it is a bit more mature)
+- More documentation (especially on the Deno proxy-api implementation when it feels a bit more mature)
 - Another widget
