@@ -768,11 +768,14 @@ class Tracks extends HTMLElement {
             this.#scrobblesProcessor.process(scrobbles).getItems().forEach(item => {
                     if (item.type === 'track') {
                         lines.push(create('div', {class: item.pinfo.text === 'playing' ? 'trackinfo nowplaying' : 'trackinfo'},
-                            create('a', {class: 'cover', href: item.albumUrl, tabindex: '-1'}, create('img', {
-                                src: item.albumCover,
-                                alt: '',
-                                title: item.albumTitle
-                            })),
+                            create('a', {class: 'cover', href: item.albumUrl, tabindex: '-1'},
+                                item.albumCover ?
+                                    create('img', {
+                                        src: item.albumCover,
+                                        alt: '',
+                                        title: item.albumTitle
+                                    })
+                                    : ''),
                             create('a', {
                                 class: item.loved ? 'track loved' : 'track',
                                 href: item.trackUrl,
@@ -787,11 +790,14 @@ class Tracks extends HTMLElement {
                             create('div', {class: 'play', title: item.pinfo.text === 'playing' ? 'Scrobbling now...' : item.pinfo.title}, item.pinfo.text)
                         ));
                     } else if (item.type === 'album') {
-                        const coverLink = create('a', {class: 'cover', href: item.albumUrl, tabindex: '-1'}, create('img', {
-                            src: item.albumCover,
-                            alt: '',
-                            title: item.albumTitle
-                        }));
+                        const coverLink = create('a', {class: 'cover', href: item.albumUrl, tabindex: '-1'},
+                            item.albumCover ?
+                                create('img', {
+                                    src: item.albumCover,
+                                    alt: '',
+                                    title: item.albumTitle
+                                })
+                                : '');
                         const artistLink = create('a', {
                             href: item.artistUrl,
                             title: item.artistName,
