@@ -27,8 +27,7 @@ immediately deployed to the demo-site at https://lastfm-widgets.deno.dev/.
 The widget (frontend code) should be compatible back to at least Firefox 115 and Chromium 109 based web-browsers
 (which are the last versions of these running on Windows 7/8 installations). It also runs in Safari, but unsure
 how old versions are supported (I'm not able to test that myself).
-The backend code is my first simple experiments/experience with Deno. It has been tested with Deno 1.4 and
-Release Candidate versions of Deno 2.
+The backend code is my first simple experiments/experience with Deno. It is tested with Deno 1.46 and Deno 2.0.
 
 #### /widgets/ folder
 
