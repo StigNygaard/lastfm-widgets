@@ -22,7 +22,7 @@ let fetchErrorCount = 0;
 
 let hibernate = false; // In case of error 26 or 29, enter Hibernate mode
 
-export async function audioscrobbler(searchParams: URLSearchParams, reqHeaders: Headers, info: Deno.ServeHandlerInfo) : Promise<{body: string, options: object}> {
+export async function proxyApi(searchParams: URLSearchParams, reqHeaders: Headers, info: Deno.ServeHandlerInfo) : Promise<{body: string, options: object}> {
 
     const origin = reqHeaders.get('Origin');
     const respHeaders = new Headers({'content-type': 'application/json'});
@@ -45,11 +45,11 @@ export async function audioscrobbler(searchParams: URLSearchParams, reqHeaders: 
             method: method,
             date: new Date().toISOString(),
             userAgent: reqHeaders.get('User-Agent') ?? '',
-            origin: reqHeaders.get('Origin') ?? '',
+            origin: origin ?? '',
             referer: reqHeaders.get('Referer') ?? '',
             ...remoteAddr(info)
         };
-        console.log(`[${fetchSuccessCount}/${fetchErrorCount}] logData: `, logData);
+        console.log(`[${fetchSuccessCount}/${fetchErrorCount}] proxy: `, logData);
     }
     const nextTime = parseInt(cache.get(`${method}-NextTime`) || '0', 10);
     if (Date.now() <= nextTime) {

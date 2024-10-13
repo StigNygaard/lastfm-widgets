@@ -1,6 +1,7 @@
 import {serveDir} from 'jsr:@std/http/file-server';
 import 'jsr:@std/dotenv/load';
-import {audioscrobbler} from './proxy-api/audioscrobbler.ts';
+import {proxyApi} from './services/proxy-api.ts';
+import {log} from './services/log.ts';
 
 /**
  * @run --allow-net --allow-env --allow-read=./demo,./widgets,./.env main.ts
@@ -14,8 +15,12 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
     // The "Router"...
     if (/^\/proxy-api\/?$/.test(pathname)) {
         // The "proxy API" - https://lastfm-widgets.deno.dev/proxy-api
-        const result = await audioscrobbler(url.searchParams, req.headers, info);
+        const result = await proxyApi(url.searchParams, req.headers, info);
         return new Response(result.body, result.options);
+    } else if (/^\/log\/?$/.test(pathname)) {
+        // Simple "post object" log-endpoint - https://lastfm-widgets.deno.dev/log
+        log(url.searchParams, req, info);
+        return new Response('', {status: 200, statusText: 'OK'});
     } else if (pathname.startsWith('/widgets/')) {
         // The statically served widgets code - https://lastfm-widgets.deno.dev/widgets/*
         return serveDir(req, {

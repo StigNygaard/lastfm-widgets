@@ -39,10 +39,11 @@ content. And see https://lastfm-widgets.deno.dev/ for more about widget *modes* 
 
 Frontend-code for the demo page seen on https://lastfm-widgets.deno.dev/
 
-#### /proxy-api/ folder
+#### /services/ folder
 
-Contains *audioscrobbler.ts*, an example backend proxy-api made with Deno. The proxy-api is used on demo page when
+- *proxy-api.ts* - An example backend proxy-api made with Deno. The proxy-api is used on demo page when
 widget is in *Backend-supported* mode, but also used by widget on [rockland.dk](https://www.rockland.dk/).
+- *log.ts* - A simple service used by demo page to log changes in widget state
 
 #### /main.ts file
 
