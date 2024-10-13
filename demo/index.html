@@ -39,8 +39,8 @@
     <p>This page is a simple demonstration of the
       <a href="https://github.com/StigNygaard/lastfm-widgets" title="GitHub repository">Last.fm <em>Tracks</em> widget</a>
       showing recent "scrobbles" from a last.fm account. Here you'll also find instructions on how to insert the widget
-      on a webpage. But for a start, you can also just try customizing the widget shown here, including making it show
-      scrobbles from your own (or any) Last.fm account with public scrobbles.</p>
+      on a webpage. But for a start, you can try customizing the widget shown here, including making it show
+      scrobbles from your own (or any) Last.fm account with public "scrobbles".</p>
 
     <h2>The essential</h2>
 
@@ -63,7 +63,7 @@
       <em><a href="https://www.last.fm/api/show/user.getRecentTracks">user.getrecenttracks</a></em>)
       from last.fm's audioscrobbler 2.0 api that the widget needs to function. Your own backend proxy-api is
       a very good idea, if widget is to be placed on a page with <em>more</em> than very modest amounts of
-      traffic, because you can implement "throttling" in the proxy-api to prevent overwhelming volumes of
+      traffic, because you can implement "throttling" in the proxy-api to prevent overwhelming numbers of
       requests being sent directly to last.fm's API.</p>
 
     <ol>
@@ -82,7 +82,7 @@
         </p>
         <p>Adding your own API-key - which you can <a href="https://www.last.fm/api/authentication">get for free</a> -
           puts the widget into the <em>Basic</em> mode where it supports periodically refresh of the tracks-list.
-          With the <code>interval</code> attribute, you can set the track-list's refresh-rate in seconds.</p>
+          With the <code>interval</code> attribute, you can also set the track-list's refresh-rate in seconds.</p>
       </li>
       <li>
         <h3>"Backend-supported" mode</h3>
