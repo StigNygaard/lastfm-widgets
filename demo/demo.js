@@ -113,10 +113,27 @@ const stateChangeHandler = debounce(
                 showMode.textContent = widgetMode.replace('Backend', 'Backend-supported');
             }
             updateTagDef();
+            logStateChange(ev.detail);
         }
     },
     500
 );
+
+function logStateChange(state) {
+    // console.log('State changed to', state);
+    const url = new URL('/log', import.meta.url);
+    const fetchHeaders = new Headers({'Content-Type': 'application/json'});
+    const {apikey, ...logObj} = state; // log all properties of state *except* apikey
+    fetch(url.href, {method: 'POST', headers: fetchHeaders, body: JSON.stringify(logObj), keepalive: true})
+        .then((resp) => {
+            if (!resp.ok) {
+                console.warn('log fetch not ok.\n', resp);
+            }
+        })
+        .catch((err) => {
+            console.error('log fetch error.\n', err);
+        });
+}
 
 function isMobile() {
     return /mobile|tablet|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
