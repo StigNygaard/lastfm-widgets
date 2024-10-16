@@ -81,35 +81,35 @@ export async function proxyApi(searchParams: URLSearchParams, reqHeaders: Header
             }
         });
     } catch (e) {
-        console.error(`[${fetchSuccessCount}/${++fetchErrorCount}] await fetch() error ${result?.status} - ${result?.statusText} \n `, e);
+        console.error(`[${fetchSuccessCount}/${++fetchErrorCount}] await fetch() error ${result?.status} - ${result?.statusText} `, e);
         return fallback(method, respHeaders);
     }
     try {
         json = await result.json(); // result.headers.get('content-type')?.includes('application/json')
     } catch (e) {
-        console.error(`[${fetchSuccessCount}/${++fetchErrorCount}] await result.json() error `, e);
+        console.error(`Proxy [${fetchSuccessCount}/${++fetchErrorCount}] await result.json() error `, e);
         return fallback(method, respHeaders);
     }
     if (!result.ok && json.error) {
-        console.error(`[${fetchSuccessCount}/${++fetchErrorCount}] [${fUrl.href}] ${result.status} - ${result.statusText} \n${JSON.stringify(json)}`);
+        console.error(`Proxy [${fetchSuccessCount}/${++fetchErrorCount}] [${fUrl.href}] ${result.status} - ${result.statusText} `, json);
         if ([26, 29].includes(json.error)) {
             hibernate = true;
-            console.error(`⛔ Going into *Hibernate* mode because: ${json.error} - ${json.message} !`);
+            console.warn(`⛔ Going into *Hibernate* mode because proxy received: ${json.error} - ${json.message} !`);
         } else {
-            console.error(`Received error: ${json.error} - ${json.message}`);
+            console.warn(`Proxy received error: ${json.error} - ${json.message}`);
         }
         return fail(method, respHeaders);
     }
     if (result.ok && !json.error) {
         if (hibernate) {
             hibernate = false;
-            console.log('🟢 Leaving *Hibernate* mode - seems to work again');
+            console.log('🟢 Proxy leaving *Hibernate* mode - seems to work again');
         }
         // console.log(`Last.fm '${method}' fetch OK! Status : ${result.status} - ${result.statusText}`); // TODO
         fetchSuccessCount++;
         return success(method, result.status, result.statusText, json, respHeaders);
     } else {
-        console.error(`[${fetchSuccessCount}/${++fetchErrorCount}] Last.fm fetch FAILED: ${result?.status} - ${result?.statusText}`);
+        console.error(`Proxy [${fetchSuccessCount}/${++fetchErrorCount}] Last.fm fetch FAILED: ${result?.status} - ${result?.statusText}`);
         return fail(method, respHeaders);
     }
 

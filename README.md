@@ -25,9 +25,9 @@ Also, this repository is set up as a [Deno Deploy](https://deno.com/deploy) proj
 immediately deployed to the demo-site at https://lastfm-widgets.deno.dev/.
 
 The widget (frontend code) should be compatible back to at least Firefox 115 and Chromium 109 based web-browsers
-(which are the last versions of these running on Windows 7/8 installations). It also runs in Safari, but unsure
-how old versions are supported (I'm not able to test that myself).
-The backend code is my first simple experiments/experience with Deno. It is tested with Deno 1.46 and Deno 2.0.
+(which are versions still compatible with Windows 7/8 installations). It also runs in Safari, but unsure how old
+versions are supported (I'm not able to test that myself). The backend code is my first simple experiments/experience
+with Deno. It is tested with Deno 1.46 and Deno 2.0.
 
 #### /widgets/ folder
 
@@ -43,7 +43,7 @@ Frontend-code for the demo page seen on https://lastfm-widgets.deno.dev/
 
 - *proxy-api.ts* - An example backend proxy-api made with Deno. The proxy-api is used on demo page when
 widget is in *Backend-supported* mode, but also used by widget on [rockland.dk](https://www.rockland.dk/).
-- *log.ts* - A simple service used by demo page to log changes in widget state
+- *log.ts* - A simple log endpoint used by the demo page
 
 #### /main.ts file
 
