@@ -17,7 +17,7 @@ As name of this repository hints, I might have more than one Last.fm widget plan
 The *Tracks* widget itself is made as a *webcomponent* using pure standard web client-side technologies
 (no frameworks or build tools needed). It can work "alone" communicating directly with Last.fm's
 Audioscrobbler v2 API, or it can be supported by a custom backend "proxy-api". The latter is encouraged
-because it makes it possible to implement throttling of requests to Last.fm's API.
+when possible, because it makes it possible to implement throttling of requests to Last.fm's API.
 
 This repository not only holds the widget itself, but also the demo page (https://lastfm-widgets.deno.dev/) and an
 example backend proxy-api. The proxy-api is made in [Deno](https://deno.com/) (server-side javascript/typescript).
@@ -43,7 +43,7 @@ Frontend-code for the demo page seen on https://lastfm-widgets.deno.dev/
 
 - *proxy-api.ts* - An example backend proxy-api made with Deno. The proxy-api is used on demo page when
 widget is in *Backend-supported* mode, but also used by widget on [rockland.dk](https://www.rockland.dk/).
-- *log.ts* - A simple log endpoint used by the demo page
+- *log.ts* - A simple log endpoint used by the demo page.
 
 #### /main.ts file
 
