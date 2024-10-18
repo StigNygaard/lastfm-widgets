@@ -25,7 +25,7 @@ let hibernate = false; // In case of error 26 or 29, enter Hibernate mode
 export async function proxyApi(searchParams: URLSearchParams, reqHeaders: Headers, info: Deno.ServeHandlerInfo) : Promise<{body: string, options: object}> {
 
     const origin = reqHeaders.get('Origin');
-    const respHeaders = new Headers({'content-type': 'application/json'});
+    const respHeaders = new Headers({'Content-Type': 'application/json'});
     if (origin && allowedForCors(origin)) {
         respHeaders.set('Access-Control-Allow-Origin', origin);
         respHeaders.set('Vary', 'Origin');
@@ -85,9 +85,14 @@ export async function proxyApi(searchParams: URLSearchParams, reqHeaders: Header
         return fallback(method, respHeaders);
     }
     try {
-        json = await result.json(); // result.headers.get('content-type')?.includes('application/json')
+        json = await result.json(); // Check if result.headers.get('Content-Type')?.includes('application/json') ?
     } catch (e) {
         console.error(`Proxy [${fetchSuccessCount}/${++fetchErrorCount}] await result.json() error `, e);
+        try {
+            const text = await result.text();
+            console.error(`Proxy received unexpected response which had Content-Type header:\n`, result.headers.get('Content-Type'));
+            console.error(`Proxy received unexpected response which parsed as text is:\n`, text);
+        } catch  (_err) { /* ignore */ }
         return fallback(method, respHeaders);
     }
     if (!result.ok && json.error) {

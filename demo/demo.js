@@ -113,18 +113,34 @@ const stateChangeHandler = debounce(
                 showMode.textContent = widgetMode.replace('Backend', 'Backend-supported');
             }
             updateTagDef();
-            logStateChange(ev.detail);
+            logState(ev.detail);
         }
     },
     500
 );
 
-function logStateChange(state) {
-    // console.log('State changed to', state);
+function logState(stateObj) {
+    const {apikey, ...logObj} = stateObj; // log all properties of state *except* apikey
+    log('state', logObj);
+}
+
+function log(...params) {
     const url = new URL('/log', import.meta.url);
-    const fetchHeaders = new Headers({'Content-Type': 'application/json'});
-    const {apikey, ...logObj} = state; // log all properties of state *except* apikey
-    fetch(url.href, {method: 'POST', headers: fetchHeaders, body: JSON.stringify(logObj), keepalive: true})
+    let contentIdx= 0;
+    if (params.length > 1) {
+        url.searchParams.set('type', params[0]);
+        contentIdx = 1;
+    }
+    let fetchHeaders;
+    let body;
+    if (isString(params[contentIdx])) {
+        fetchHeaders = new Headers({'Content-Type': 'text/plain'});
+        body = params[contentIdx];
+    } else { // assume we can post as json
+        fetchHeaders = new Headers({'Content-Type': 'application/json'});
+        body = JSON.stringify(params[contentIdx]);
+    }
+    fetch(url.href, {method: 'POST', headers: fetchHeaders, body: body, keepalive: true})
         .then((resp) => {
             if (!resp.ok) {
                 console.warn('log fetch not ok.\n', resp);
@@ -133,6 +149,10 @@ function logStateChange(state) {
         .catch((err) => {
             console.error('log fetch error.\n', err);
         });
+}
+
+function isString(x) {
+    return Object.prototype.toString.call(x) === "[object String]"
 }
 
 function isMobile() {
