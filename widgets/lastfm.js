@@ -391,7 +391,7 @@ class Tracks extends HTMLElement {
             create('div', {'class': 'footer'},
                 create('a', {
                         href: 'https://github.com/StigNygaard/lastfm-widgets',
-                        title: 'Widget by Stig Nygaard. Configure it to show tracks "scrobbled" to your own last.fm account!...'
+                        title: 'Widget by Stig Nygaard. Use it on your homepage or blog, showing "scrobbles" from your own last.fm account...'
                     },
                     'Widget by Stig Nygaard'
                 )

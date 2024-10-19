@@ -211,14 +211,14 @@ const waitNext = new Map([
     // Avoid too fast retries when errors. Errors might be caused by overloaded last.fm servers.
     // Well, I might actually be over-thinking this a bit :-) ...
     ['user.getinfo', {
-        ok: 3601,
-        failedWithFallback: 1801,
-        failedWithoutFallback: 61
+        ok: 3600,
+        failedWithFallback: 1800,
+        failedWithoutFallback: 60
     }],
     ['user.getrecenttracks', {
-        ok: 31,
-        failedWithFallback: 121,
-        failedWithoutFallback: 61
+        ok: 30,
+        failedWithFallback: 120,
+        failedWithoutFallback: 60
     }]
 ]);
 function waitUntil(method: string) {
