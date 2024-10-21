@@ -5,7 +5,7 @@ See *Tracks* in action on https://www.rockland.dk/ and https://lastfm-widgets.de
 can not only find some more information and instructions for use, you can also play with some of the customization
 options, including setting the user to show scrobbles from. 
 
-[![Tracks screenshot](demo/Tracks.png "Tracks widget example")](https://www.last.fm/user/rockland)
+[![Tracks](demo/Tracks-lastfm-widget-header-1280x640-2.png "Tracks widget")](https://www.last.fm/user/rockland)
 
 Long time Last.fm users might get a déjà vu feeling by the red album header-lines. As primarily an album listener
 myself, I have missed them. So I brought them (optionally) back in this widget.
