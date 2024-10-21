@@ -21,10 +21,6 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
     const url = new URL(req.url);
     const pathname = url.pathname;
 
-    console.log(`hostname: ${url.hostname}`);
-    console.log(`host: ${url.host}`);
-    console.log(`origin: ${url.origin}`);
-
     // TODO...
     // if (url.origin.startsWith('http://localhost:')) {
     //     myHeaders.set('Content-Security-Policy',
@@ -72,7 +68,7 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
             `default-src 'none' ; script-src 'self' ; connect-src https: ${url.origin} ; img-src https: blob: data: ${url.origin} ; style-src 'self' ; frame-ancestors 'none' ; form-action 'self'`);
     } else {
         response.headers.set('Content-Security-Policy',
-            `default-src 'none' ; script-src 'self' ; connect-src https: http://localhost:8000 ; img-src https: blob: data: http://localhost:8000 ; style-src 'self' ; frame-ancestors 'none' ; form-action 'self'`);
+            `default-src 'none' ; script-src 'self' ; connect-src https: ; img-src https: blob: data: ; style-src 'self' ; frame-ancestors 'none' ; form-action 'self'`);
     }
     response.headers.set('Referrer-Policy',
         'strict-origin-when-cross-origin');
