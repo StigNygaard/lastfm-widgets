@@ -13,17 +13,18 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
     const pathname = url.pathname;
 
     // The "Router"...
+    let response: Response;
     if (/^\/proxy-api\/?$/.test(pathname)) {
         // The "proxy API" - https://lastfm-widgets.deno.dev/proxy-api
         const result = await proxyApi(url.searchParams, req.headers, info);
-        return new Response(result.body, result.options);
+        response =  new Response(result.body, result.options);
     } else if (/^\/log\/?$/.test(pathname)) {
         // Simple "post object" log-endpoint - https://lastfm-widgets.deno.dev/log
         log(url.searchParams, req, info);
-        return new Response('', {status: 200, statusText: 'OK'});
+        response = new Response('', {status: 200, statusText: 'OK'});
     } else if (pathname.startsWith('/widgets/')) {
         // The statically served widgets code - https://lastfm-widgets.deno.dev/widgets/*
-        return serveDir(req, {
+        response = await serveDir(req, {
             urlRoot: 'widgets',
             fsRoot: 'widgets',
             showDirListing: false,
@@ -35,7 +36,7 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
         });
     } else {
         // The statically served demo-page - https://lastfm-widgets.deno.dev/*
-        return serveDir(req, {
+        response = await serveDir(req, {
             urlRoot: '',
             fsRoot: 'demo',
             showDirListing: false,
@@ -46,6 +47,11 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
             headers: []
         });
     }
+
+    response.headers.set('Content-Security-Policy',
+        `default-src 'none' ; script-src 'self' ; connect-src https: http://localhost:8000 ; img-src https: blob: data: http://localhost:8000 ; style-src 'self' ; frame-ancestors 'none' ; form-action 'self'`);
+
+    return response;
 
 });
 
