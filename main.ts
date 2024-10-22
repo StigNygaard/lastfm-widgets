@@ -20,6 +20,7 @@ function responseWithHeaders(response: Response): Response {
     return response;
 }
 
+// we could set a port-number with Deno.serve({port: portno}, handler);
 Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
 
     const url = new URL(req.url);
