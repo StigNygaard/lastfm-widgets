@@ -12,13 +12,7 @@ const myHeaders = {
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'X-Content-Type-Options': 'nosniff'
 }
-
-function responseWithHeaders(response: Response): Response {
-    for (const [key, value] of Object.entries(myHeaders)) {
-        response.headers.set(key, value);
-    }
-    return response;
-}
+const myHeadersArr = Object.entries(myHeaders).map(([k, v]) => `${k}: ${v}`);
 
 // we could set a port-number with Deno.serve({port: portno}, handler);
 Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
@@ -38,7 +32,7 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
         response = new Response(null, {status: 200, statusText: 'OK', headers: myHeaders});
     } else if (pathname.startsWith('/widgets/') && req.method === 'GET') {
         // The statically served widgets code - https://lastfm-widgets.deno.dev/widgets/*
-        response = responseWithHeaders(await serveDir(req, {
+        response = await serveDir(req, {
             urlRoot: 'widgets',
             fsRoot: 'widgets',
             showDirListing: false,
@@ -46,12 +40,11 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
             showIndex: false, // index.html
             enableCors: false, // CORS not allowed/enabled (no CORS headers)
             quiet: true, // logging of errors
-            headers: []
-            // TODO Why doesn't this work?:  headers: Object.entries(myHeaders).map(([k, v]) => `${k}: ${v}`)
-        }));
+            headers: myHeadersArr
+        });
     } else if (req.method === 'GET') {
         // The statically served demo-page - https://lastfm-widgets.deno.dev/*
-        response = responseWithHeaders(await serveDir(req, {
+        response = await serveDir(req, {
             urlRoot: '',
             fsRoot: 'demo',
             showDirListing: false,
@@ -59,9 +52,8 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
             showIndex: true, // index.html
             enableCors: false, // CORS not allowed/enabled (no CORS headers)
             quiet: true, // logging of errors
-            headers: []
-            // TODO Why doesn't this work?:  headers: Object.entries(myHeaders).map(([k, v]) => `${k}: ${v}`)
-        }));
+            headers: myHeadersArr
+        });
     } else {
         response = new Response('Not found', { status: 404, statusText: `Method ${req.method} not supported here`, headers: myHeaders});
         // for other routing examples, see f.ex: https://youtu.be/p541Je4J_ws?si=-tWmB355467gtFIP
