@@ -28,7 +28,10 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
 
     // The "Router"...
     let response: Response;
-    if (/^\/proxy-api\/?$/.test(pathname)) {
+    if (req.method !== 'GET') {
+        return new Response('Not found', { status: 404, statusText: `Method ${req.method} not supported here`, headers: myHeaders});
+        // for supporting other methods, see f.ex: https://youtu.be/p541Je4J_ws?si=-tWmB355467gtFIP
+    } else if (/^\/proxy-api\/?$/.test(pathname)) {
         // The "proxy API" - https://lastfm-widgets.deno.dev/proxy-api
         const result = await proxyApi(url.searchParams, req.headers, info);
         response =  new Response(result.body, {headers: myHeaders, ...result.options});
