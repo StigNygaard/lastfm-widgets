@@ -28,18 +28,15 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
 
     // The "Router"...
     let response: Response;
-    if (req.method !== 'GET') {
-        response = new Response('Not found', { status: 404, statusText: `Method ${req.method} not supported here`, headers: myHeaders});
-        // for supporting other methods, see f.ex: https://youtu.be/p541Je4J_ws?si=-tWmB355467gtFIP
-    } else if (/^\/proxy-api\/?$/.test(pathname)) {
+    if (/^\/proxy-api\/?$/.test(pathname) && req.method === 'GET') {
         // The "proxy API" - https://lastfm-widgets.deno.dev/proxy-api
         const result = await proxyApi(url.searchParams, req.headers, info);
         response = new Response(result.body, {headers: myHeaders, ...result.options});
-    } else if (/^\/log\/?$/.test(pathname)) {
+    } else if (/^\/log\/?$/.test(pathname) && req.method === 'POST') {
         // Simple "post object" log-endpoint - https://lastfm-widgets.deno.dev/log
         log(url.searchParams, req, info);
         response = new Response(null, {status: 200, statusText: 'OK', headers: myHeaders});
-    } else if (pathname.startsWith('/widgets/')) {
+    } else if (pathname.startsWith('/widgets/') && req.method === 'GET') {
         // The statically served widgets code - https://lastfm-widgets.deno.dev/widgets/*
         response = responseWithHeaders(await serveDir(req, {
             urlRoot: 'widgets',
@@ -52,7 +49,7 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
             headers: []
             // TODO Why doesn't this work?:  headers: Object.entries(myHeaders).map(([k, v]) => `${k}: ${v}`)
         }));
-    } else {
+    } else if (req.method === 'GET') {
         // The statically served demo-page - https://lastfm-widgets.deno.dev/*
         response = responseWithHeaders(await serveDir(req, {
             urlRoot: '',
@@ -65,6 +62,9 @@ Deno.serve(async (req: Request, info: Deno.ServeHandlerInfo) => {
             headers: []
             // TODO Why doesn't this work?:  headers: Object.entries(myHeaders).map(([k, v]) => `${k}: ${v}`)
         }));
+    } else {
+        response = new Response('Not found', { status: 404, statusText: `Method ${req.method} not supported here`, headers: myHeaders});
+        // for other routing examples, see f.ex: https://youtu.be/p541Je4J_ws?si=-tWmB355467gtFIP
     }
 
     if (url.origin.startsWith('http://localhost:')) { // if http://localhost development, modify slightly
