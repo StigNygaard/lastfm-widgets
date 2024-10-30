@@ -711,14 +711,15 @@ class Tracks extends HTMLElement {
                 }
             }
             // update potential albumHeaderData with data from track t !
-            if (item.albumTitle?.length && !(albumHeaderData.albumTitle?.length)) {
+            if (item.albumTitle?.length && !(albumHeaderData.albumTitle?.length)) { // if no current potential "header album"...
                 albumHeaderData.albumTitle = item.albumTitle;
                 albumHeaderData.albumUrl = item.albumUrl;
                 albumHeaderData.albumCover = item.albumCover;
                 albumHeaderData.artistName = item.artistName;
                 albumHeaderData.artistUrl = item.artistUrl;
-            } else if (item.albumTitle?.length && caseInsensitiveIdenticalStrings(item.albumTitle, albumHeaderData.albumTitle)) {
-                if (item.artistName !== albumHeaderData.artistName && albumHeaderData.artistName !== 'Various Artists') {
+            } else if (item.albumTitle?.length && caseInsensitiveIdenticalStrings(item.albumTitle, albumHeaderData.albumTitle)) { // if same album-title header as potential album-header...
+                if (item.artistName !== albumHeaderData.artistName && albumHeaderData.artistName !== 'Various Artists') { // if different artist-names (and potential album-header is not VA)...
+                    const shortArtistName = item.artistName?.split(',')[0];
                     if (containing(albumHeaderData.artistName, item.artistName)) {
                         albumHeaderData.albumTitle = item.albumTitle;
                         albumHeaderData.albumUrl = item.albumUrl;
@@ -727,6 +728,14 @@ class Tracks extends HTMLElement {
                         }
                         albumHeaderData.artistName = item.artistName;
                         albumHeaderData.artistUrl = item.artistUrl;
+                    } else if (shortArtistName?.length && containing(albumHeaderData.artistName, shortArtistName)) {
+                        albumHeaderData.albumTitle = item.albumTitle;
+                        if (item.albumCover !== 'https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png') {
+                            albumHeaderData.albumCover = item.albumCover;
+                        }
+                        albumHeaderData.artistName = shortArtistName;
+                        albumHeaderData.artistUrl = item.artistUrl.split(',')[0];
+                        albumHeaderData.albumUrl = albumHeaderData.artistUrl + '/' + encodeURIComponent(albumHeaderData.albumTitle).replaceAll('%20', '+');
                     } else if (!containing(item.artistName, albumHeaderData.artistName)) {
                         albumHeaderData.artistName = 'Various Artists';
                         albumHeaderData.artistUrl = 'https://www.last.fm/music/Various+Artists';
