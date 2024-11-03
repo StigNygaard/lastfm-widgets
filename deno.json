@@ -1,13 +1,14 @@
 {
-  "tasks": {
-    "dev": "deno run --allow-net --allow-env --allow-read=./demo,./widgets,./.env --watch main.ts",
-    "start": "deno run --allow-net --allow-env --allow-read=./demo,./widgets,./.env main.ts"
-  },
-  "deploy": {
-    "exclude": [
-      "**/node_modules"
-    ],
-    "include": [],
-    "entrypoint": "main.ts"
-  }
+    "tasks": {
+        "dev": "deno --allow-net --allow-env --allow-read=./demo,./widgets,./.env --watch main.ts",
+        "start": "deno --allow-net --allow-env --allow-read=./demo,./widgets,./.env main.ts",
+        "lint": "deno lint main.ts services/"
+    },
+    "deploy": {
+        "exclude": [
+            "**/node_modules"
+        ],
+        "include": [],
+        "entrypoint": "main.ts"
+    }
 }

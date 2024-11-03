@@ -1,202 +1,221 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
 
-<head prefix="og: http://ogp.me/ns#">
+  <head prefix="og: http://ogp.me/ns#">
 
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tracks last.fm widget demo site</title>
-  <link rel="stylesheet" href="demo.css" />
-  <script src="/widgets/lastfm.js" type="module"></script>
-  <script src="demo.js" type="module"></script>
-  <meta name="description" content="Tracks - a last.fm scrobbles widget. Customize the widget for your use, and show your latest played tracks on your blog or homepage." />
-  <meta name="keywords" content="last.fm,lastfm,scrobbles,scrobble,scrobbling,audioscrobbler,playlist,tracks,tracklist,recently played,play history,listening to,now playing,widget,webcomponent,javascript,Stig Nygaard,music,web-development,deno,deno deploy" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tracks last.fm widget demo site</title>
+    <link rel="stylesheet" href="demo.css" />
+    <script src="/widgets/lastfm.js" type="module"></script>
+    <script src="demo.js" type="module"></script>
+    <meta name="description" content="Tracks - a last.fm scrobbles widget. Customize the widget for your use, and show your latest played tracks on your blog or homepage." />
+    <meta name="keywords" content="last.fm,lastfm,scrobbles,scrobble,scrobbling,audioscrobbler,playlist,tracks,tracklist,recently played,play history,listening to,now playing,widget,webcomponent,javascript,Stig Nygaard,music,web-development,deno,deno deploy" />
 
-  <meta name="dc.language" content="en" />
-  <meta name="dc.creator.name" content="Stig Nygaard" />
-  <meta name="author" content="Stig Nygaard" />
-  <meta name="publisher" content="Stig Nygaard" />
-  <link rel="me" href="https://www.rockland.dk/" />
-  <link rel="me" href="https://mastodon.world/@stignygaard" />
-  <meta property="fediverse:creator" content="@stignygaard@mastodon.world" />
-  <meta name="google-site-verification" content="JmHUvheHQClDK983oeALxiV75Ea_Wri5R8YnYh5RQHo" />
+    <meta name="dc.language" content="en" />
+    <meta name="dc.creator.name" content="Stig Nygaard" />
+    <meta name="author" content="Stig Nygaard" />
+    <meta name="publisher" content="Stig Nygaard" />
+    <link rel="me" href="https://www.rockland.dk/" />
+    <link rel="me" href="https://mastodon.world/@stignygaard" />
+    <meta property="fediverse:creator" content="@stignygaard@mastodon.world" />
+    <meta name="google-site-verification" content="JmHUvheHQClDK983oeALxiV75Ea_Wri5R8YnYh5RQHo" />
 
-  <meta property="og:title" content="Tracks last.fm widget demo site" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://lastfm-widgets.deno.dev/" />
-  <meta property="og:description" content="Tracks - a last.fm scrobbles widget. Customize the widget for your use, and show your latest played tracks on your blog or homepage." />
-  <meta property="og:image" content="https://lastfm-widgets.deno.dev/Tracks.png" />
-  <meta property="og:image:alt" content="screenshot of widget" />
+    <meta property="og:title" content="Tracks last.fm widget demo site" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://lastfm-widgets.deno.dev/" />
+    <meta property="og:description" content="Tracks - a last.fm scrobbles widget. Customize the widget for your use, and show your latest played tracks on your blog or homepage." />
+    <meta property="og:image" content="https://lastfm-widgets.deno.dev/Tracks-lastfm-widget-header-1280x640-2.png" />
+    <meta property="og:image:alt" content="Tracks widget header" />
 
-</head>
+  </head>
 
-<body>
+  <body>
 
-<main class="demo">
-  <div class="info">
-    <h1>🔴 Last.fm <em>Tracks</em> widget</h1>
+    <main class="demo">
+      <div class="info">
+        <h1>🔴 Last.fm <em>Tracks</em> widget</h1>
 
-    <p>This page is a simple demonstration of the
-      <a href="https://github.com/StigNygaard/lastfm-widgets" title="GitHub repository">Last.fm <em>Tracks</em> widget</a>
-      showing recent "scrobbles" from a last.fm account. Here you'll also find instructions on how to insert the widget
-      on a webpage. But for a start, you can try customizing the widget shown here, including making it show
-      scrobbles from your own (or any) Last.fm account with public "scrobbles".</p>
+        <p>This page is a simple demonstration of the
+          <a href="https://github.com/StigNygaard/lastfm-widgets" title="GitHub repository">Last.fm <em>Tracks</em> widget</a>
+          showing recent "scrobbles" from a last.fm account. Here you'll also find instructions on how to insert the
+          widget on a webpage. But for a start, you can try customizing the widget shown here, including making it show
+          scrobbles from your own (or any) Last.fm account with public "scrobbles".</p>
 
-    <h2>The essential</h2>
+        <h2>The essential</h2>
 
-    <p>To use the widget on a webpage, you need to import <code>lastfm.js</code> as a module. If you do that from html,
-      remember the <code>type</code> attribute:</p>
+        <p>To use the widget on a webpage, you need to import <code>lastfm.js</code> as a module. If you do that from
+          html, remember the <code>type</code> attribute:</p>
 
-    <code>&lt;script src="lastfm.js" type="module"&gt;&lt;/script&gt;</code>
+        <code>&lt;script src="lastfm.js" type="module"&gt;&lt;/script&gt;</code>
 
-    <p>The script defines the custom html-element <code>&lt;lastfm-tracks/&gt;</code>. Insert such element on a
-      webpage where you want a <em>Tracks</em> widget to be.</p>
+        <p>The script defines the custom html-element <code>&lt;lastfm-tracks/&gt;</code>. Insert such element on a
+          webpage where you want a <em>Tracks</em> widget to be.</p>
 
-    <p>When creating widget, the script will read the <code>tracks.css</code> stylesheet file, which it expects
-      to find at same location as the script file itself.</p>
+        <p>When creating widget, the script will read the <code>tracks.css</code> stylesheet file, which it expects to
+          find at same location as the script file itself.</p>
 
-    <p>The widget has 3 modes. The <em>Demo</em> and <em>Basic</em> modes are "standalone" modes where widget
-      communicates <em>directly</em> with last.fm's API to get the "scrobbles". The third mode is
-      <em>Backend-supported</em> mode where you need to have a backend "proxy-api" that the widget can
-      communicate with. The idea is that the proxy-api should mirror/forward the two methods
-      (<em><a href="https://www.last.fm/api/show/user.getInfo">user.getinfo</a></em> and
-      <em><a href="https://www.last.fm/api/show/user.getRecentTracks">user.getrecenttracks</a></em>)
-      from last.fm's audioscrobbler 2.0 api that the widget needs to function. Your own backend proxy-api is
-      a very good idea, if widget is to be placed on a page with <em>more</em> than very modest amounts of
-      traffic, because you can implement "throttling" in the proxy-api to prevent overwhelming numbers of
-      requests being sent directly to last.fm's API.</p>
+        <p>The widget has 3 modes. The <em>Demo</em> and <em>Basic</em> modes are "standalone" modes where widget
+          communicates <em>directly</em> with last.fm's API to get the "scrobbles". The third mode is
+          <em>Backend-supported</em> mode where you need to have a backend "proxy-api" that the widget can communicate
+          with. The idea is that the proxy-api should mirror/forward the two methods
+          (<em><a href="https://www.last.fm/api/show/user.getInfo">user.getinfo</a></em> and
+          <em><a href="https://www.last.fm/api/show/user.getRecentTracks">user.getrecenttracks</a></em>) from last.fm's
+          audioscrobbler 2.0 api that the widget needs to function. Your own backend proxy-api is a very good idea, if
+          widget is to be placed on a page with <em>more</em> than very modest amounts of traffic, because you can
+          implement "throttling" in the proxy-api to prevent overwhelming numbers of requests being sent directly to
+          last.fm's API.</p>
 
-    <ol>
-      <li>
-        <h3>"Demo" mode</h3>
-        <p>
-          <code>&lt;lastfm-tracks user="your username"&gt;<wbr />&lt;/lastfm-tracks&gt;</code>
-        </p>
-        <p>In the "standalone" <em>Demo</em> mode, the widget is "static". Latest "scrobbles" will be loaded upon
-          creation of the widget, but tracklist will <em>not</em> be refreshed after that.</p>
-      </li>
-      <li>
-        <h3>"Basic" mode</h3>
-        <p>
-          <code>&lt;lastfm-tracks user="your username" apikey="your own api key" interval="60"&gt;<wbr />&lt;/lastfm-tracks&gt;</code>
-        </p>
-        <p>Adding your own API-key - which you can <a href="https://www.last.fm/api/authentication">get for free</a> -
-          puts the widget into the <em>Basic</em> mode where it supports periodically refresh of the tracks-list.
-          With the <code>interval</code> attribute, you can also set the track-list's refresh-rate in seconds.</p>
-      </li>
-      <li>
-        <h3>"Backend-supported" mode</h3>
-        <p>
-          <code>&lt;lastfm-tracks backend="/proxy-api" interval="35"&gt;<wbr />&lt;/lastfm-tracks&gt;</code>
-        </p>
-        <p>Add the <code>backend</code> attribute pointing to a custom "proxy API" to enable <em>Backend-supported</em>
-          mode. Depending on your proxy-api, you could (or should?) also add other attributes like <code>user</code>
-          and <code>apikey</code>. But usually it will be smarter - and simpler - to have fixed values for these
-          defined in the backend.</p>
-      </li>
-    </ol>
+        <ol>
+          <li>
+            <h3>"Demo" mode</h3>
+            <p>
+              <code>&lt;lastfm-tracks user="your username"&gt;<wbr />&lt;/lastfm-tracks&gt;</code>
+            </p>
+            <p>In the "standalone" <em>Demo</em> mode, the widget is "static". Latest "scrobbles" will be loaded upon
+              creation of the widget, but tracklist will <em>not</em> be refreshed after that.</p>
+          </li>
+          <li>
+            <h3>"Basic" mode</h3>
+            <p>
+              <code>&lt;lastfm-tracks user="your username" apikey="your own api key" interval="60"&gt;<wbr />&lt;/lastfm-tracks&gt;</code>
+            </p>
+            <p>Adding your own API-key - which you can <a href="https://www.last.fm/api/authentication">get for free</a>
+              - puts the widget into the <em>Basic</em> mode where it supports periodically refresh of the tracks-list.
+              With the <code>interval</code> attribute, you can also set the track-list's refresh-rate in seconds.</p>
+          </li>
+          <li>
+            <h3>"Backend-supported" mode</h3>
+            <p>
+              <code>&lt;lastfm-tracks backend="/proxy-api" interval="35"&gt;<wbr />&lt;/lastfm-tracks&gt;</code>
+            </p>
+            <p>Add the <code>backend</code> attribute pointing to a custom "proxy API" to enable <em>Backend-supported</em>
+              mode. Depending on your proxy-api, you could (or should?) also add other attributes like <code>user</code>
+              and <code>apikey</code>. But usually it will be smarter - and simpler - to have fixed values for these
+              defined in the backend.</p>
+          </li>
+        </ol>
 
-    <h2>Attributes</h2>
+        <h2>Attributes</h2>
 
-    <p>Potential attributes to set on the <code>&lt;lastfm-tracks/&gt;</code> element:</p>
-    <ul>
-      <li><em>user</em> - last.fm username.</li>
-      <li><em>apikey</em> - last.fm api-key.</li>
-      <li><em>backend</em> - address of a backend proxy-api.</li>
-      <li><em>interval</em> - update interval in seconds for the tracks-list. On Last.fm profile pages, an update
-        interval of 30 seconds is used. So you should probably never go lower than that. Default value is 60 in
-        <em>Basic</em> and <em>Backend-supported</em> mode, and the widget doesn't allow lower than 30 in Basic mode.
-        The value is ignored in <em>Demo</em> mode.</li>
-      <li><em>tracks</em> - max number of tracks to show. Widget default is 50 (but overridden to 100 in the
-        proxy-api used in this demo when in <em>Backend-supported</em> mode).</li>
-      <li><em>updates</em> - max. number of times to update tracks-list (0&nbsp;=&nbsp;unlimited,
-        1&nbsp;=&nbsp;initial&nbsp;only). Default value is 0 in <em>Basic</em>
-        and <em>Backend-supported</em> mode. The attribute is ignored in <em>Demo</em> mode.</li>
-      <li>css classes:
+        <p>Potential attributes to set on the <code>&lt;lastfm-tracks/&gt;</code> element:</p>
         <ul>
-          <li><em>dynaheader</em> - When added, the profile-widget header becomes "dynamic"
-            (shown only when mouse is over widget).</li>
-          <li><em>no-albums</em> - When added, the red album header-lines will <em>not</em> be shown.</li>
-          <li><em>no-scroll</em> - When added, scrolling the track-list inside the widget is <em>not</em> possible
-            (otherwise it can be done with touch or mouse-wheel).</li>
+          <li>
+            <em>user</em> - last.fm username.
+          </li>
+          <li>
+            <em>apikey</em> - last.fm api-key.
+          </li>
+          <li>
+            <em>backend</em> - address of a backend proxy-api.
+          </li>
+          <li>
+            <em>interval</em> - update interval in seconds for the tracks-list. On Last.fm profile pages, an update
+            interval of 30 seconds is used. So you should probably never go lower than that. Default value is 60 in
+            <em>Basic</em> and <em>Backend-supported</em> mode, and the widget doesn't allow lower than 30 in Basic
+            mode. The value is ignored in <em>Demo</em> mode.
+          </li>
+          <li>
+            <em>tracks</em> - max number of tracks to show. Widget default is 50 (but overridden to 100 in the proxy-api
+            used in this demo when in <em>Backend-supported</em> mode).
+          </li>
+          <li>
+            <em>updates</em> - max. number of times to update tracks-list (0&nbsp;=&nbsp;unlimited,
+            1&nbsp;=&nbsp;initial&nbsp;only). Default value is 0 in <em>Basic</em> and <em>Backend-supported</em> mode.
+            The attribute is ignored in <em>Demo</em> mode.
+          </li>
+          <li>
+            css classes:
+            <ul>
+              <li>
+                <em>dynaheader</em> - When added, the profile-widget header becomes "dynamic" (shown only when mouse is
+                over widget).
+              </li>
+              <li>
+                <em>no-albums</em> - When added, the red album header-lines will <em>not</em> be shown.
+              </li>
+              <li>
+                <em>no-scroll</em> - When added, scrolling the track-list inside the widget is <em>not</em>
+                possible (otherwise it can be done with touch or mouse-wheel).
+              </li>
+            </ul>
+          </li>
         </ul>
-      </li>
-    </ul>
 
-    <h2>Get your own API key for <em>Basic</em> or <em>Backend-supported</em> mode</h2>
+        <h2>Get your own API key for <em>Basic</em> or <em>Backend-supported</em> mode</h2>
 
-    <p>To enable the <em>Basic</em> and <em>Backend-supported</em> modes of the widget, you need your own Last.fm
-      API-key. To get this, go to
-      <a href="https://www.last.fm/api/authentication" target="_blank">https://www.last.fm/api/authentication</a>.
-      Though this page talks about <em>authentication</em> and <em>secrets</em>, you can ignore that. For our
-      non-authenticated use of the API, you don't need a secret, but you still need an API-key connected to your
-      Last.fm account. So follow the
-      <a href="https://www.last.fm/api/account/create" target="_blank">"apply for a key" link</a>.
-      Here you should enter an application name and description.
-    </p>
-    <details class="keyshot">
-      <summary>I imagine something like this will be fine [click to view]...</summary>
-      <a href="https://www.last.fm/api/account/create"><img src="apply-apikey.png" alt=" [screenshot] " loading="lazy" /></a>
-    </details>
+        <p>To enable the <em>Basic</em> and <em>Backend-supported</em> modes of the widget, you need your own Last.fm
+          API-key. To get this, go to
+          <a href="https://www.last.fm/api/authentication" target="_blank">https://www.last.fm/api/authentication</a>.
+          Though this page talks about <em>authentication</em> and <em>secrets</em>, you can ignore that. For our
+          non-authenticated use of the API, you don't need a secret, but you still need an API-key connected to your
+          Last.fm account. So follow the
+          <a href="https://www.last.fm/api/account/create" target="_blank">"apply for a key" link</a>. Here you should
+          enter an application name and description.</p>
+        <details class="keyshot">
+          <summary>I imagine something like this will be fine [click to view]...</summary>
+          <a href="https://www.last.fm/api/account/create"><img src="apply-apikey.png" alt=" [screenshot] " loading="lazy" /></a>
+        </details>
 
-    <p>Once submitted, you should get a personal API-key which can be used for the Tracks widget, to either enable
-      the widget's <em>Basic</em> mode, or use it via a proxy-api with widget in <em>Backend-supported</em> mode.</p>
+        <p>Once submitted, you should get a personal API-key which can be used for the Tracks widget, to either enable
+          the widget's <em>Basic</em> mode, or use it via a proxy-api with widget in <em>Backend-supported</em> mode.</p>
 
-  </div>
-  <div class="widget">
-    <div class="resizeable">
-    </div>
-    <button id="stopBtn">Stop updating</button>
-  </div>
-  <div class="options">
-    <h2 id="config">Customize widget...</h2>
-    <p>Note, if your browser-window is wide enough, this column is conveniently shown next to widget for easy
-      experimenting🙂
-    </p>
-    <p>Current widget mode:<br/><span id="show-mode"></span></p>
-    <p>Enter <em>user</em> and <em>api-key</em> to try widget in <em>Demo</em> and <em>Basic</em> mode with any
-      Last.fm user:
-    </p>
-    <p class="textinput" title="A Last.fm username">
-      <label for="username-input">user:</label>
-      <input type="text" class="username" id="username-input" value=""/>
-    </p>
-    <p class="textinput" title="Your personal Last.fm API-key (will enable Basic widget mode)">
-      <label for="apikey-input">api-key:</label>
-      <input type="text" class="apikey" id="apikey-input" value=""/>
-    </p>
-    <p>
-      <label title="Make widget-header visible only when mouse is over widget (or long-press on touch displays)">
-        <input type="checkbox" class="dynaheader"/> "Dynamic" <em>widget header</em>
-      </label>
-    </p>
-    <p>
-      <label title="Remove the red album header-lines from tracks-list">
-        <input type="checkbox" class="hidealbums"/> Hide <em>album header-lines</em>
-      </label>
-    </p>
-    <p>
-      <label title="Disable the possibility (via mouse-wheel or touch) to scroll in shown tracks-list">
-        <input type="checkbox" class="noscroll"/> Disable <em>track-list scrolling</em>
-      </label>
-    </p>
-    <p title="You'll find the handle next to (usually) lower right corner of the widget" class="drag-info">ℹ️
-      To resize widget, drag the <em>handle</em> shown next to a corner of the widget.
-    </p>
-    <pre class="style">
-    </pre>
-    <pre class="tag">
-    </pre>
-  </div>
-</main>
+      </div>
+      <div class="widget">
+        <div class="resizeable">
+        </div>
+        <button id="stopBtn">Stop updating</button>
+      </div>
+      <div class="options">
+        <h2 id="config">Customize widget...</h2>
+        <p>Note, if your browser-window is wide enough, this column is conveniently shown next to widget for easy
+          experimenting🙂</p>
+        <p>Current widget mode:<br /><span id="show-mode"></span></p>
+        <p>Enter <em>user</em> and <em>api-key</em> to try widget in <em>Demo</em> and <em>Basic</em> mode with any
+          Last.fm user:</p>
+        <p class="textinput" title="A Last.fm username">
+          <label for="username-input">user:</label>
+          <input type="text" class="username" id="username-input" value="" />
+        </p>
+        <p class="textinput" title="Your personal Last.fm API-key (will enable Basic widget mode)">
+          <label for="apikey-input">api-key:</label>
+          <input type="text" class="apikey" id="apikey-input" value="" />
+        </p>
+        <p>
+          <label title="Make widget-header visible only when mouse is over widget (or long-press on touch displays)">
+            <input type="checkbox" class="dynaheader" /> "Dynamic" <em>widget header</em>
+          </label>
+        </p>
+        <p>
+          <label title="Remove the red album header-lines from tracks-list">
+            <input type="checkbox" class="hidealbums" /> Hide <em>album header-lines</em>
+          </label>
+        </p>
+        <p>
+          <label title="Disable the possibility (via mouse-wheel or touch) to scroll in shown tracks-list">
+            <input type="checkbox" class="noscroll" /> Disable <em>track-list scrolling</em>
+          </label>
+        </p>
+        <p title="You'll find the handle next to (usually) lower right corner of the widget" class="drag-info">
+          ℹ️ To resize widget, drag the <em>handle</em> shown next to lower right corner of the widget.
+        </p>
+        <pre class="style">
+        </pre>
+        <pre class="tag">
+        </pre>
+      </div>
+    </main>
 
-<footer>
-  <p><i><b>Tracks</b> widget</i> is made by
-    <a href="https://www.rockland.dk/" title="Homepage of Stig Nygaard">Stig Nygaard</a> &nbsp; — &nbsp; The
-    <a href="https://github.com/StigNygaard/lastfm-widgets">code repository</a> and official
-    <a href="https://github.com/StigNygaard/lastfm-widgets/releases">widget release versions</a> can be found on GitHub.</p>
-</footer>
+    <footer>
+      <p>
+        <i><b>Tracks</b> widget</i> is made by
+        <a href="https://www.rockland.dk/" title="Homepage of Stig Nygaard">Stig Nygaard</a>
+        &nbsp; — &nbsp; On GitHub you can find the
+        <a href="https://github.com/StigNygaard/lastfm-widgets">code repository</a> and the official
+        <a href="https://github.com/StigNygaard/lastfm-widgets/releases">widget release versions</a>.
+      </p>
+    </footer>
 
-</body>
+  </body>
 
 </html>

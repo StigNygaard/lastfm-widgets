@@ -1,4 +1,3 @@
-
 /**
  * Creates an HTML element with the specified tag name, attributes, and content.
  *
@@ -38,9 +37,9 @@ function throttle(func, interval) {
         const later = () => {
             func.apply(this, args);
             timeout = null;
-        }
+        };
         timeout = setTimeout(later, interval);
-    }
+    };
 }
 
 /**
@@ -52,7 +51,7 @@ function throttle(func, interval) {
  */
 function debounce(func, delay) {
     let timer;
-    return function(...args) {
+    return function (...args) {
         clearTimeout(timer);
         timer = setTimeout(() => {
             func.apply(this, args);
@@ -77,7 +76,7 @@ function styleDefString(width, height) {
  * @param {ResizeObserverEntry[]} [_roea] - ResizeObserverEntry Array
  */
 function updateStyleDef(_roea) {
-    const styleDef = document.querySelector(('.options pre.style'));
+    const styleDef = document.querySelector('.options pre.style');
     const widget = document.querySelector('lastfm-tracks');
     if (styleDef && widget) {
         const { offsetWidth, offsetHeight } = widget;
@@ -92,19 +91,19 @@ const handleResizedWidget = throttle(updateStyleDef, 100);
 
 function updateTagDef() {
     const widget = document.querySelector('lastfm-tracks');
-    const tagDef = document.querySelector(('.options pre.tag'));
+    const tagDef = document.querySelector('.options pre.tag');
     const attribs = [];
-    widget.getAttributeNames().forEach(name => {
+    widget.getAttributeNames().forEach((name) => {
         const val = widget.getAttribute(name);
-        if (name!=='style' && !(name === 'class' && val === '')) {
+        if (name !== 'style' && !(name === 'class' && val === '')) {
             attribs.push(`\n  ${name}="${val}"`);
         }
-    })
+    });
     tagDef.textContent = `<lastfm-tracks ${attribs.join(' ')}>\n</lastfm-tracks>`;
 }
 
 const stateChangeHandler = debounce(
-    function(ev) {
+    function (ev) {
         const showMode = document.getElementById('show-mode');
         if (ev.detail) {
             let widgetMode = ev.detail.widgetMode.trim();
@@ -120,13 +119,13 @@ const stateChangeHandler = debounce(
 );
 
 function logState(stateObj) {
-    const {apikey, ...logObj} = stateObj; // log all properties of state *except* apikey
+    const { apikey, ...logObj } = stateObj; // log all properties of state *except* apikey
     log('state', logObj);
 }
 
 function log(...params) {
     const url = new URL('/log', import.meta.url);
-    let contentIdx= 0;
+    let contentIdx = 0;
     if (params.length > 1) {
         url.searchParams.set('type', params[0]);
         contentIdx = 1;
@@ -134,13 +133,13 @@ function log(...params) {
     let fetchHeaders;
     let body;
     if (isString(params[contentIdx])) {
-        fetchHeaders = new Headers({'Content-Type': 'text/plain'});
+        fetchHeaders = new Headers({ 'Content-Type': 'text/plain' });
         body = params[contentIdx];
     } else { // assume we can post as json
-        fetchHeaders = new Headers({'Content-Type': 'application/json'});
+        fetchHeaders = new Headers({ 'Content-Type': 'application/json' });
         body = JSON.stringify(params[contentIdx]);
     }
-    fetch(url.href, {method: 'POST', headers: fetchHeaders, body: body, keepalive: true})
+    fetch(url.href, { method: 'POST', headers: fetchHeaders, body: body, keepalive: true })
         .then((resp) => {
             if (!resp.ok) {
                 console.warn('log fetch not ok.\n', resp);
@@ -152,7 +151,7 @@ function log(...params) {
 }
 
 function isString(x) {
-    return Object.prototype.toString.call(x) === "[object String]"
+    return Object.prototype.toString.call(x) === '[object String]';
 }
 
 function isMobile() {
@@ -199,7 +198,7 @@ window.addEventListener(
         const noScrollChanged = () => {
             widget.classList.toggle('no-scroll', toggleNoScroll.checked);
             updateTagDef();
-        }
+        };
         const userChanged = () => {
             const username = usernameInput.value?.trim();
             if (username.length) {
@@ -222,7 +221,7 @@ window.addEventListener(
         };
         if (widget) {
             stopButton?.addEventListener('click', () => {
-                widget.stopUpdating()
+                widget.stopUpdating();
             });
             incIntervalButton?.addEventListener('click', () => {
                 widget.setAttribute('interval', Number(widget.state.interval) + 5);

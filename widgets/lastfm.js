@@ -14,10 +14,10 @@ const LOG = false;
 
 // I see en-GB 24h formats as pretty intuitive and "universally understandable".
 // Well, at least in the "western world". So I'll stick to that here...
-const rtf = new Intl.RelativeTimeFormat("en-GB", {
-    localeMatcher: "best fit", // "best fit" or "lookup"
-    numeric: "auto", // "always" or "auto"
-    style: "short", // "long", "short" or "narrow"
+const rtf = new Intl.RelativeTimeFormat('en-GB', {
+    localeMatcher: 'best fit', // "best fit" or "lookup"
+    numeric: 'auto', // "always" or "auto"
+    style: 'short' // "long", "short" or "narrow"
 });
 const dtfDateTimeThisYear = new Intl.DateTimeFormat('en-GB', {
     day: 'numeric',
@@ -69,7 +69,7 @@ function create(tagName, attributes = {}, ...content) {
 
 
 // https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator/Collator#sensitivity
-const RelaxedComparator = new Intl.Collator(undefined, { sensitivity: "base" });
+const RelaxedComparator = new Intl.Collator(undefined, { sensitivity: 'base' });
 
 function caseInsensitiveIdenticalStrings(str1, str2) {
     return RelaxedComparator.compare(str1, str2) === 0;
@@ -81,7 +81,7 @@ function caseInsensitiveIdenticalStrings(str1, str2) {
  *
  * (I thought I needed this, but last.fm actually allows CORS, so I only use json() method in this widget)
  */
-const fetcher = (function() {
+const fetcher = (function () {
 
     /**
      * Makes a "JSONP request" to the given URI
@@ -102,17 +102,17 @@ const fetcher = (function() {
                 const ele = document.getElementById(id);
                 ele.parentNode.removeChild(ele);
                 resolve(data);
-            }
+            };
             const src = `${uri}&${cbparam}=${callbackName}`;
-            const script = create('script', {src: src, async: true, id: id});
+            const script = create('script', { src: src, async: true, id: id });
             script.addEventListener('error', reject);
-            (document.getElementsByTagName('head')[0] ?? document.body ?? document.documentElement).appendChild(script)
+            (document.getElementsByTagName('head')[0] ?? document.body ?? document.documentElement).appendChild(script);
         }).finally(
             () => {
                 LOG && console.log(`${uri} time by jsonp: ${Date.now() - ts}ms.`);
                 running.delete(uri);
             }
-        )
+        );
     }
 
     /**
@@ -127,20 +127,19 @@ const fetcher = (function() {
 
         return fetch(uri)
             .then(function (response) {
-                    if (response.headers.get('content-type')?.includes('application/json')) {
-                        if(!response.ok) {
-                            LOG && console.warn(`[${uri}] ${response.status} - ${response.statusText}`);
-                        }
-                        return response.json();
+                if (response.headers.get('content-type')?.includes('application/json')) {
+                    if (!response.ok) {
+                        LOG && console.warn(`[${uri}] ${response.status} - ${response.statusText}`);
                     }
-                    throw new Error(`Network response from ${uri.href} was NOT ok. Status: ${response.status}. statusText:${response.statusText}.`);
+                    return response.json();
                 }
-            ).finally(
+                throw new Error(`Network response from ${uri.href} was NOT ok. Status: ${response.status}. statusText:${response.statusText}.`);
+            }).finally(
                 () => {
                     LOG && console.log(`${uri} time: ${Date.now() - ts}ms.`);
                     running.delete(uri);
                 }
-            )
+            );
     }
 
     const running = new Set();
@@ -152,7 +151,7 @@ const fetcher = (function() {
         json: json,
         jsonp: jsonp,
         isRunning: isRunning
-    }
+    };
 })();
 
 
@@ -167,12 +166,12 @@ class Tracks extends HTMLElement {
     }
 
     #apikey = null; // this.#demoKey;
-    #user= null;
+    #user = null;
     #backend = null;
     #tracks = 50;
     #interval = 60;
     #updates = 1; // 1 in demo-mode (initial only). 0 default in basic and backend-mode (unlimited/"forever")
-    #widgetMode = 'demo';  // backend, basic or demo
+    #widgetMode = 'demo'; // backend, basic or demo
     get state() {
         return {
             apikey: this.#apikey,
@@ -182,7 +181,7 @@ class Tracks extends HTMLElement {
             interval: this.#interval,
             updates: this.#updates,
             widgetMode: this.#widgetMode
-        }
+        };
     }
 
     #initiated = false;
@@ -194,7 +193,7 @@ class Tracks extends HTMLElement {
     // Fires when an instance of the element is created or updated
     constructor() {
         super();
-        this.attachShadow({mode: 'open'});
+        this.attachShadow({ mode: 'open' });
     }
 
     // Fires when an instance was inserted into the document
@@ -204,7 +203,7 @@ class Tracks extends HTMLElement {
         if (!basestyles.searchParams.get('cache')) {
             basestyles.searchParams.set('cache', cachevalue.toString());
         }
-        this.shadowRoot.appendChild(create('link', {rel: 'stylesheet', id: 'basestyles', href: basestyles.href}));
+        this.shadowRoot.appendChild(create('link', { rel: 'stylesheet', id: 'basestyles', href: basestyles.href }));
         this.#init();
         this.#dispatchStateChange();
     }
@@ -291,7 +290,7 @@ class Tracks extends HTMLElement {
 
         const dataValid = () => {
             if (this.#widgetMode === 'demo') {
-                return !!this.#user?.length
+                return !!this.#user?.length;
             } else if (this.#widgetMode === 'basic') {
                 return !!(this.#user?.length && this.#apikey?.length);
             } else if (this.#widgetMode === 'backend') {
@@ -299,7 +298,7 @@ class Tracks extends HTMLElement {
             }
             LOG && console.warn(`Data is not valid! ${this.#user}/${this.#apikey}/${this.#widgetMode}`);
             return false;
-        }
+        };
 
 
         if (this.#initiated && dataValid()) {
@@ -371,30 +370,29 @@ class Tracks extends HTMLElement {
     }
 
     #init() {
-        const skeleton = create('div', {'class': 'wrap', 'lang': 'en-GB'},
-            create('div', {'class': 'header'}, create('div', {'class': 'content'},
-                    create('a', {'href': '#', 'class': 'userlink'},
+        const skeleton = create('div', { 'class': 'wrap', 'lang': 'en-GB' },
+            create('div', { 'class': 'header' }, create('div', { 'class': 'content' },
+                    create('a', { 'href': '#', 'class': 'userlink' },
                         create('img', {
-                            'class': 'avatar', 'alt': '',
+                            'class': 'avatar',
+                            'alt': '',
                             'src': '' // src to be set from script
                         })),
-                    create('a', {'href': 'https://www.last.fm/', 'class': 'lastfm', 'title': 'Last.fm'},
+                    create('a', { 'href': 'https://www.last.fm/', 'class': 'lastfm', 'title': 'Last.fm' },
                         create('div', {}, '')
                     ),
-                    create('div', {'class': 'usernamecontainer'},
-                        create('a', {'href': '#', 'class': 'userlink username'}, '')
+                    create('div', { 'class': 'usernamecontainer' },
+                        create('a', { 'href': '#', 'class': 'userlink username' }, '')
                     ),
-                    create('div', {'class': 'scrobblehistory'}, '')
+                    create('div', { 'class': 'scrobblehistory' }, '')
                 )
             ),
-            create('div', {'id': 'playlist', 'inert': false}),
-            create('div', {'class': 'footer'},
+            create('div', { 'id': 'playlist', 'inert': false }),
+            create('div', { 'class': 'footer' },
                 create('a', {
-                        href: 'https://github.com/StigNygaard/lastfm-widgets',
-                        title: 'Widget by Stig Nygaard. Use it on your homepage or blog, showing "scrobbles" from your own last.fm account...'
-                    },
-                    'Widget by Stig Nygaard'
-                )
+                    href: 'https://github.com/StigNygaard/lastfm-widgets',
+                    title: 'Widget by Stig Nygaard. Use it on your homepage or blog, showing "scrobbles" from your own last.fm account...'
+                }, 'Tracks widget')
             ),
         );
         this.shadowRoot.appendChild(skeleton);
@@ -410,7 +408,13 @@ class Tracks extends HTMLElement {
         //  https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
         //  https://developer.mozilla.org/en-US/docs/Web/API/Element/checkVisibility
 
-        console.log(`Tracks widget initializing in '${this.#widgetMode}'-mode. ${this.#updates || 'Forever'} times getting ${this.#tracks} tracks for user ${this.#user ?? '(unknown)'} every ${this.#interval} seconds.`);
+        console.log(
+            `Tracks widget initializing in '${this.#widgetMode}'-mode. ${
+                this.#updates || 'Forever'
+            } times getting ${this.#tracks} tracks for user ${
+                this.#user ?? '(unknown)'
+            } every ${this.#interval} seconds.`,
+        );
     }
 
 
@@ -419,8 +423,10 @@ class Tracks extends HTMLElement {
             const fixedParams = {
                 method: 'user.getinfo',
                 format: 'json'
-            }
-            const url = it.#widgetMode === 'backend' ? new URL(it.#backend, it.baseURI) : new URL(`https:${it.#apiRoot}`);
+            };
+            const url = it.#widgetMode === 'backend'
+                ? new URL(it.#backend, it.baseURI)
+                : new URL(`https:${it.#apiRoot}`);
             for (const param in fixedParams) {
                 url.searchParams.append(param, fixedParams[param]);
             }
@@ -439,8 +445,8 @@ class Tracks extends HTMLElement {
                     return it.#fetcher(url.href)
                         .then((o) => {
                             if (o.error) {
-                                if ([26,29].includes(o.error)) {
-                                    console.error(`Tracks widget: ⛔ ${o.error} - ${o.message} !`)
+                                if ([26, 29].includes(o.error)) {
+                                    console.error(`Tracks widget: ⛔ ${o.error} - ${o.message} !`);
                                 }
                                 throw new Error(`${url.href} Returned: \n${JSON.stringify(o)}`);
                             }
@@ -473,12 +479,12 @@ class Tracks extends HTMLElement {
                 it.shadowRoot.querySelectorAll('.username').forEach((e) => {
                     e.textContent = o.user.name;
                 });
-                it.shadowRoot.querySelectorAll('.scrobblehistory').forEach((e) => {
+                it.shadowRoot.querySelectorAll('.scrobblehistory').forEach( (e) => {
                     e.textContent = scrobbleHistory;
                 });
                 it.shadowRoot.querySelectorAll('img.avatar').forEach((img) => {
                     img.src = avatar;
-                })
+                });
             } else {
                 console.error(`Skipping update profile because unexpected data: ${JSON.stringify(o)}`);
             }
@@ -486,7 +492,7 @@ class Tracks extends HTMLElement {
 
         return {
             setup: setup
-        }
+        };
     })(this);
 
     /**
@@ -501,7 +507,7 @@ class Tracks extends HTMLElement {
             method: 'user.getrecenttracks',
             extended: '1',
             format: 'json'
-        }
+        };
 
         function clearUpdatesState() {
             updateCount = 0;
@@ -510,7 +516,9 @@ class Tracks extends HTMLElement {
         }
 
         function update() {
-            const url = it.#widgetMode === 'backend' ? new URL(it.#backend, it.baseURI) : new URL(`https:${it.#apiRoot}`);
+            const url = it.#widgetMode === 'backend'
+                ? new URL(it.#backend, it.baseURI)
+                : new URL(`https:${it.#apiRoot}`);
             clearTimeout(timer);
             for (const param in fixedParams) {
                 url.searchParams.append(param, fixedParams[param]);
@@ -524,15 +532,15 @@ class Tracks extends HTMLElement {
             url.searchParams.append('limit', it.#tracks);
 
             if (it.#widgetMode === 'backend' || it.#okUserAgent) {
-                LOG && console.log(`[${updateCount+1}] Getting Scrobbles with: ${url.href} ...`);
+                LOG && console.log(`[${updateCount + 1}] Getting Scrobbles with: ${url.href} ...`);
 
                 if (!fetcher.isRunning(url.href)) {
-                    return it.#fetcher(url.href)  /* or '/widgets/test.json' */
+                    return it.#fetcher(url.href) /* or '/widgets/test.json' */
                         .then((o) => {
                             if (o.error) {
-                                if ([10,17,26,29].includes(o.error)) { // 17: "Login: User required to be logged in"
+                                if ([10, 17, 26, 29].includes(o.error)) { // 17: "Login: User required to be logged in"
                                     updatesCanceled = true;
-                                    console.error(`Tracks widget: ⛔ Updates has stopped because error: ${o.error} - ${o.message} !`)
+                                    console.error(`Tracks widget: ⛔ Updates has stopped because error: ${o.error} - ${o.message} !`);
                                 }
                                 throw new Error(`${url.href} Returned: \n${JSON.stringify(o)}`);
                             }
@@ -550,7 +558,7 @@ class Tracks extends HTMLElement {
                             }
                             if ((it.#widgetMode !== 'backend' && successiveErrors >= 3) || (successiveErrors >= 10)) {
                                 updatesCanceled = true;
-                                console.warn(`Updates stopped in ${it.#widgetMode}-mode, because of ${successiveErrors} successive errors occurring.`)
+                                console.warn(`Updates stopped in ${it.#widgetMode}-mode, because of ${successiveErrors} successive errors occurring.`);
                             }
                             if (!updatesCanceled && (it.#updates === 0 || updateCount < it.#updates)) {
                                 LOG && console.log(`Waiting ${it.#interval} seconds until next update...`);
@@ -575,7 +583,7 @@ class Tracks extends HTMLElement {
             update: update,
             clearUpdatesState: clearUpdatesState,
             stop: stop
-        }
+        };
     })(this);
 
     /**
@@ -630,21 +638,24 @@ class Tracks extends HTMLElement {
         function potentiallyAlbumHeaderItem() {
             if (items[0].type === 'track' && items[1].type === 'track' && caseInsensitiveIdenticalStrings(items[0].albumTitle, items[1].albumTitle)) {
                 if (albumHeaderData.albumTitle?.length) {
-                    const item = {type: 'album', splitTitle: splitAlbumTitle(albumHeaderData.albumTitle)};
-                    items.unshift(Object.assign(item, albumHeaderData))
+                    const item = {
+                        type: 'album',
+                        splitTitle: splitAlbumTitle(albumHeaderData.albumTitle)
+                    };
+                    items.unshift(Object.assign(item, albumHeaderData));
                 }
             }
         }
 
         function containing(s, sub) {
-            s = s.trim().replace(/^the\s/gui, "").replace(/,\sthe$/gui, "").replace(" & ", " and ").trim();
-            sub = sub.trim().replace(/^the\s/gui, "").replace(/,\sthe$/gui, "").replace(" & ", " and ").trim();
+            s = s.trim().replace(/^the\s/gui, '').replace(/,\sthe$/gui, '').replace(' & ', ' and ').trim();
+            sub = sub.trim().replace(/^the\s/gui, '').replace(/,\sthe$/gui, '').replace(' & ', ' and ').trim();
             return (s.toLocaleUpperCase().includes(sub.toLocaleUpperCase()));
         }
 
         function splitAlbumTitle(title) {
             title = title.trim();
-            const rtval = {full: title, basic: title};
+            const rtval = { full: title, basic: title };
             const regs = [
                 /^([^$]*[^-\s])(\s-\s)(\w[\w\s]+\sEdition[\w\s]*)$/iu,
                 /^([^$]*[^-\s])(\s-\s)(\w[\w\s]+\sVersion[\w\s]*)$/iu,
@@ -675,7 +686,7 @@ class Tracks extends HTMLElement {
                 /^([^$]*[^-\s])(\s)([(\[]Disc\s[\w\s]+[)\]])$/iu,
                 /^([^$]*[^-\s])(\s)([(\[]CD\s[\w\s]+[)\]])$/iu,
                 /^([^$]*[^-\s])(\s)(EP[\d\s]*)$/iu
-            ];  // ( ... bonus CD), (single),... ?
+            ]; // ( ... bonus CD), (single),... ?
             for (const reg of regs) {
                 const m = title.match(reg);
                 // 0: full (= basic+spacer+extension)
@@ -693,14 +704,14 @@ class Tracks extends HTMLElement {
         }
 
         function updateItems(t) {
-            const item = {type: 'track'};
+            const item = { type: 'track' };
             item.pinfo = playedInfo(t);
             item.loved = t.loved === '1';
             item.trackName = (t.name ?? '').trim();
             item.trackUrl = (t.url ?? '').trim();
             item.artistName = (t.artist?.name ?? '').trim();
             item.artistUrl = (t.artist?.url ?? '').trim();
-            item.albumCover = t.image?.find(i => i.size === 'medium')['#text']; // 64px
+            item.albumCover = t.image?.find( (i) => i.size === 'medium')['#text']; // 64px
             // item.albumCover = t.image?.find(i => i.size === 'large')['#text']; // 174px
             item.albumTitle = (t.album['#text'] ?? '').trim();
             item.albumUrl = t.artist?.url + '/' + encodeURIComponent(item.albumTitle).replaceAll('%20', '+');
@@ -762,7 +773,7 @@ class Tracks extends HTMLElement {
             process: process,
             getItems: getItems,
             clearItems: clearItems
-        }
+        };
     })();
 
 
@@ -782,12 +793,12 @@ class Tracks extends HTMLElement {
             console.warn('Tracks: The user has no recent tracks!');
         } else if (scrobbles?.length) {
 
-            this.#scrobblesProcessor.process(scrobbles).getItems().forEach(item => {
+            this.#scrobblesProcessor.process(scrobbles).getItems().forEach( (item) => {
                     if (item.type === 'track') {
                         lines.push(create('div', {class: item.pinfo.text === 'playing' ? 'trackinfo nowplaying' : 'trackinfo'},
                             create('a', {class: 'cover', href: item.albumUrl, tabindex: '-1'},
-                                item.albumCover ?
-                                    create('img', {
+                                item.albumCover
+                                    ? create('img', {
                                         src: item.albumCover,
                                         alt: '',
                                         title: item.albumTitle
@@ -799,17 +810,22 @@ class Tracks extends HTMLElement {
                                 title: item.trackName,
                                 tabindex: '-1'
                             }, item.trackName),
-                            create('div', {class: 'artist'}, create('a', {
-                                href: item.artistUrl,
-                                title: item.artistName,
-                                tabindex: '-1'
-                            }, item.artistName)),
-                            create('div', {class: 'play', title: item.pinfo.text === 'playing' ? 'Scrobbling now...' : item.pinfo.title}, item.pinfo.text)
+                            create('div', {class: 'artist'},
+                                create('a', {
+                                    href: item.artistUrl,
+                                    title: item.artistName,
+                                    tabindex: '-1'
+                                }, item.artistName)),
+                            create('div', {
+                                    class: 'play',
+                                    title: item.pinfo.text === 'playing' ? 'Scrobbling now...' : item.pinfo.title
+                                },
+                                item.pinfo.text)
                         ));
                     } else if (item.type === 'album') {
                         const coverLink = create('a', {class: 'cover', href: item.albumUrl, tabindex: '-1'},
-                            item.albumCover ?
-                                create('img', {
+                            item.albumCover
+                                ? create('img', {
                                     src: item.albumCover,
                                     alt: '',
                                     title: item.albumTitle

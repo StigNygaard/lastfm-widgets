@@ -11,7 +11,8 @@ const corsAllowHostnames = Deno.env.get('audioscrobbler_cors_allow_hostnames')?.
 //      const database = Deno.env.get('audioscrobbler_database');
 //      const KV = await Deno.openKv(database);
 //  Another (obvious?) option could be to use the Deno Deploy Web Cache API?
-//  But for now, the much simpler Map solution🙂...
+//  Or simply localStorage which I think is also supported in Deno (and if it is "cross-visitor application-wide" in Deno)?
+//  But for now, the much simpler Map solution... Which actually is very fine in practice🙂
 const cache = new Map([
     ['user.getinfo-OkResponse', ''],
     ['user.getrecenttracks-OkResponse', '']
@@ -22,10 +23,13 @@ let fetchErrorCount = 0;
 
 let hibernate = false; // In case of error 26 or 29, enter Hibernate mode
 
-export async function proxyApi(searchParams: URLSearchParams, reqHeaders: Headers, info: Deno.ServeHandlerInfo) : Promise<{body: string, options: object}> {
-
+export async function proxyApi(
+    searchParams: URLSearchParams,
+    reqHeaders: Headers,
+    info: Deno.ServeHandlerInfo
+): Promise<{ body: string; options: object }> {
     const origin = reqHeaders.get('Origin');
-    const respHeaders = new Headers({'Content-Type': 'application/json'});
+    const respHeaders = new Headers({ 'Content-Type': 'application/json' });
     if (origin && allowedForCors(origin)) {
         respHeaders.set('Access-Control-Allow-Origin', origin);
         respHeaders.set('Vary', 'Origin');
@@ -92,7 +96,7 @@ export async function proxyApi(searchParams: URLSearchParams, reqHeaders: Header
             const text = await result.text();
             console.error(`Proxy received unexpected response which had Content-Type header:\n`, result.headers.get('Content-Type'));
             console.error(`Proxy received unexpected response which parsed as text is:\n`, text);
-        } catch  (_err) { /* ignore */ }
+        } catch (_err) { /* ignore */ }
         return fallback(method, respHeaders);
     }
     if (!result.ok && json.error) {
@@ -125,7 +129,7 @@ function remoteAddr(info: Deno.ServeHandlerInfo): object {
         return {
             remoteIp: info.remoteAddr.hostname,
             remotePort: info.remoteAddr.port
-        }
+        };
     }
     return {};
 }
@@ -149,10 +153,10 @@ function allowedForCors(origin: string) {
     return false;
 }
 
-function success(method: string, _status: string|number, _statusText: string, jsonObj: object, headers: Headers): {body: string, options: object} {
+function success(method: string, _status: string | number, _statusText: string, jsonObj: object, headers: Headers): { body: string, options: object } {
     const json = JSON.stringify(jsonObj);
     if (json !== cache.get(`${method}-OkResponse`)) { // If we used KV or other database, we would try to avoid unnecessary writes
-        cache.set(`${method}-OkResponse`,json);
+        cache.set(`${method}-OkResponse`, json);
         // console.log(`Updating the cached json for '${method}'...`); // TODO
     } else {
         // console.log(`SKIP updating cached json - there's no change in data for '${method}'`);
@@ -166,10 +170,10 @@ function success(method: string, _status: string|number, _statusText: string, js
             statusText: 'OK',
             headers: headers
         }
-    }
+    };
 }
 
-function fail(method: string, headers: Headers): {body: string, options: object} {
+function fail(method: string, headers: Headers): { body: string, options: object } {
     const okResponse = cache.get(`${method}-OkResponse`) ?? '';
     cache.set(`${method}-FailTime`, Date.now().toString());
     if (okResponse) {
@@ -180,7 +184,7 @@ function fail(method: string, headers: Headers): {body: string, options: object}
     return fallback(method, headers);
 }
 
-function fallback(method: string, headers: Headers): {body: string, options: object} {
+function fallback(method: string, headers: Headers): { body: string, options: object } {
     const okResponse = cache.get(`${method}-OkResponse`) ?? '';
     if (okResponse) {
         return {
@@ -190,7 +194,7 @@ function fallback(method: string, headers: Headers): {body: string, options: obj
                 statusText: 'OK - Using previously cached response',
                 headers: headers
             }
-        }
+        };
     } else {
         return {
             body: `{error: 16, message: 'Not ready. Try again later'}`,
@@ -199,7 +203,7 @@ function fallback(method: string, headers: Headers): {body: string, options: obj
                 statusText: 'Not ready. Successful response not available in proxy cache',
                 headers: headers
             }
-        }
+        };
     }
 }
 
@@ -209,7 +213,7 @@ function fallback(method: string, headers: Headers): {body: string, options: obj
 const waitNext = new Map([
     // Seconds until next call to last.fm method is allowed.
     // Avoid too fast retries when errors. Errors might be caused by overloaded last.fm servers.
-    // Well, I might actually be over-thinking this a bit :-) ...
+    // But well, I might actually be over-thinking this a bit :-) ...
     ['user.getinfo', {
         ok: 3600,
         failedWithFallback: 1800,
@@ -230,13 +234,13 @@ function waitUntil(method: string) {
             ok: 3600000 + now,
             failedWithFallback: 3600000 + now,
             failedWithoutFallback: 3600000 + now
-        }
+        };
     }
     return {
         ok: data.ok * 1000 + now,
         failedWithFallback: data.failedWithFallback * 1000 + now,
         failedWithoutFallback: data.failedWithoutFallback * 1000 + now
-    }
+    };
 }
 
 function apiKeyMissing(headers: Headers) {
@@ -248,7 +252,7 @@ function apiKeyMissing(headers: Headers) {
             statusText: 'API key not defined in proxy',
             headers: headers
         }
-    }
+    };
 }
 
 function methodError(method: string, headers: Headers) {
@@ -261,7 +265,7 @@ function methodError(method: string, headers: Headers) {
                 statusText: 'Method not specified',
                 headers: headers
             }
-        }
+        };
     } else {
         return {
             body: `{error: 3, message: 'Specified method not available in proxy'}`,
@@ -270,6 +274,6 @@ function methodError(method: string, headers: Headers) {
                 statusText: 'Specified method not available in proxy',
                 headers: headers
             }
-        }
+        };
     }
 }
