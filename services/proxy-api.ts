@@ -267,7 +267,7 @@ function methodError(method: string, headers: Headers) {
             }
         };
     } else {
-        let msg = `Specified method '${method}' not available in proxy`;
+        const msg = `Specified method '${method}' not available in proxy`;
         return {
             body: `{error: 3, message: '${msg}'}`,
             options: {

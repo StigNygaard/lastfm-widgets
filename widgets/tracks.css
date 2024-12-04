@@ -181,7 +181,7 @@ a.username {
   left: calc(50% - (min(100%, 9em) + .2em + 2px) / 2);
 
   display: block;
-  transform: translateY(calc(100% + 1px)); /* +1px because Firefox sometimes mis-positions (css rounding error?) */
+  transform: translateY(calc(100% + 1px)); /* +1px because Firefox sometimes mis-positions (css rounding error?) TODO investigate */
   transition: transform var(--transition-time-out) ease-in-out var(--transition-delay-out);
 }
 .footer a {
@@ -198,7 +198,7 @@ a.username {
   vertical-align: sub;
 }
 :host(:hover) .footer {
-  transform: translateY(1px); /* 1px because Firefox sometimes mis-positions (css rounding error?) */
+  transform: translateY(1px); /* 1px because Firefox sometimes mis-positions (css rounding error?) TODO investigate */
   transition: transform var(--transition-time-in) ease var(--transition-delay-in);
   transition-delay: 1.5s;
 }

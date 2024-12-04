@@ -28,7 +28,7 @@ The widget (frontend code) should be compatible back to at least Firefox 115 and
 are versions still compatible with Windows 7/8 installations). It also runs in Safari, but unsure how old versions are
 supported (I'm not able to test that myself). The backend code is my first simple experiments/experience with Deno, so
 you might see me making many changes and "stupid" comments and TODOs in that😊 Currently the backend is tested with Deno
-1.46 and Deno 2.0.
+1.46 and latest Deno 2.x.
 
 #### /widgets/ folder
 
@@ -57,5 +57,5 @@ What could future updates bring? _Maybe_:
 - A layout that adapt nicer to wider display dimensions of widget
 - Dark mode
 - Refactoring code _if_ I'm in the mood for that kind of thing 🙂
-- More documentation (especially on the Deno proxy-api implementation when it feels a bit more mature)
+- More documentation (especially on the Deno proxy-api implementation)
 - Another widget
