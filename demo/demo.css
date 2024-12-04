@@ -51,6 +51,10 @@ h3 {
   font-size: 1.05rem;
 }
 
+p, li {
+  text-wrap: pretty;
+}
+
 a {
   color: rgb(34, 34, 34);
 }

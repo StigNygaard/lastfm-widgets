@@ -256,8 +256,8 @@ function apiKeyMissing(headers: Headers) {
 }
 
 function methodError(method: string, headers: Headers) {
-    console.error('Method missing or not supported');
-    if (method === '') {
+    console.error(`Method '${method}' missing or not supported`);
+    if (method.trim() === '') {
         return {
             body: `{error: 6, message: 'Method not specified'}`,
             options: {
@@ -267,8 +267,9 @@ function methodError(method: string, headers: Headers) {
             }
         };
     } else {
+        let msg = `Specified method '${method}' not available in proxy`;
         return {
-            body: `{error: 3, message: 'Specified method not available in proxy'}`,
+            body: `{error: 3, message: '${msg}'}`,
             options: {
                 status: 404,
                 statusText: 'Specified method not available in proxy',
