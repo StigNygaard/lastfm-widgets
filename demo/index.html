@@ -96,6 +96,14 @@
           </li>
         </ol>
 
+        <p>Some advanced "bots" crawling the internet supports Javascript, and thus potentially trigger calls to the
+          audioscrobbler API when loading the <em>Tracks</em> widget. To avoid overload of the API, <em>Tracks</em>
+          will in <em>Demo</em> and <em>Basic</em> mode ignore clients where useragent includes text like "bot",
+          "spider", "crawl", "archive", "harvest" and "headless". This so far seems effective preventing overload of
+          the audioscrobbler API. <em>But note</em>, in <em>Backend-supported</em> mode this "filtering" is
+          <em>not</em> enabled in the widget, and it is the responsibility of the used "proxy-API" to prevent every
+          call to be forwarded directly to Last.fm's audioscrobbler API.</p>
+
         <h2>Attributes</h2>
 
         <p>Potential attributes to set on the <code>&lt;lastfm-tracks/&gt;</code> element:</p>
