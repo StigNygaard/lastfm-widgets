@@ -217,7 +217,7 @@ class Tracks extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['user', 'apikey', 'backend', 'tracks', 'updates', 'interval'];
+        return ['user', 'apikey', 'backend', 'tracks', 'updates', 'interval']; // Plus attrib. 'ignorebots' currently checked directly before API-calls
     }
 
     // Fires when an observed attribute was added, removed, or updated
@@ -354,7 +354,7 @@ class Tracks extends HTMLElement {
             ua.includes('harvest') ||
             ua.includes('headless');
         if (isBot) {
-            console.warn(`UserAgent looks like a bot: ${ua}`);
+            console.warn(`NOT loading data for tracks widget. UserAgent looks like a bot: "${ua}"`);
         }
         return !isBot;
     }
@@ -439,7 +439,7 @@ class Tracks extends HTMLElement {
                 url.searchParams.append('user', it.#user);
             }
 
-            if (it.#widgetMode === 'backend' || it.#okUserAgent) {
+            if ((it.#widgetMode === 'backend' && !it.hasAttribute('ignorebots')) || it.#okUserAgent) {
                 LOG && console.log(`Getting Profile with: ${url.href} ...`);
                 if (!fetcher.isRunning(url.href)) {
                     return it.#fetcher(url.href)
@@ -531,7 +531,7 @@ class Tracks extends HTMLElement {
             if (it.#user?.length) url.searchParams.append('user', it.#user);
             url.searchParams.append('limit', it.#tracks);
 
-            if (it.#widgetMode === 'backend' || it.#okUserAgent) {
+            if ((it.#widgetMode === 'backend' && !it.hasAttribute('ignorebots')) || it.#okUserAgent) {
                 LOG && console.log(`[${updateCount + 1}] Getting Scrobbles with: ${url.href} ...`);
 
                 if (!fetcher.isRunning(url.href)) {

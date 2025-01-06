@@ -104,9 +104,11 @@
           audioscrobbler API when loading the <em>Tracks</em> widget. To avoid overload of the API, <em>Tracks</em>
           will in <em>Demo</em> and <em>Basic</em> modes ignore clients where useragent includes text like "bot",
           "spider", "crawl", "archive", "harvest" and "headless". This so far seems effective preventing such "bots"
-          triggering calls the audioscrobbler API. <em>But note</em>, in <em>Backend-supported</em> mode this
-          "filtering" is <em>not</em> enabled in the widget, and it is the responsibility of the used "proxy-API" to
-          avoid forwarding every call directly to Last.fm's audioscrobbler API.</p>
+          triggering calls the audioscrobbler API. <em>But note</em>, in <em>Backend-supported</em> mode this feature
+          is <em>disabled</em> by default, making it the responsibility of the "proxy-API" to avoid forwarding every
+          call directly to Last.fm's audioscrobbler API. You can however enable filtering in widget when using
+          <em>Backend-supported</em> mode too, by adding the attribute <code>ignorebots</code> to the
+          <code>&lt;lastfm-tracks/&gt;</code> html-element.</p>
 
         <h2>Attributes</h2>
 
@@ -135,6 +137,13 @@
             <em>updates</em> - max. number of times to update tracks-list (0&nbsp;=&nbsp;unlimited,
             1&nbsp;=&nbsp;initial&nbsp;only, or higher values for specific number of times). Default value is 0 in
             <em>Basic</em> and <em>Backend-supported</em> mode. The attribute is ignored in <em>Demo</em> mode.
+          </li>
+          <li>
+            <em>ignorebots</em> - In <em>Backend-supported</em> mode this attribute enables "bot-filtering" in the
+            widget itself, to prevent calls to the "proxy-api" when useragent looks like a "bot". No value for the
+            attribute is needed, just the presence of the attribute.
+            In <em>Basic</em> and <em>Demo</em> mode, "bots-filtering" in widget is always enabled, so this attribute
+            is ignored/redundant in those modes.
           </li>
           <li>
             css classes:
