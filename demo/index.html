@@ -42,6 +42,10 @@
           widget on a webpage. But for a start, you can try customizing the widget shown here, including making it show
           scrobbles from your own (or any) Last.fm account with public "scrobbles".</p>
 
+        <p>A unique feature of this widget, is that it (optionally) displays red "album-headers" in tracklist when it
+          detects multiple tracks from same album has been played successively. Just like Last.fm itself did in the
+          "old days".</p>
+
         <h2>The essential</h2>
 
         <p>To use the widget on a webpage, you need to import <code>lastfm.js</code> as a module. If you do that from
@@ -57,7 +61,7 @@
 
         <p>The widget has 3 modes. The <em>Demo</em> and <em>Basic</em> modes are "standalone" modes where widget
           communicates <em>directly</em> with last.fm's API to get the "scrobbles". The third mode is
-          <em>Backend-supported</em> mode where you need to have a backend "proxy-api" that the widget can communicate
+          <em>Backend-supported</em> mode where you need to have a "proxy-api" that the widget can communicate
           with. The idea is that the proxy-api should mirror/forward the two methods
           (<em><a href="https://www.last.fm/api/show/user.getInfo">user.getinfo</a></em> and
           <em><a href="https://www.last.fm/api/show/user.getRecentTracks">user.getrecenttracks</a></em>) from last.fm's
@@ -98,7 +102,7 @@
 
         <p>Some advanced "bots" crawling the internet supports Javascript, and thus potentially trigger calls to the
           audioscrobbler API when loading the <em>Tracks</em> widget. To avoid overload of the API, <em>Tracks</em>
-          will in <em>Demo</em> and <em>Basic</em> mode ignore clients where useragent includes text like "bot",
+          will in <em>Demo</em> and <em>Basic</em> modes ignore clients where useragent includes text like "bot",
           "spider", "crawl", "archive", "harvest" and "headless". This so far seems effective preventing such "bots"
           triggering calls the audioscrobbler API. <em>But note</em>, in <em>Backend-supported</em> mode this
           "filtering" is <em>not</em> enabled in the widget, and it is the responsibility of the used "proxy-API" to
@@ -129,8 +133,8 @@
           </li>
           <li>
             <em>updates</em> - max. number of times to update tracks-list (0&nbsp;=&nbsp;unlimited,
-            1&nbsp;=&nbsp;initial&nbsp;only). Default value is 0 in <em>Basic</em> and <em>Backend-supported</em> mode.
-            The attribute is ignored in <em>Demo</em> mode.
+            1&nbsp;=&nbsp;initial&nbsp;only, or higher values for specific number of times). Default value is 0 in
+            <em>Basic</em> and <em>Backend-supported</em> mode. The attribute is ignored in <em>Demo</em> mode.
           </li>
           <li>
             css classes:
