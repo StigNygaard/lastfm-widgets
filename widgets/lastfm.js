@@ -352,6 +352,7 @@ class Tracks extends HTMLElement {
             ua.includes('crawl') ||
             ua.includes('archive') ||
             ua.includes('harvest') ||
+            ua.includes('radar') ||
             ua.includes('headless');
         if (isBot) {
             console.warn(`NOT loading data for tracks widget. UserAgent looks like a bot: "${ua}"`);
