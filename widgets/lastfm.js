@@ -165,7 +165,7 @@ class Tracks extends HTMLElement {
         return '//ws.audioscrobbler.com/2.0';
     }
 
-    #apikey = null; // this.#demoKey;
+    #apikey = null;
     #user = null;
     #backend = null;
     #tracks = 50;

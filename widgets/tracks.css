@@ -47,7 +47,7 @@
 }
 
 .wrap::-webkit-scrollbar {
-  -webkit-appearance: none; /* Non-standard, but currently needed for Safari */
+  -webkit-appearance: none; /* Non-standard, but currently needed for Safari versions older than 18.2 */
 }
 .wrap {
   margin: 0;
@@ -55,7 +55,7 @@
   border: none;
   max-height: inherit;
   overflow-y: auto;
-  scrollbar-width: none; /* Standard supported by Firefox & Chromium, but NOT yet Safari - https://caniuse.com/?search=scrollbar-width */
+  scrollbar-width: none; /* Standard supported by Firefox 64+, Chrome/Chromium 121+ & Safari 18.2+ - https://caniuse.com/?search=scrollbar-width */
 }
 :host(.no-scroll) .wrap {
   overflow-y: clip;
@@ -198,7 +198,7 @@ a.username {
   vertical-align: sub;
 }
 :host(:hover) .footer {
-  transform: translateY(1px); /* 1px because Firefox sometimes mis-positions (css rounding error?) TODO investigate */
+  transform: translateY(1px); /* 1px because Firefox sometimes mis-positions (css rounding error?) TODO investigate! */
   transition: transform var(--transition-time-in) ease var(--transition-delay-in);
   transition-delay: 1.5s;
 }
