@@ -21,13 +21,13 @@ implement throttling of requests to Last.fm's API.
 
 This repository not only holds the widget itself, but also the demo page (https://lastfm-widgets.deno.dev/) and an
 example backend proxy-api. The proxy-api is made in [Deno](https://deno.com/) (server-side javascript/typescript). Also,
-this repository is set up as a [Deno Deploy](https://deno.com/deploy) project. Any updates in main-branch are
+this repository is set up as a [Deno Deploy](https://deno.com/deploy) project. Any updates to the main-branch are
 immediately deployed to the demo-site at https://lastfm-widgets.deno.dev/.
 
 The widget (frontend code) should be compatible back to at least Firefox 115 and Chromium 109 based web-browsers (which
 are versions running on old Windows 7/8 installations). It also runs in Safari, but unsure how old versions are
 supported (I'm not able to test that myself). The backend code is my first simple experiments/experience with Deno, so
-you might see me making many changes and "stupid" comments and TODOs in that😊 The backend is generally tested/used
+you might see me making many changes and "stupid" comments and TODOs in that. The backend is generally tested/used
 with the latest or a very recent Deno 2.x.
 
 #### /widgets/ folder
