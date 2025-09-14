@@ -138,7 +138,7 @@ function allowedForCors(origin: string) {
     let originHostname = null;
     try {
         originHostname = new URL(origin).hostname.toLowerCase();
-        // Unfortunately it is too early to use URL.parse() instead https://caniuse.com/mdn-api_url_parse_static
+        // Unfortunately, it is(/WAS?) too early to use URL.parse() instead, to avoid try/catch ( https://caniuse.com/mdn-api_url_parse_static )
     } catch (_e) {
         return false;
     }
