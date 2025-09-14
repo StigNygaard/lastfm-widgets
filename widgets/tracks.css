@@ -10,7 +10,7 @@
  */
 
 :host {
-  all: revert; /* In this webcomponent I don't want to inherit anything */
+  all: initial; /* In this webcomponent I don't want to inherit anything */
   display: block; /* By default, custom elements are "inline" */
   position: relative;
   contain: content; /* https://developer.chrome.com/blog/css-containment/ */
