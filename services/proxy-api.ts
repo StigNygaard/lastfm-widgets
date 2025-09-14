@@ -1,4 +1,4 @@
-import 'jsr:@std/dotenv/load';
+import '@std/dotenv/load';
 
 // Get the fixed values from .env file or environment variables ( todo: or maybe from KV? )
 const apikey = Deno.env.get('audioscrobbler_apikey');

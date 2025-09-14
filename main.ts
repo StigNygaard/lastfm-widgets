@@ -1,5 +1,5 @@
-import { serveDir } from 'jsr:@std/http/file-server';
-import 'jsr:@std/dotenv/load';
+import { serveDir } from '@std/http/file-server';
+import '@std/dotenv/load';
 import { proxyApi } from './services/proxy-api.ts';
 import { log } from './services/log.ts';
 
