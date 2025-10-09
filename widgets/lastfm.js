@@ -100,7 +100,7 @@ const fetcher = (function () {
             globalThis[callbackName] = function (data) {
                 delete globalThis[callbackName];
                 const ele = document.getElementById(id);
-                ele.parentNode.removeChild(ele);
+                ele.remove();
                 resolve(data);
             };
             const src = `${uri}&${cbparam}=${callbackName}`;
@@ -248,43 +248,43 @@ class Tracks extends HTMLElement {
         const userChanged = this.#user !== newUser;
         this.#user = newUser;
 
-        const potential_tracks = Math.abs(parseInt(this.getAttribute('tracks'), 10));
-        if (!potential_tracks) { // null, NaN or 0
-            this.#tracks = 50;
-        } else {
+        const potential_tracks = Math.abs(Number.parseInt(this.getAttribute('tracks'), 10));
+        if (potential_tracks) {
             this.#tracks = Math.min(potential_tracks, 200);
+        } else { // null, NaN or 0
+            this.#tracks = 50;
         }
 
-        const potential_updates = Math.abs(parseInt(this.getAttribute('updates'), 10));
+        const potential_updates = Math.abs(Number.parseInt(this.getAttribute('updates'), 10));
         if (this.#widgetMode === 'demo') {
             this.#updates = 1;
         } else { // 'basic' or 'backend' mode
-            if (!potential_updates) { // null, NaN or 0
-                this.#updates = 0;
-            } else {
+            if (potential_updates) {
                 this.#updates = Math.max(0, potential_updates);
+            } else { // null, NaN or 0
+                this.#updates = 0;
             }
         }
 
-        const potential_interval = Math.abs(parseInt(this.getAttribute('interval'), 10)); // number | NaN
+        const potential_interval = Math.abs(Number.parseInt(this.getAttribute('interval'), 10)); // number | NaN
         if (this.#widgetMode === 'demo') {
             // Actually not relevant, because currently we don't allow refresh in demo mode
-            if (!potential_interval) { // null, NaN or 0
-                this.#interval = 120;
-            } else {
+            if (potential_interval) {
                 this.#interval = Math.max(potential_interval, 90);
+            } else { // null, NaN or 0
+                this.#interval = 120;
             }
         } else if (this.#widgetMode === 'basic') {
-            if (!potential_interval) { // null, NaN or 0
-                this.#interval = 60;
-            } else {
+            if (potential_interval) {
                 this.#interval = Math.max(potential_interval, 30);
+            } else { // null, NaN or 0
+                this.#interval = 60;
             }
         } else { // 'backend' mode
-            if (!potential_interval) { // null, NaN or 0
-                this.#interval = 60;
-            } else {
+            if (potential_interval) {
                 this.#interval = Math.max(potential_interval, 10);
+            } else { // null, NaN or 0
+                this.#interval = 60;
             }
         }
 
@@ -442,7 +442,9 @@ class Tracks extends HTMLElement {
 
             if ((it.#widgetMode === 'backend' && !it.hasAttribute('ignorebots')) || it.#okUserAgent) {
                 LOG && console.log(`Getting Profile with: ${url.href} ...`);
-                if (!fetcher.isRunning(url.href)) {
+                if (fetcher.isRunning(url.href)) {
+                    console.warn(`Skipping Profile with ${url.href} because already running...`);
+                } else {
                     return it.#fetcher(url.href)
                         .then((o) => {
                             if (o.error) {
@@ -459,8 +461,6 @@ class Tracks extends HTMLElement {
                         })
                         .finally(() => {
                         });
-                } else {
-                    console.warn(`Skipping Profile with ${url.href} because already running...`);
                 }
             }
         }
@@ -473,19 +473,19 @@ class Tracks extends HTMLElement {
                 const title = `${o.user.realname} (${o?.user?.name}) on Last.fm`;
 
                 it.style.setProperty('--header-background', `url("${avatar}")`);
-                it.shadowRoot.querySelectorAll('a.userlink').forEach((a) => {
+                for (const a of it.shadowRoot.querySelectorAll('a.userlink')) {
                     a.href = o.user.url;
                     a.title = title;
-                });
-                it.shadowRoot.querySelectorAll('.username').forEach((e) => {
+                }
+                for (const e of it.shadowRoot.querySelectorAll('.username')) {
                     e.textContent = o.user.name;
-                });
-                it.shadowRoot.querySelectorAll('.scrobblehistory').forEach( (e) => {
+                }
+                for (const e of it.shadowRoot.querySelectorAll('.scrobblehistory')) {
                     e.textContent = scrobbleHistory;
-                });
-                it.shadowRoot.querySelectorAll('img.avatar').forEach((img) => {
+                }
+                for (const img of it.shadowRoot.querySelectorAll('img.avatar')) {
                     img.src = avatar;
-                });
+                }
             } else {
                 console.error(`Skipping update profile because unexpected data: ${JSON.stringify(o)}`);
             }
@@ -535,7 +535,9 @@ class Tracks extends HTMLElement {
             if ((it.#widgetMode === 'backend' && !it.hasAttribute('ignorebots')) || it.#okUserAgent) {
                 LOG && console.log(`[${updateCount + 1}] Getting Scrobbles with: ${url.href} ...`);
 
-                if (!fetcher.isRunning(url.href)) {
+                if (fetcher.isRunning(url.href)) {
+                    console.warn(`Skipping fetching scrobbles with ${url.href} because already running...`);
+                } else {
                     return it.#fetcher(url.href) /* or '/widgets/test.json' */
                         .then((o) => {
                             if (o.error) {
@@ -566,8 +568,6 @@ class Tracks extends HTMLElement {
                                 timer = setTimeout(update, it.#interval * 1000);
                             }
                         });
-                } else {
-                    console.warn(`Skipping fetching scrobbles with ${url.href} because already running...`);
                 }
             }
         }
@@ -649,8 +649,8 @@ class Tracks extends HTMLElement {
         }
 
         function containing(s, sub) {
-            s = s.trim().replace(/^the\s/gui, '').replace(/,\sthe$/gui, '').replace(' & ', ' and ').trim();
-            sub = sub.trim().replace(/^the\s/gui, '').replace(/,\sthe$/gui, '').replace(' & ', ' and ').trim();
+            s = s.trim().replaceAll(/^the\s/gui, '').replaceAll(/,\sthe$/gui, '').replace(' & ', ' and ').trim();
+            sub = sub.trim().replaceAll(/^the\s/gui, '').replaceAll(/,\sthe$/gui, '').replace(' & ', ' and ').trim();
             return (s.toLocaleUpperCase().includes(sub.toLocaleUpperCase()));
         }
 
@@ -845,7 +845,7 @@ class Tracks extends HTMLElement {
                         }, item.artistName);
                         if (item.splitTitle.extension) {
                             const albumBasicLink = create('a', {
-                                href: `${item.artistUrl}/${encodeURIComponent(item.splitTitle.basic).replace(/%20/g, '+')}`,
+                                href: `${item.artistUrl}/${encodeURIComponent(item.splitTitle.basic).replaceAll('%20', '+')}`,
                                 title: item.splitTitle.basic,
                                 class: 'album-title',
                                 tabindex: '-1'
@@ -896,8 +896,8 @@ class Tracks extends HTMLElement {
 }
 
 // Register custom element...
-if (!customElements.get('lastfm-tracks')) {
-    customElements.define('lastfm-tracks', Tracks);
-} else {
+if (customElements.get('lastfm-tracks')) {
     LOG && console.warn('<lastfm-tracks/> was already defined.');
+} else {
+    customElements.define('lastfm-tracks', Tracks);
 }

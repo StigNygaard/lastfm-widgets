@@ -93,12 +93,12 @@ function updateTagDef() {
     const widget = document.querySelector('lastfm-tracks');
     const tagDef = document.querySelector('.options pre.tag');
     const attribs = [];
-    widget.getAttributeNames().forEach((name) => {
+    for (const name of widget.getAttributeNames()) {
         const val = widget.getAttribute(name);
         if (name !== 'style' && !(name === 'class' && val === '')) {
             attribs.push(`\n  ${name}="${val}"`);
         }
-    });
+    }
     tagDef.textContent = `<lastfm-tracks ${attribs.join(' ')}>\n</lastfm-tracks>`;
 }
 

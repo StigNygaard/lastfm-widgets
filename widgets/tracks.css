@@ -18,7 +18,7 @@
   overflow: clip;
   max-height: 100%;
   opacity: 1;
-  color: rgb(34, 34, 34); /* #222; */
+  color: rgb(34 34 34); /* #222; */
   background-color: #fff;
   margin: 0;
   padding: 0 !important;
@@ -223,7 +223,7 @@ a.username {
 }
 
 #playlist a {
-  color: rgba(34, 34, 34, 1);
+  color: rgb(34 34 34 / 1);
 }
 
 #playlist > div {
@@ -312,7 +312,7 @@ a.username {
 #playlist div.trackinfo > .play {
   grid-area: play;
   font-size: 85%;
-  color: rgba(136, 136, 136, 1);
+  color: rgb(136 136 136 / 1);
   line-height: 32px; /* equals height -> center vertically */
   text-align: right;
   padding-right: 4px;
@@ -339,5 +339,5 @@ a.username {
   font-style: italic;
 }
 #playlist div.albuminfo > .albumline a.album-title.extension {
-  color: rgba(34, 34, 34, .7);
+  color: rgb(34 34 34 / .7);
 }
