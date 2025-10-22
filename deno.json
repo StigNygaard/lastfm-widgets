@@ -13,6 +13,6 @@
     },
     "imports": {
         "@std/dotenv": "jsr:@std/dotenv@^0.225.5",
-        "@std/http": "jsr:@std/http@^1.0.20"
+        "@std/http": "jsr:@std/http@^1.0.21"
     }
 }
