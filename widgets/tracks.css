@@ -55,6 +55,7 @@
   border: none;
   max-height: inherit;
   overflow-y: auto;
+  overscroll-behavior: contain; /* prevent scroll chaining from happening */
   scrollbar-width: none; /* Standard supported by Firefox 64+, Chrome/Chromium 121+ & Safari 18.2+ - https://caniuse.com/?search=scrollbar-width */
 }
 :host(.no-scroll) .wrap {
