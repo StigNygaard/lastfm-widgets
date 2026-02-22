@@ -12,8 +12,6 @@
 const scriptURI = import.meta.url;
 const LOG = false;
 
-// I see en-GB 24h formats as pretty intuitive and "universally understandable".
-// Well, at least in the "western world". So I'll stick to that here...
 const rtf = new Intl.RelativeTimeFormat('en-GB', {
     localeMatcher: 'best fit', // "best fit" or "lookup"
     numeric: 'auto', // "always" or "auto"
@@ -76,7 +74,7 @@ function caseInsensitiveIdenticalStrings(str1, str2) {
 }
 
 /**
- * A "fetcher" that works similar for "real" (json) endpoints and for
+ * A "fetcher" that works similarly for "real" (json) endpoints and for
  * "endpoints" implemented as a "jsonp script" to avoid CORS issues.
  *
  * (I thought I needed this, but last.fm actually allows CORS, so I only use json() method in this widget)

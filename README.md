@@ -24,11 +24,9 @@ example backend proxy-api. The proxy-api is made in [Deno](https://deno.com/) (s
 this repository is set up as a [Deno Deploy](https://deno.com/deploy) project. Any updates to the main-branch are
 immediately deployed to the demo-site at https://lastfm-widgets.deno.dev/.
 
-The widget (frontend code) should be compatible back to at least Firefox 115 and Chromium 109 based web-browsers (which
-are versions running on old Windows 7/8 installations). It also runs in Safari, but unsure how old versions are
-supported (I'm not able to test that myself). The backend code is my first simple experiments/experience with Deno, so
-you might see me making many changes and "stupid" comments and TODOs in that. The backend is generally tested/used
-with the latest or a very recent Deno 2.x.
+The widget (frontend code) should be compatible back to at least Firefox 115 and Chromium 109 based web-browsers
+(Windows 7/8 users are stuck on these versions). It also runs in Safari, but I'm unsure how old versions are
+supported. The backend code is my first simple experiments/experience with Deno.
 
 #### /widgets/ folder
 
@@ -56,6 +54,5 @@ What could future updates bring? _Maybe_:
 
 - A layout that adapt nicer to wider display dimensions of widget
 - Dark mode
-- Refactoring code _if_ I'm in the mood for that kind of thing 🙂
-- More documentation (especially on the Deno proxy-api implementation)
+- Some documentation on the Deno proxy-api implementation
 - Another widget
