@@ -12,7 +12,7 @@
         "entrypoint": "main.ts"
     },
     "imports": {
-        "@std/dotenv": "jsr:@std/dotenv@^0.225.5",
-        "@std/http": "jsr:@std/http@^1.0.22"
+        "@std/dotenv": "jsr:@std/dotenv@^0.225.6",
+        "@std/http": "jsr:@std/http@^1.0.25"
     }
 }
