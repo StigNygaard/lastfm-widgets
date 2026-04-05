@@ -6,7 +6,6 @@
  *    https://www.rockland.dk/
  *    https://www.last.fm/user/rockland
  *    https://github.com/StigNygaard/lastfm-widgets
- *    https://lastfm-widgets.deno.dev/
  */
 
 const scriptURI = import.meta.url;

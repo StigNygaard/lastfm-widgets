@@ -29,15 +29,15 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
     // The "Router"...
     let response: Response;
     if (/^\/proxy-api\/?$/.test(pathname) && req.method === 'GET') {
-        // The "proxy API" - https://lastfm-widgets.deno.dev/proxy-api
+        // The "proxy API" - https://lastfm-widgets.deno.dev/proxy-api TODO this address/domain will soon change
         const result = await proxyApi(url.searchParams, req.headers, info);
         response = new Response(result.body, { headers: myHeaders, ...result.options });
     } else if (/^\/log\/?$/.test(pathname) && req.method === 'POST') {
-        // Simple "post object" log-endpoint - https://lastfm-widgets.deno.dev/log
+        // Simple "post object" log-endpoint - https://lastfm-widgets.deno.dev/log TODO this address/domain will soon change
         log(url.searchParams, req, info);
         response = new Response(null, { status: 200, statusText: 'OK', headers: myHeaders });
     } else if (pathname.startsWith('/widgets/') && req.method === 'GET') {
-        // The statically served widgets code - https://lastfm-widgets.deno.dev/widgets/*
+        // The statically served widgets code - https://lastfm-widgets.deno.dev/widgets/* TODO this address/domain will soon change
         response = await serveDir(req, {
             urlRoot: 'widgets',
             fsRoot: 'widgets',
@@ -49,7 +49,7 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
             headers: myHeadersArr
         });
     } else if (req.method === 'GET') {
-        // The statically served demo-page - https://lastfm-widgets.deno.dev/*
+        // The statically served demo-page - https://lastfm-widgets.deno.dev/* TODO this address/domain will soon change
         response = await serveDir(req, {
             urlRoot: '',
             fsRoot: 'demo',
