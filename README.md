@@ -20,7 +20,7 @@ supported by a custom backend "proxy-api". The latter is encouraged when possibl
 implement throttling of requests to Last.fm's API.
 
 This repository not only holds the widget itself, but also the demo-site (https://lastfm-widgets.deno.dev/ - *but the
-address of this will sone change*) and an example backend proxy-api. The proxy-api is made in [Deno](https://deno.com/)
+address of this will soon change*) and an example backend proxy-api. The proxy-api is made in [Deno](https://deno.com/)
 (server-side javascript/typescript). Also, this repository is set up as a [Deno Deploy](https://deno.com/deploy)
 project. Any updates to the main-branch are immediately deployed to the demo-site.
 
@@ -32,12 +32,12 @@ supported. The backend code is my first simple experiments/experience with Deno.
 
 The widget frontend code. _All_ that is needed for widget to work in _Demo_ or _Basic_ mode. See
 [Releases](https://github.com/StigNygaard/lastfm-widgets/releases) to get latest "release-version" of this folder's
-content. And see https://lastfm-widgets.deno.dev/ (*this address will sone change*) for more about widget _modes_
+content. And see https://lastfm-widgets.deno.dev/ (*this address will soon change*) for more about widget _modes_
 and how to use and customize the widget.
 
 #### /demo/ folder
 
-Frontend-code for the demo page seen on https://lastfm-widgets.deno.dev/ (*this address will sone change*)
+Frontend-code for the demo page seen on https://lastfm-widgets.deno.dev/ (*this address will soon change*)
 
 #### /services/ folder
 
@@ -47,7 +47,7 @@ Frontend-code for the demo page seen on https://lastfm-widgets.deno.dev/ (*this 
 
 #### /main.ts file
 
-Basically the "web-server" or "router" for https://lastfm-widgets.deno.dev/ (*this address will sone change*), serving
+Basically the "web-server" or "router" for https://lastfm-widgets.deno.dev/ (*this address will soon change*), serving
 the above-mentioned content.
 
 ## Future updates?
