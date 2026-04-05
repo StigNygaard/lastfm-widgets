@@ -1,7 +1,7 @@
 # 🔴 lastfm-widgets
 
 _Tracks_ is a javascript web-widget to show "scrobbles" (play history) from a [Last-fm](https://www.last.fm/) account.
-See _Tracks_ in action on https://www.rockland.dk/ and https://lastfm-widgets.deno.dev/ (*this address will sone
+See _Tracks_ in action on https://www.rockland.dk/ and https://lastfm-widgets.deno.dev/ (*this address will soon
 change*). At the latter site, you can not only find some more information and instructions for use, you can
 also play with some of the customization options, including setting the user to show scrobbles from.
 
