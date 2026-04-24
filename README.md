@@ -31,7 +31,7 @@ supported. The backend code is my first simple experiments/experience with Deno.
 #### /widgets/ folder
 
 The widget frontend code. _All_ that is needed for widget to work in _Demo_ or _Basic_ mode. See
-[Releases](https://github.com/StigNygaard/lastfm-widgets/releases) to get latest "release-version" of this folder's
+[Releases](https://github.com/StigNygaard/lastfm-widgets/releases) to get the latest "release-version" of this folder's
 content. And see https://lastfm-widgets.deno.dev/ (*this address will soon change*) for more about widget _modes_
 and how to use and customize the widget.
 
@@ -54,7 +54,7 @@ the above-mentioned content.
 
 What could future updates bring? _Maybe_:
 
-- A layout that adapt nicer to wider display dimensions of widget
+- A layout that adapts nicer to wider display dimensions of widget
 - Dark mode
 - Some documentation on the Deno proxy-api implementation
 - Another widget
