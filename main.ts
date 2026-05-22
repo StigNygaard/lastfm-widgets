@@ -49,10 +49,10 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
             headers: myHeadersArr
         });
     } else if (req.method === 'GET') {
-        if (url.hostname === 'lastfm-widgets.deno.dev') { // lastfm-widgets.deno.dev -> lastfm-widgets.stignygaard.deno.net
+        if (url.hostname === 'lastfm-widgets.deno.dev') { // redirect: lastfm-widgets.deno.dev (old deploy) -> lastfm-widgets.stignygaard.deno.net (new/current)
             url.hostname = 'lastfm-widgets.stignygaard.deno.net';
             response = new Response(null, {
-                status: 302, // 301 permanent redirect, 302 temporary redirect
+                status: 301, // 301 permanent redirect, 302 temporary redirect
                 headers: {
                     Location: url.href
                 }
