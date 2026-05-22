@@ -49,17 +49,27 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
             headers: myHeadersArr
         });
     } else if (req.method === 'GET') {
-        // The statically served demo-page - https://lastfm-widgets.stignygaard.deno.net/*
-        response = await serveDir(req, {
-            urlRoot: '',
-            fsRoot: 'demo',
-            showDirListing: false,
-            showDotfiles: false,
-            showIndex: true, // index.html
-            enableCors: false, // CORS not allowed/enabled (no CORS headers)
-            quiet: true, // logging of errors
-            headers: myHeadersArr
-        });
+        if (url.hostname === 'lastfm-widgets.deno.dev') { // lastfm-widgets.deno.dev -> lastfm-widgets.stignygaard.deno.net
+            url.hostname = 'lastfm-widgets.stignygaard.deno.net';
+            response = new Response(null, {
+                status: 302, // 301 permanent redirect, 302 temporary redirect
+                headers: {
+                    Location: url.href
+                }
+            })
+        } else {
+            // The statically served demo-page - https://lastfm-widgets.stignygaard.deno.net/*
+            response = await serveDir(req, {
+                urlRoot: '',
+                fsRoot: 'demo',
+                showDirListing: false,
+                showDotfiles: false,
+                showIndex: true, // index.html
+                enableCors: false, // CORS not allowed/enabled (no CORS headers)
+                quiet: true, // logging of errors
+                headers: myHeadersArr
+            });
+        }
     } else {
         response = new Response('Not found', { status: 404, statusText: `Method ${req.method} not supported here`, headers: myHeaders });
         // for other routing examples, see f.ex: https://youtu.be/p541Je4J_ws?si=-tWmB355467gtFIP
