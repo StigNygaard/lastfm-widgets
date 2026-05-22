@@ -165,6 +165,9 @@ function isLocalhost() {
 window.addEventListener(
     'DOMContentLoaded',
     function () {
+        if (location.hostname === 'lastfm-widgets.deno.dev') {
+            document.getElementById('new-site').style.display = 'block';
+        }
         if (!isMobile()) {
             document.body.classList.add('desktop-mode');
         }
