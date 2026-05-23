@@ -8,7 +8,8 @@ import { log } from './services/log.ts';
  */
 
 const myHeaders = {
-    'Content-Security-Policy': `default-src 'none' ; script-src 'self' ; connect-src https: ; img-src https: blob: data: ; style-src 'self' ; frame-ancestors 'none' ; form-action 'self' ; base-uri 'none'`,
+    // 'Content-Security-Policy': `default-src 'none' ; script-src 'self' ; connect-src https: ; img-src https: blob: data: ; style-src 'self' ; frame-ancestors 'none' ; form-action 'self' ; base-uri 'none'`,
+    'Content-Security-Policy': `default-src 'self' ; connect-src https: ; img-src https: blob: data: ; base-uri 'none'`,
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'X-Content-Type-Options': 'nosniff'
 };
@@ -34,7 +35,8 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
         response = new Response(null, {
             status: 301, // 301 permanent redirect, 302 temporary redirect
             headers: {
-                Location: url.href
+                Location: url.href,
+                'Content-Security-Policy': `default-src https ; img-src https: blob: data: ; form-action 'self' ; base-uri 'none'`
             }
         })
     } else if (/^\/proxy-api\/?$/.test(pathname) && req.method === 'GET') {
