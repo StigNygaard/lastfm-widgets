@@ -26,11 +26,6 @@ body {
   flex: 0 1 38rem;
 }
 
-.addr {
-  white-space: nowrap;
-  text-decoration: underline;
-}
-
 .widget {
 }
 

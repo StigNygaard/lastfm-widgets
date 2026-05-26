@@ -171,16 +171,6 @@ window.addEventListener(
         if (isLocalhost()) {
             document.body.classList.add('local-mode');
         }
-
-        if (location.href.includes('lastfm-widgets.stignygaard.deno.net') && document.referrer.includes('lastfm-widgets.deno.dev')) {
-            const forwardedInfo = document.createElement('div');
-            forwardedInfo.innerHTML = `
-                <p><mark>You were forwarded from <em class="addr">lastfm-widgets.deno.dev</em> to this new <em class="addr">lastfm-widgets.stignygaard.deno.net</em> site.<br />
-                Please update any links or bookmarks pointing to the old address to point to this new site instead. Soon old links/bookmarks won't work anymore.</mark></p>
-            `;
-            document.querySelector('div.info')?.prepend(forwardedInfo);
-        }
-
         const widgetContainer = document.querySelector('div.widget');
         const widgetResizeable = widgetContainer.querySelector('div.resizeable');
         widgetContainer.addEventListener('stateChange', stateChangeHandler);
