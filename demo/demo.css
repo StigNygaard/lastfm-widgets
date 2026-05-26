@@ -26,8 +26,9 @@ body {
   flex: 0 1 38rem;
 }
 
-#new-site {
-  display: none;
+.addr {
+  white-space: nowrap;
+  text-decoration: underline;
 }
 
 .widget {
