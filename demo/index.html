@@ -53,16 +53,19 @@
 
         <h2>The essential</h2>
 
-        <p>To use the widget on a webpage, you need to import <code>lastfm.js</code> as a module. If you do that from
+        <p>To use the widget on a webpage, get <code>lastfm.js</code> and <code>tracks.css</code> from latest
+          <a href="https://github.com/StigNygaard/lastfm-widgets/releases">widget release</a>, and place them together
+          on your site. You then need to import <code>lastfm.js</code> as a module. If you do that from
           html, remember the <code>type</code> attribute:</p>
 
         <code>&lt;script src="lastfm.js" type="module"&gt;&lt;/script&gt;</code>
 
-        <p>The script defines the custom html-element <code>&lt;lastfm-tracks/&gt;</code>. Insert such element on a
-          webpage where you want a <em>Tracks</em> widget to be.</p>
+        <p><em>Don't</em> include the stylesheet <code>tracks.css</code> yourself. Just make sure to place the file
+          <em>at same location</em> as the <code>lastfm.js</code> script file. The stylesheet will automatically be
+          read when a widget is created.</p>
 
-        <p>When creating widget, the script will read the <code>tracks.css</code> stylesheet file, which it expects to
-          find at same location as the script file itself.</p>
+        <p>The script defines the custom html-element <code>&lt;lastfm-tracks/&gt;</code>. Now simply insert such an element
+          on the webpage where you want a <em>Tracks</em> widget to be located.</p>
 
         <p>The widget has 3 modes. The <em>Demo</em> and <em>Basic</em> modes are "standalone" modes where widget
           communicates <em>directly</em> with last.fm's API to get the "scrobbles". The third mode is
