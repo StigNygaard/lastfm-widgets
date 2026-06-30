@@ -1,0 +1,11 @@
+name = "lastfm-proxy"
+main = "index.ts"
+compatibility_date = "2026-06-30"
+
+[vars]
+audioscrobbler_user = "rockland"
+audioscrobbler_trackslimit = "50"
+audioscrobbler_cors_allow_hostnames = "example.com; localhost"
+
+# Secret variables should be set using `wrangler secret put <name>`
+# audioscrobbler_apikey = "YOUR_LASTFM_API_KEY"
