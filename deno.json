@@ -2,7 +2,7 @@
     "tasks": {
         "dev": "deno --allow-net --allow-env --allow-read=./demo,./widgets,./.env --watch main.ts",
         "start": "deno --allow-net --allow-env --allow-read=./demo,./widgets,./.env main.ts",
-        "lint": "deno lint main.ts services/"
+        "lint": "deno lint main.ts services/proxy-api.ts services/log.ts"
     },
     "deploy": {
         "exclude": [
