@@ -28,6 +28,44 @@ The widget (frontend code) should be compatible back to at least Firefox 115 and
 (so it also works for Windows 7/8 users stuck on these versions). It also runs in Safari, but I'm unsure how old versions are
 supported. The backend code is my first simple experiments/experience with Deno.
 
+## How to Use / Installation
+
+Using the widget in any HTML file is straightforward because it's a standard web component. You only need to import the script and place the custom HTML tag where you want it to appear.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Last.fm Scrobbles</title>
+    <!-- 1. Import the widget's js as a module -->
+    <script type="module" src="./widgets/lastfm.js"></script>
+</head>
+<body>
+
+    <!-- 2. Use the custom web component tag -->
+    <lastfm-tracks 
+        user="rockland" 
+        tracks="50">
+    </lastfm-tracks>
+
+</body>
+</html>
+```
+
+### Customization Attributes
+
+You can easily customize the widget by adding attributes to the `<lastfm-tracks>` tag:
+
+- `user`: The Last.fm username to fetch scrobbles for.
+- `tracks`: The number of tracks to display (default 50, max 200).
+- `apikey`: Your Last.fm API key. (Only required if you are running in Basic mode directly from the browser without a proxy. If omitted, the widget runs in Demo mode, fetching once with a built-in demo key).
+- `backend`: If you've set up a backend proxy (see the `/services/` folder), provide its URL here instead of using the `apikey` attribute. This is highly recommended for production!
+- `interval`: Refresh interval in seconds (Basic mode min. 30, Backend mode min. 10).
+- `updates`: Number of updates before stopping.
+
+For a full list of attributes and an interactive customization playground, check out the [demo site](https://lastfm-widgets.stignygaard.deno.net/).
+
 #### /widgets/ folder
 
 The widget frontend code. _All_ that is needed for widget to work in _Demo_ or _Basic_ mode. See
@@ -40,6 +78,8 @@ and how to use and customize the widget.
 Frontend-code for the demo page seen on https://lastfm-widgets.stignygaard.deno.net/.
 
 #### /services/ folder
+
+For full documentation on setting up the backend proxies, see [services/README.md](services/README.md).
 
 - _proxy-api.ts_ - An example backend proxy-api made with Deno. The proxy-api is used on demo page when widget is in
   _Backend-supported_ mode, but also used by widget on [rockland.dk](https://www.rockland.dk/).
@@ -56,5 +96,4 @@ What could future updates bring? _Maybe_:
 
 - A layout that adapts nicer to wider display dimensions of widget
 - Dark mode
-- Some documentation on the Deno proxy-api implementation
 - Another widget
