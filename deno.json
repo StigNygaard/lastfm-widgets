@@ -1,4 +1,5 @@
 {
+    "exclude": ["cf-worker/"],
     "tasks": {
         "dev": "deno --allow-net --allow-env --allow-read=./demo,./widgets,./.env --watch main.ts",
         "start": "deno --allow-net --allow-env --allow-read=./demo,./widgets,./.env main.ts",
