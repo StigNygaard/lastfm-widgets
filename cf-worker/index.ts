@@ -222,13 +222,13 @@ export default {
                 console.log('🟢 Proxy leaving *Hibernate* mode - seems to work again');
             }
             fetchSuccessCount++;
-            return await success(method, json, respHeaders, cache, cacheKey, ctx);
+            return success(method, json, respHeaders, cache, cacheKey, ctx);
         } else {
             console.error(`Proxy [${fetchSuccessCount}/${++fetchErrorCount}] Last.fm fetch FAILED: ${result?.status} - ${result?.statusText}`);
-            return await fail(method, okResponse, respHeaders, cache, cacheKey, ctx);
+            return fail(method, okResponse, respHeaders, cache, cacheKey, ctx);
         }
 
-        async function success(method: string, jsonObj: any, headers: Headers, cache: Cache, cacheKey: Request, ctx: ExecutionContext) {
+        function success(method: string, jsonObj: unknown, headers: Headers, cache: Cache, cacheKey: Request, ctx: ExecutionContext) {
             const jsonStr = JSON.stringify(jsonObj);
             const nextTime = waitUntilTime(method, hibernate).ok;
             ctx.waitUntil(setCacheData(cache, cacheKey, jsonStr, nextTime));
@@ -240,7 +240,7 @@ export default {
             });
         }
 
-        async function fail(method: string, okResponse: string | null, headers: Headers, cache: Cache, cacheKey: Request, ctx: ExecutionContext) {
+        function fail(method: string, okResponse: string | null, headers: Headers, cache: Cache, cacheKey: Request, ctx: ExecutionContext) {
             let nextTime;
             if (okResponse) {
                 nextTime = waitUntilTime(method, hibernate).failedWithFallback;
@@ -251,7 +251,7 @@ export default {
             return makeFallbackResponse(okResponse, method, headers);
         }
 
-        function makeFallbackResponse(okResponse: string | null, method: string, headers: Headers) {
+        function makeFallbackResponse(okResponse: string | null, _method: string, headers: Headers) {
             if (okResponse) {
                 return new Response(okResponse, {
                     status: 200,

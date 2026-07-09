@@ -42,7 +42,7 @@ Note: Deno Deploy runs on multiple edge nodes globally, so the in-memory cache i
 
 ## Option 2: Cloudflare Workers
 
-Port located in `services/cloudflare-worker/index.ts`. Instead of in-memory caching, this version uses the native **Cloudflare Cache API**, since Worker isolates are short-lived and in-memory state does not persist reliably between invocations. This makes the fallback cache behavior consistent across Cloudflare's edge network.
+Port located in `cf-worker/index.ts`. Instead of in-memory caching, this version uses the native **Cloudflare Cache API**, since Worker isolates are short-lived and in-memory state does not persist reliably between invocations. This makes the fallback cache behavior consistent across Cloudflare's edge network.
 
 ### Requirements
 
@@ -50,7 +50,7 @@ Port located in `services/cloudflare-worker/index.ts`. Instead of in-memory cach
 - [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/)
 
 ```bash
-cd services/cloudflare-worker
+cd cf-worker
 npm install -g wrangler
 ```
 
@@ -62,7 +62,7 @@ npm install -g wrangler
 ```
    This opens a browser window to log in (or sign up, if you don't have a Cloudflare account yet) and authorize the Wrangler CLI. If your account has multiple Cloudflare accounts attached, you may need to set `account_id` in `wrangler.toml` to avoid being prompted each time.
 
-2. **Configure variables** — edit the `[vars]` section in `services/cloudflare-worker/wrangler.toml`: set `audioscrobbler_user`, `audioscrobbler_trackslimit`, and `audioscrobbler_cors_allow_hostnames`. Do not put the API key here, as this file is committed to git.
+2. **Configure variables** — edit the `[vars]` section in `cf-worker/wrangler.toml`: set `audioscrobbler_user`, `audioscrobbler_trackslimit`, and `audioscrobbler_cors_allow_hostnames`. Do not put the API key here, as this file is committed to git.
 
 3. **Set the API key as a secret**:
 ```bash
