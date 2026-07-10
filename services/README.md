@@ -2,7 +2,7 @@
 
 Running the Last.fm widget purely client-side means exposing your Last.fm API key to the public. This backend proxy sits between the frontend widget and Last.fm's Audioscrobbler API to avoid that, along with a few other practical problems.
 
-## Why a proxy is needed
+## Why a proxy is strongly recommended
 
 1. **API key isolation** — the key lives only in server/edge environment variables and is never sent to the client.
 2. **CORS handling** — Last.fm's API does not return permissive CORS headers by default. The proxy injects `Access-Control-Allow-Origin` based on a configurable hostname whitelist.
@@ -14,7 +14,7 @@ Two implementations exist, both functionally identical: the original Deno versio
 
 ## Option 1: Deno Deploy
 
-Original implementation in `proxy-api.ts`. Cache state is held in memory.
+Original implementation in `services/proxy-api.ts`. Cache state is held in memory.
 
 ### Setup
 

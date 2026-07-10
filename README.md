@@ -12,22 +12,6 @@ myself, I have missed them. So I brought them (optionally) back in this widget.
 
 As name of this repository hints, I might have more than one Last.fm widget planned for this space 🙂
 
-## The technical...
-
-The _Tracks_ widget itself is made as a _webcomponent_ using pure standard web client-side technologies (no frameworks
-or build tools needed). It can work "alone" communicating directly with Last.fm's Audioscrobbler v2 API, or it can be
-supported by a custom backend "proxy-api". The latter is encouraged when possible, because it makes it possible to
-implement throttling of requests to Last.fm's API.
-
-This repository not only holds the widget itself, but also the demo-site (https://lastfm-widgets.stignygaard.deno.net/)
-and an example backend proxy-api. The proxy-api is made in [Deno](https://deno.com/)
-(server-side javascript/typescript). Also, this repository is set up as a [Deno Deploy](https://deno.com/deploy)
-project. Any updates to the main-branch are immediately deployed to the demo-site.
-
-The widget (frontend code) should be compatible back to at least Firefox 115 and Chromium 109 based web-browsers
-(so it also works for Windows 7/8 users stuck on these versions). It also runs in Safari, but I'm unsure how old versions are
-supported. The backend code is my first simple experiments/experience with Deno.
-
 ## How to Use / Installation
 
 Using the widget in any HTML file is straightforward because it's a standard web component. You only need to import the script and place the custom HTML tag where you want it to appear.
@@ -52,6 +36,8 @@ Using the widget in any HTML file is straightforward because it's a standard web
 </body>
 </html>
 ```
+Notice, you should _not_ include the stylesheet (tracks.css) yourself. The script (lastfm.js) will automatically include it.
+Just make sure to place it at the same location as the script file, as that is where it will look for the stylesheet.
 
 ### Customization Attributes
 
@@ -66,6 +52,23 @@ You can easily customize the widget by adding attributes to the `<lastfm-tracks>
 
 For a full list of attributes and an interactive customization playground, check out the [demo site](https://lastfm-widgets.stignygaard.deno.net/).
 
+## The technical...
+
+The _Tracks_ widget itself is made as a _webcomponent_ using pure standard web client-side technologies (no frameworks
+or build tools needed). It can work "alone" communicating directly with Last.fm's Audioscrobbler v2 API, or it can be
+supported by a custom backend "proxy-api". The latter is encouraged when possible, because it makes it possible to
+implement throttling of requests to Last.fm's API.
+
+This repository not only holds the widget itself, but also the demo-site (https://lastfm-widgets.stignygaard.deno.net/)
+and two backend proxy-api implementations. The "primary" proxy-api is made in [Deno](https://deno.com/). The
+"alternative" proxy-api is a Cloudflare Workers implementation made by [burnblazter](https://github.com/burnblazter). 
+Also, this repository is set up as a [Deno Deploy](https://deno.com/deploy) project. Any updates to the main-branch
+(widget, demo-page and the Deno proxy-api) are immediately deployed to the Deno Deploy demo-site.
+
+The widget itself should be compatible back to at least Firefox 115 and Chromium 109 based web-browsers
+(so it also works for Windows 7/8 users stuck on these versions). It also runs in Safari, but I'm unsure how old versions are
+supported. The backend code (Deno proxy-api) is my first simple experiments/experience with Deno.
+
 #### /widgets/ folder
 
 The widget frontend code. _All_ that is needed for widget to work in _Demo_ or _Basic_ mode. See
@@ -79,21 +82,28 @@ Frontend-code for the demo page seen on https://lastfm-widgets.stignygaard.deno.
 
 #### /services/ folder
 
-For full documentation on setting up the backend proxies, see [services/README.md](services/README.md).
-
-- _proxy-api.ts_ - An example backend proxy-api made with Deno. The proxy-api is used on demo page when widget is in
+- _proxy-api.ts_ - A backend proxy-api made with Deno. The proxy-api is used on the demo page when widget is in
   _Backend-supported_ mode, but also used by widget on [rockland.dk](https://www.rockland.dk/).
 - _log.ts_ - A simple log endpoint used by the demo page.
+
+For full documentation on setting up the backend proxies, see [services/README.md](services/README.md).
+
+#### /cf-worker/ folder
+
+An alternative Cloudflare Worker backend proxy-api. Kindly contributed to this project by [burnblazter](https://github.com/burnblazter).
+
+For full documentation on setting up the backend proxies, see [services/README.md](services/README.md).
 
 #### /main.ts file
 
 Basically the "web-server" or "router" for https://lastfm-widgets.stignygaard.deno.net/, serving
-the above-mentioned content.
+the above-mentioned content (except /cf-worker/).
 
 ## Future updates?
 
 What could future updates bring? _Maybe_:
 
+- Use of Deno KV (or some other storage option available from Deno Deploy) for caching/proxy, instead of the current simple in-memory cache implementation.
 - A layout that adapts nicer to wider display dimensions of widget
 - Dark mode
 - Another widget
