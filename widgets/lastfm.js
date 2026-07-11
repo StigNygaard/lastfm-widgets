@@ -45,7 +45,7 @@ const dtfDateTimeLong = new Intl.DateTimeFormat('en-GB', { // DateTimeLong
  *
  * @param {string} tagName - The tag name of the element to create.
  * @param {object} attributes - An object containing the attributes to set on the element.
- * @param {...(string | Node)} content - Content to be added to the element. Can be strings and Node objects.
+ * @param {...(string | Element)} content - Content to be added to the element. Can be strings and Node objects (elements).
  * @returns {HTMLElement} - The created HTML element.
  */
 function create(tagName, attributes = {}, ...content) {

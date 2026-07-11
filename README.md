@@ -103,7 +103,7 @@ the above-mentioned content (except /cf-worker/).
 
 What could future updates bring? _Maybe_:
 
-- Use of Deno KV (or some other storage option available from Deno Deploy) for caching/proxy, instead of the current simple in-memory cache implementation.
+- Use of Deno KV (or some other storage option available from Deno Deploy) for caching/proxy, instead of the current simple and potentially short-living in-memory cache implementation.
 - A layout that adapts nicer to wider display dimensions of widget
 - Dark mode
 - Another widget

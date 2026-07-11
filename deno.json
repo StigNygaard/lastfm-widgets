@@ -9,8 +9,7 @@
         "exclude": [
             "**/node_modules"
         ],
-        "include": [],
-        "entrypoint": "main.ts"
+        "include": []
     },
     "imports": {
         "@std/dotenv": "jsr:@std/dotenv@^0.225.7",

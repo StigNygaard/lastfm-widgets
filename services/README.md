@@ -14,7 +14,7 @@ Two implementations exist, both functionally identical: the original Deno versio
 
 ## Option 1: Deno Deploy
 
-Original implementation in `services/proxy-api.ts`. Cache state is held in memory.
+Original implementation in `services/proxy-api.ts`. Cache state is currently held in memory (Plan is to update it to Deno KV or other free-tier storage option available from Deno Deploy).
 
 ### Setup
 
