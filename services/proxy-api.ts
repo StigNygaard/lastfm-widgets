@@ -23,8 +23,6 @@ let fetchErrorCount = 0;
 
 let hibernate = false; // In case of error 26 or 29, enter Hibernate mode
 
-const byteSize = (str: string) => new Blob([str]).size; // byte-size of a string
-
 export async function proxyApi(
     searchParams: URLSearchParams,
     reqHeaders: Headers,
@@ -333,4 +331,6 @@ function nowStamp() {
     return dateInYyyyMmDdHhMmSs(new Date());
 }
 
-
+// function byteSize(str: string) {
+//     return new Blob([str]).size; // byte-size of a string
+// }
