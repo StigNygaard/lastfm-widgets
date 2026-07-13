@@ -123,13 +123,15 @@ const fetcher = (function () {
         running.add(uri);
         const ts = Date.now();
 
+        console.log(`json-fetcher: Fetching ${uri}...`); // TODO remove
+
         return fetch(uri)
             .then(function (response) {
                 if (response.headers.get('content-type')?.includes('application/json')) {
                     if (!response.ok) {
-                        LOG && console.warn(`[${uri}] ${response.status} - ${response.statusText}`);
+                        console.warn(`[${uri}] ${response.status} - ${response.statusText} \n`, response);
                     }
-                    return response.json();
+                    return response.json(); // Despite header, could this fail json parsing(?)...
                 }
                 throw new Error(`Network response from ${uri.href} was NOT ok. Status: ${response.status}. statusText:${response.statusText}.`);
             }).finally(
@@ -445,13 +447,16 @@ class Tracks extends HTMLElement {
                 } else {
                     return it.#fetcher(url.href)
                         .then((o) => {
+
+                            console.log(`Profile fetcher ${url.href} returned \n`, o); // TODO remove !!!
+
                             if (o.error) {
                                 if ([26, 29].includes(o.error)) {
                                     console.error(`Tracks widget: ⛔ ${o.error} - ${o.message} !`);
                                 }
-                                throw new Error(`${url.href} Returned: \n${JSON.stringify(o)}`);
+                                throw new Error(`${url.href} Returned: \n${JSON.stringify(o)}`); // TODO ignore if JSON.stringify throws error exception
                             }
-                            LOG && console.log(`Profile data: \n${JSON.stringify(o)}`);
+                            LOG && console.log(`Profile data: \n`, o);
                             update(o);
                         })
                         .catch((e) => {
@@ -464,6 +469,9 @@ class Tracks extends HTMLElement {
         }
 
         function update(o) {
+
+            console.log(`A: Updating profile with: \n`, o); // TODO remove !!!
+
             if (o?.user?.name) {
                 const avatar = o.user.image[2]['#text']; // TODO: filter on size=large !?
                 const sinceDt = new Date(Number(o.user.registered.unixtime) * 1000);
@@ -485,8 +493,10 @@ class Tracks extends HTMLElement {
                     img.src = avatar;
                 }
             } else {
-                console.error(`Skipping update profile because unexpected data: ${JSON.stringify(o)}`);
+                console.error(`Skipping update profile because unexpected data: \n`, o);
             }
+
+            console.log(`B: Updating profile ended.`); // TODO remove !!!
         }
 
         return {
@@ -543,7 +553,7 @@ class Tracks extends HTMLElement {
                                     updatesCanceled = true;
                                     console.error(`Tracks widget: ⛔ Updates has stopped because error: ${o.error} - ${o.message} !`);
                                 }
-                                throw new Error(`${url.href} Returned: \n${JSON.stringify(o)}`);
+                                throw new Error(`${url.href} Returned: \n${JSON.stringify(o)}`); // TODO ignore if JSON.stringify throws (unlikely?) error exception
                             }
                             it.#renderScrobbles(o);
                             successiveErrors = 0;
@@ -787,7 +797,7 @@ class Tracks extends HTMLElement {
      */
     #renderScrobbles(o) {
 
-        LOG && console.log(`o data stringify: \n${JSON.stringify(o)}`);
+        LOG && console.log(`o data stringify: \n`, o);
 
         const scrobbles = o?.recenttracks?.track;
 

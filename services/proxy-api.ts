@@ -23,6 +23,8 @@ let fetchErrorCount = 0;
 
 let hibernate = false; // In case of error 26 or 29, enter Hibernate mode
 
+const byteSize = (str: string) => new Blob([str]).size; // byte-size of a string
+
 export async function proxyApi(
     searchParams: URLSearchParams,
     reqHeaders: Headers,
@@ -44,7 +46,7 @@ export async function proxyApi(
         return methodError(method, respHeaders);
     }
     if (method === 'user.getinfo') {
-        // log for getinfo only, because few (oftest only one) requests pr visitor
+        // log for getinfo only, because few requests pr visitor (often only one)
         const logData = {
             method: method,
             date: new Date().toISOString(),
@@ -57,7 +59,7 @@ export async function proxyApi(
     }
     const nextTime = parseInt(cache.get(`${method}-NextTime`) || '0', 10);
     if (Date.now() <= nextTime) {
-        // console.log(`Too early for '${method}'. Will use cached data instead...`);
+        console.log(` *** ${nowStamp()} - Too early for '${method}' (Next time: ${dateInYyyyMmDdHhMmSs(new Date(nextTime))}). Will use cached data instead...`); // TODO remove?
         return fallback(method, respHeaders);
     }
     const fUrl = new URL('https://ws.audioscrobbler.com/2.0');
@@ -75,10 +77,11 @@ export async function proxyApi(
         fUrl.searchParams.append('extended', '1');
     }
 
-    // console.log(`Last.fm fetch: ${fUrl.href}`);
-
-    cache.set(`${method}-NextTime`, String(waitUntil(method).ok)); // temporary update to prevent multiple concurrent fetches
+    // Temporary update to prevent multiple concurrent fetches
+    // todo: but it is a good idea if cache is empty and fetch fails?
+    cache.set(`${method}-NextTime`, String(waitUntil(method).ok));
     try {
+        // console.log(`fetching ${fUrl.href} ...`);
         result = await fetch(fUrl.href, {
             headers: {
                 'User-Agent': 'Proxy-api (https://github.com/StigNygaard/lastfm-widgets)'
@@ -155,11 +158,19 @@ function allowedForCors(origin: string) {
 
 function success(method: string, _status: string | number, _statusText: string, jsonObj: object, headers: Headers): { body: string, options: object } {
     const json = JSON.stringify(jsonObj);
-    if (json !== cache.get(`${method}-OkResponse`)) { // If we used KV or other database, we would try to avoid unnecessary writes
+    const cachedText = cache.get(`${method}-OkResponse`) ?? '';
+    // Update cache only if the new value differs from currently cached value (If/when using KV, we avoid unnecessary writes)...
+    if (json.length && json !== cachedText) {
+        console.log(` --- ${nowStamp()} - Current cached value for '${method}-OkResponse' has length=${cachedText.length}.`); // TODO
+        if (method == 'user.getinfo') {
+            console.log(` +++ ${nowStamp()} - DATA READ - UPDATE CACHE for '${method}-OkResponse': \n`, json); // TODO
+        } else {
+            console.log(` +++ ${nowStamp()} - DATA READ - UPDATE CACHE for '${method}-OkResponse' (length=${json.length}).`); // TODO
+        }
         cache.set(`${method}-OkResponse`, json);
         // console.log(`Updating the cached json for '${method}'...`); // TODO
     } else {
-        // console.log(`SKIP updating cached json - there's no change in data for '${method}'`);
+        console.log(` +++ ${nowStamp()} - DATA READ - SKIP updating cached json - there's no change in data for '${method}-OkResponse'`);
     }
     cache.set(`${method}-OkTime`, Date.now().toString());
     cache.set(`${method}-NextTime`, String(waitUntil(method).ok));
@@ -175,6 +186,9 @@ function success(method: string, _status: string | number, _statusText: string, 
 
 function fail(method: string, headers: Headers): { body: string, options: object } {
     const okResponse = cache.get(`${method}-OkResponse`) ?? '';
+
+    console.log(` *** ${nowStamp()} - Failback value from cache: \n`, okResponse); // TODO remove
+
     cache.set(`${method}-FailTime`, Date.now().toString());
     if (okResponse) {
         cache.set(`${method}-NextTime`, String(waitUntil(method).failedWithFallback));
@@ -184,9 +198,12 @@ function fail(method: string, headers: Headers): { body: string, options: object
     return fallback(method, headers);
 }
 
-function fallback(method: string, headers: Headers): { body: string, options: object } {
-    const okResponse = cache.get(`${method}-OkResponse`) ?? '';
+function fallback(method: string, headers: Headers, okResponse?: string): { body: string, options: object } {
+    if (!okResponse) {
+        okResponse = cache.get(`${method}-OkResponse`) ?? '';
+    }
     if (okResponse) {
+        console.log(` *** ${nowStamp()} - Returning fallback '${method}-OkResponse' value of length ${okResponse.length} from cache.`); // TODO remove
         return {
             body: okResponse,
             options: {
@@ -196,6 +213,7 @@ function fallback(method: string, headers: Headers): { body: string, options: ob
             }
         };
     } else {
+        console.warn(` *** ${nowStamp()} - Fallback cache NOT ready for method '${method}-OkResponse'`);
         return {
             body: `{error: 16, message: 'Not ready. Try again later'}`,
             options: {
@@ -278,3 +296,41 @@ function methodError(method: string, headers: Headers) {
         };
     }
 }
+
+
+
+function padTwoDigits(num: number) {
+    return num.toString().padStart(2, "0");
+}
+
+function dateInYyyyMmDdHhMmSs(date: Date, dateDivider: string = "-") {
+    // :::: Exmple Usage ::::
+    // The function takes a Date object as a parameter and formats the date as YYYY-MM-DD hh:mm:ss.
+    // 👇️ 2023-04-11 16:21:23 (yyyy-mm-dd hh:mm:ss)
+    //console.log(dateInYyyyMmDdHhMmSs(new Date()));
+
+    //  👇️️ 2025-05-04 05:24:07 (yyyy-mm-dd hh:mm:ss)
+    // console.log(dateInYyyyMmDdHhMmSs(new Date('May 04, 2025 05:24:07')));
+    // Date divider
+    // 👇️ 01/04/2023 10:20:07 (MM/DD/YYYY hh:mm:ss)
+    // console.log(dateInYyyyMmDdHhMmSs(new Date(), "/"));
+    return (
+        [
+            date.getFullYear(),
+            padTwoDigits(date.getMonth() + 1),
+            padTwoDigits(date.getDate()),
+        ].join(dateDivider) +
+        " " +
+        [
+            padTwoDigits(date.getHours()),
+            padTwoDigits(date.getMinutes()),
+            padTwoDigits(date.getSeconds()),
+        ].join(":")
+    );
+}
+
+function nowStamp() {
+    return dateInYyyyMmDdHhMmSs(new Date());
+}
+
+
