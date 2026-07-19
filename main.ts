@@ -8,8 +8,7 @@ import { log } from './services/log.ts';
  */
 
 const myHeaders = {
-    // 'Content-Security-Policy': `default-src 'none' ; script-src 'self' ; connect-src https: ; img-src https: blob: data: ; style-src 'self' ; frame-ancestors 'none' ; form-action 'self' ; base-uri 'none'`,
-    'Content-Security-Policy': `default-src 'self' ; connect-src https: ; img-src https: blob: data: ; base-uri 'none'`,
+    'Content-Security-Policy': `default-src 'none' ; script-src 'self' ; connect-src https: ; img-src https: blob: data: ; style-src 'self' ; frame-ancestors 'none' ; form-action 'self' ; base-uri 'none'`,
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'X-Content-Type-Options': 'nosniff'
 };
@@ -29,17 +28,7 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
 
     // The "Router"...
     let response: Response;
-    if (url.hostname === 'lastfm-widgets.deno.dev' && req.method === 'GET') {
-        // redirect: lastfm-widgets.deno.dev (old deploy) -> lastfm-widgets.stignygaard.deno.net (new/current)
-        url.hostname = 'lastfm-widgets.stignygaard.deno.net';
-        response = new Response(null, {
-            status: 301, // 301 permanent redirect, 302 temporary redirect
-            headers: {
-                Location: url.href,
-                'Content-Security-Policy': `default-src https ; img-src https: blob: data: ; form-action 'self' ; base-uri 'none'`
-            }
-        })
-    } else if (/^\/proxy-api\/?$/.test(pathname) && req.method === 'GET') {
+    if (/^\/proxy-api\/?$/.test(pathname) && req.method === 'GET') {
         // The "proxy API" - https://lastfm-widgets.stignygaard.deno.net/proxy-api
         const result = await proxyApi(url.searchParams, req.headers, info);
         response = new Response(result.body, { headers: myHeaders, ...result.options });
