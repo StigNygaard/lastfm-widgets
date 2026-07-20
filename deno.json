@@ -1,8 +1,8 @@
 {
     "exclude": ["cf-worker/"],
     "tasks": {
-        "dev": "deno --allow-net --allow-env --allow-read=./demo,./widgets,./.env --watch main.ts",
-        "start": "deno --allow-net --allow-env --allow-read=./demo,./widgets,./.env main.ts",
+        "dev": "deno --unstable-kv --allow-net --allow-env --allow-read=./demo,./widgets,./.env --watch main.ts",
+        "start": "deno --unstable-kv --allow-net --allow-env --allow-read=./demo,./widgets,./.env main.ts",
         "lint": "deno lint main.ts services/"
     },
     "deploy": {
@@ -12,6 +12,7 @@
         "include": []
     },
     "imports": {
+        "@kitsonk/kv-toolbox": "jsr:@kitsonk/kv-toolbox@^0.31.0",
         "@std/dotenv": "jsr:@std/dotenv@^0.225.7",
         "@std/http": "jsr:@std/http@^1.1.2"
     }

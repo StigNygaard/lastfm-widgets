@@ -1,22 +1,58 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@deno/kv-utils@~0.1.4": "0.1.4",
+    "jsr:@kitsonk/kv-toolbox@0.31": "0.31.0",
+    "jsr:@std/assert@1": "1.0.19",
+    "jsr:@std/bytes@1": "1.0.6",
+    "jsr:@std/bytes@^1.0.3": "1.0.6",
     "jsr:@std/cli@^1.0.31": "1.0.32",
+    "jsr:@std/crypto@1.1": "1.1.0",
     "jsr:@std/dotenv@~0.225.7": "0.225.7",
+    "jsr:@std/encoding@1": "1.0.11",
     "jsr:@std/encoding@^1.0.11": "1.0.11",
+    "jsr:@std/encoding@^1.0.5": "1.0.11",
     "jsr:@std/fmt@^1.0.10": "1.0.10",
     "jsr:@std/fs@^1.0.24": "1.0.24",
     "jsr:@std/html@^1.0.7": "1.0.7",
     "jsr:@std/http@^1.1.2": "1.1.2",
     "jsr:@std/internal@^1.0.14": "1.0.14",
+    "jsr:@std/media-types@1": "1.1.0",
     "jsr:@std/media-types@^1.1.0": "1.1.0",
     "jsr:@std/net@^1.0.6": "1.0.6",
     "jsr:@std/path@^1.1.6": "1.1.6",
     "jsr:@std/streams@^1.1.1": "1.1.1"
   },
   "jsr": {
+    "@deno/kv-utils@0.1.4": {
+      "integrity": "119a768c8a9b1af76552b48e78457cd2fb38cc97c10b3a57cf65efe47ff9ca1a",
+      "dependencies": [
+        "jsr:@std/bytes@^1.0.3",
+        "jsr:@std/encoding@^1.0.5"
+      ]
+    },
+    "@kitsonk/kv-toolbox@0.31.0": {
+      "integrity": "cf2c62dad83234b2472f2525e23dbd5d998407afa60bf24bdd315c538abe2663",
+      "dependencies": [
+        "jsr:@deno/kv-utils",
+        "jsr:@std/assert",
+        "jsr:@std/bytes@1",
+        "jsr:@std/crypto",
+        "jsr:@std/encoding@1",
+        "jsr:@std/media-types@1"
+      ]
+    },
+    "@std/assert@1.0.19": {
+      "integrity": "eaada96ee120cb980bc47e040f82814d786fe8162ecc53c91d8df60b8755991e"
+    },
+    "@std/bytes@1.0.6": {
+      "integrity": "f6ac6adbd8ccd99314045f5703e23af0a68d7f7e58364b47d2c7f408aeb5820a"
+    },
     "@std/cli@1.0.32": {
       "integrity": "188b3a100d6202d64e3f5bd3d799c7fa4f6d77f92cc65eb7f641c1fa0aa92a66"
+    },
+    "@std/crypto@1.1.0": {
+      "integrity": "b8d6d0a6377a32b213af2661ed7bf1062d94feac0c57def5526a8e74a95c3ec8"
     },
     "@std/dotenv@0.225.7": {
       "integrity": "11d8db03ca4ad5aba9eba809f2e8058b2a4f320b7b09fea4b360e162928329e3"
@@ -37,11 +73,11 @@
       "integrity": "1c0473590d5e5b75b30b2be4833c08047dd799aeea35624fd34ec58d67fc9240",
       "dependencies": [
         "jsr:@std/cli",
-        "jsr:@std/encoding",
+        "jsr:@std/encoding@^1.0.11",
         "jsr:@std/fmt",
         "jsr:@std/fs",
         "jsr:@std/html",
-        "jsr:@std/media-types",
+        "jsr:@std/media-types@^1.1.0",
         "jsr:@std/net",
         "jsr:@std/path",
         "jsr:@std/streams"
@@ -68,6 +104,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@kitsonk/kv-toolbox@0.31",
       "jsr:@std/dotenv@~0.225.7",
       "jsr:@std/http@^1.1.2"
     ]

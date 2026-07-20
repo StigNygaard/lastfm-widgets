@@ -8,20 +8,21 @@ Running the Last.fm widget purely client-side means exposing your Last.fm API ke
 2. **CORS handling** — Last.fm's API does not return permissive CORS headers by default. The proxy injects `Access-Control-Allow-Origin` based on a configurable hostname whitelist.
 3. **Caching and throttling** — Last.fm's API has intermittent downtime and aggressive rate limiting. The proxy caches the last successful response and serves it (stale-while-revalidate) when upstream requests fail. A hibernate mode also pauses outgoing requests entirely after a rate-limit response, to avoid getting the API key banned.
 
-Two implementations exist, both functionally identical: the original Deno version and a Cloudflare Workers port.
+Two implementations exist, functionally identical: A Deno KV based version and a Cloudflare Workers port.
 
 ---
 
-## Option 1: Deno Deploy
+## Option 1: Deno KV (Deno Deploy compatible)
 
-Original implementation in `services/proxy-api.ts`. Cache state is currently held in memory (Plan is to update it to Deno KV or other free-tier storage option available from Deno Deploy).
+Implementation is in `services/proxy-api.ts`. Cache state held in Deno KV Key-Value database. Deno KV is available on a Deno Deploy free-tier.
 
-### Setup
+### Setup using Deno Deploy
 
 1. Fork/clone this repository and push it to your own GitHub account.
 2. Create a new project on [Deno Deploy](https://deno.com/deploy) linked to your repo.
-3. Set the entrypoint to `main.ts`, or write a minimal entry script that serves `proxyApi` directly if you only need the proxy and not the demo site.
-4. Set the following environment variables in the Deno Deploy project settings:
+3. Go to "Databases" configuration for the created Deno Deploy project and attach a Deno KV database to the project.
+4. Set the entrypoint to `main.ts`, or write a minimal entry script that serves `proxyApi` directly if you only need the proxy and not the demo site.
+5. Set the following environment variables in the Deno Deploy project settings:
 
 | Variable | Required | Description |
 | --- | --- | --- |
@@ -33,16 +34,16 @@ Original implementation in `services/proxy-api.ts`. Cache state is currently hel
 ### Local development
 
 ```bash
-deno run --allow-net --allow-env --allow-read=./demo,./widgets main.ts
+deno run --unstable-kv --allow-net --allow-env --allow-read=./demo,./widgets main.ts
 ```
 
-Note: Deno Deploy runs on multiple edge nodes globally, so the in-memory cache is per-node, not shared globally. This is a known limitation, not a bug — each node will independently warm its own cache.
+Note: KV is still considered 'in development' technology. But it has existed for a while and seems reliable - at least for non-critical use.
 
 ---
 
 ## Option 2: Cloudflare Workers
 
-Port located in `cf-worker/index.ts`. Instead of in-memory caching, this version uses the native **Cloudflare Cache API**, since Worker isolates are short-lived and in-memory state does not persist reliably between invocations. This makes the fallback cache behavior consistent across Cloudflare's edge network.
+Port located in `cf-worker/index.ts`. This version uses the native **Cloudflare Cache API**. This makes the fallback cache behavior consistent across Cloudflare's edge network.
 
 ### Requirements
 
@@ -99,11 +100,4 @@ To serve the proxy from your own domain instead of `*.workers.dev`, add a route 
 
 ## Choosing between the two
 
-| | Deno Deploy | Cloudflare Workers |
-| --- | --- | --- |
-| Cache persistence | In-memory, per-node | Cloudflare Cache API, edge-persistent |
-| Free tier | Generous | 100k requests/day |
-| Setup complexity | Lower (git-linked auto-deploy) | Requires Wrangler CLI |
-| Best for | Quick setup, low-to-moderate traffic | Higher traffic, more consistent caching |
-
-Both expose the same request/response contract, so the frontend widget works identically regardless of which backend is used.
+Both expose the same request/response contract, so the frontend widget works identically regardless of which backend is used. If you ain't already using either backend-technology, Deno KV solution on Deno Deploy is probably an easy and free way to get a backend-proxy for your widget. Deno Deploy free-tier has monthly storage/write limitations for Deno KV. If that could be an issue depends on factors like activity (usage) of widget, how often your scrobbles data updates, widget update-interval and widget playlist length. For most, I think a free-tier Deno Deploy is plenty if only used for this widget. But I'm also still collecting practical experience on this myself, as the KV-based proxy-implementation is still very new.

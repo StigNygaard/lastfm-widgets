@@ -60,8 +60,8 @@ supported by a custom backend "proxy-api". The latter is encouraged when possibl
 implement throttling of requests to Last.fm's API.
 
 This repository not only holds the widget itself, but also the demo-site (https://lastfm-widgets.stignygaard.deno.net/)
-and two backend proxy-api implementations. The "primary" proxy-api is made in [Deno](https://deno.com/). The
-"alternative" proxy-api is a Cloudflare Workers implementation made by [burnblazter](https://github.com/burnblazter). 
+and two backend proxy-api implementations. The "primary" proxy-api is made in [Deno](https://deno.com/) using [Deno KV](https://docs.deno.com/deploy/kv/).
+The "alternative" proxy-api is a Cloudflare Workers implementation made by [burnblazter](https://github.com/burnblazter). 
 Also, this repository is set up as a [Deno Deploy](https://deno.com/deploy) project. Any updates to the main-branch
 (widget, demo-page and the Deno proxy-api) are immediately deployed to the Deno Deploy demo-site.
 
@@ -103,7 +103,6 @@ the above-mentioned content (except /cf-worker/).
 
 What could future updates bring? _Maybe_:
 
-- Use of Deno KV (or some other storage option available from Deno Deploy) for caching/proxy, instead of the current simple and potentially short-living in-memory cache implementation.
 - A layout that adapts nicer to wider display dimensions of widget
 - Dark mode
 - Another widget

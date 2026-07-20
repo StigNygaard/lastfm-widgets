@@ -4,7 +4,7 @@ import { proxyApi } from './services/proxy-api.ts';
 import { log } from './services/log.ts';
 
 /**
- * @run --allow-net --allow-env --allow-read=./demo,./widgets,./.env main.ts
+ * @run --unstable-kv --allow-net --allow-env --allow-read=./demo,./widgets,./.env main.ts
  */
 
 const myHeaders = {

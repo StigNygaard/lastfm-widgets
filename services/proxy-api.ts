@@ -1,33 +1,62 @@
 import '@std/dotenv/load';
+import * as kvBlobTool from "@kitsonk/kv-toolbox/blob";
 
-// Get the fixed values from .env file or environment variables ( todo: or maybe from KV? )
+/******************************************************************************/
+/*                   Proxy/cache implemented with Deno KV                     */
+/*   Since Deno KV has a max record size of 64K per value, also using         */
+/*   @kitsonk/kv-toolbox/blob to spread the large audioscrobbler response     */
+/*   data over multiple records. Could the monthly write-limit for KV on a    */
+/*   free tier of Deno Deploy become a problem? As an alternative to KV,      */
+/*   I should probably also consider/try...                                   */
+/*   a) Deno Deploy Web Cache API:                                            */
+/*      https://deno.com/blog/deploy-cache-api                                */
+/*      https://docs.deno.com/deploy/classic/edge_cache/                      */
+/*      https://developer.mozilla.org/en-US/docs/Web/API/Cache                */
+/*   b) Deno Deploy HTTP Edge Cache:                                          */
+/*      https://docs.deno.com/deploy/reference/caching/                       */
+/*   (I'm still learning and experimenting here 😊)                           */
+/******************************************************************************/
+
+// Get the fixed values from .env file or environment variables
 const apikey = Deno.env.get('audioscrobbler_apikey');
 const user = Deno.env.get('audioscrobbler_user') || 'rockland';
 const tracks = Deno.env.get('audioscrobbler_trackslimit');
 // Allow CORS for given hostname(s) and their subdomains. Multiple hostnames separated by semicolon:
 const corsAllowHostnames = Deno.env.get('audioscrobbler_cors_allow_hostnames')?.toLowerCase()?.split(/\s*(?:;|$)\s*/) ?? [];
 
-// TODO *IF* I wanted to use Deno (Deploy) KV database for response caching, I needed something like:
-//      const database = Deno.env.get('audioscrobbler_database');
-//      const KV = await Deno.openKv(database);
-//  Another (obvious?) option could be to use the Deno Deploy Web Cache API?
-//  Or simply localStorage which I think is also supported in Deno (and if it is "cross-visitor application-wide" in Deno)?
-//  But for now, the much simpler Map solution... Which actually is very fine in practice🙂
-const cache = new Map([
-    ['user.getinfo-OkResponse', ''],
-    ['user.getrecenttracks-OkResponse', '']
+/**
+ * Map containing waiting times for each last.fm method.
+ */
+const waitNext = new Map([
+    // Seconds until next call to last.fm method is allowed.
+    // Avoid too fast retries when errors. Errors might be caused by overloaded last.fm servers.
+    // But well, I might actually be over-thinking this a bit :-) ...
+    ['user.getinfo', {
+        ok: 1800,
+        failedWithFallback: 900,
+        failedWithoutFallback: 60
+    }],
+    ['user.getrecenttracks', {
+        ok: 30,
+        failedWithFallback: 120,
+        failedWithoutFallback: 60
+    }]
 ]);
-let fetchSuccessCount = 0;
-let fetchErrorCount = 0;
-// TODO: Also a returned-cached-content count?
-
-let hibernate = false; // In case of error 26 or 29, enter Hibernate mode
 
 export async function proxyApi(
     searchParams: URLSearchParams,
     reqHeaders: Headers,
     info: Deno.ServeHandlerInfo
 ): Promise<{ body: string; options: object }> {
+
+    const textDecoder = new TextDecoder();
+    using cache = await Deno.openKv();
+
+    let fetchSuccessCount = 0;
+    let fetchErrorCount = 0;
+    // TODO: Also a returned-cached-content count?
+    let hibernate = false; // In case of error 26 or 29, enter Hibernate mode
+
     const origin = reqHeaders.get('Origin');
     const respHeaders = new Headers({ 'Content-Type': 'application/json' });
     if (origin && allowedForCors(origin)) {
@@ -55,10 +84,11 @@ export async function proxyApi(
         };
         console.log(`[${fetchSuccessCount}/${fetchErrorCount}] proxy: `, logData);
     }
-    const nextTime = parseInt(cache.get(`${method}-NextTime`) || '0', 10);
+    const nextTimeStr = await cache.get<string>([`${method}-NextTime`]);
+    const nextTime = Number.parseInt(nextTimeStr.value || '0', 10);
     if (Date.now() <= nextTime) {
-        console.log(` *** ${nowStamp()} - Too early for '${method}' (Next time: ${dateInYyyyMmDdHhMmSs(new Date(nextTime))}). Will use cached data instead...`); // TODO remove?
-        return fallback(method, respHeaders);
+        console.log(` *** ${nowStamp()} - Too early for '${method}' (Next time: ${dateInYyyyMmDdHhMmSs(new Date(nextTime))}). Will use cached data instead...`);
+        return await fallback(method, respHeaders);
     }
     const fUrl = new URL('https://ws.audioscrobbler.com/2.0');
     fUrl.searchParams.append('method', method);
@@ -76,8 +106,8 @@ export async function proxyApi(
     }
 
     // Temporary update to prevent multiple concurrent fetches
-    // todo: but it is a good idea if cache is empty and fetch fails?
-    cache.set(`${method}-NextTime`, String(waitUntil(method).ok));
+    await cache.set([`${method}-NextTime`], String(waitUntil(method).ok));
+
     try {
         // console.log(`fetching ${fUrl.href} ...`);
         result = await fetch(fUrl.href, {
@@ -87,7 +117,7 @@ export async function proxyApi(
         });
     } catch (e) {
         console.error(`[${fetchSuccessCount}/${++fetchErrorCount}] await fetch() error ${result?.status} - ${result?.statusText} `, e);
-        return fallback(method, respHeaders);
+        return await fallback(method, respHeaders);
     }
     try {
         json = await result.json(); // Check if result.headers.get('Content-Type')?.includes('application/json') ?
@@ -98,7 +128,7 @@ export async function proxyApi(
             console.error(`Proxy received unexpected response which had Content-Type header:\n`, result.headers.get('Content-Type'));
             console.error(`Proxy received unexpected response which parsed as text is:\n`, text);
         } catch (_err) { /* ignore */ }
-        return fallback(method, respHeaders);
+        return await fallback(method, respHeaders);
     }
     if (!result.ok && json.error) {
         console.error(`Proxy [${fetchSuccessCount}/${++fetchErrorCount}] [${fUrl.href}] ${result.status} - ${result.statusText} `, json);
@@ -108,19 +138,112 @@ export async function proxyApi(
         } else {
             console.warn(`Proxy received error: ${json.error} - ${json.message}`);
         }
-        return fail(method, respHeaders);
+        return await fail(method, respHeaders);
     }
     if (result.ok && !json.error) {
         if (hibernate) {
             hibernate = false;
             console.log('🟢 Proxy leaving *Hibernate* mode - seems to work again');
         }
-        // console.log(`Last.fm '${method}' fetch OK! Status : ${result.status} - ${result.statusText}`); // TODO
         fetchSuccessCount++;
-        return success(method, result.status, result.statusText, json, respHeaders);
+        return await success(method, result.status, result.statusText, json, respHeaders);
     } else {
         console.error(`Proxy [${fetchSuccessCount}/${++fetchErrorCount}] Last.fm fetch FAILED: ${result?.status} - ${result?.statusText}`);
-        return fail(method, respHeaders);
+        return await fail(method, respHeaders);
+    }
+
+
+
+    async function success(method: string, _status: string | number, _statusText: string, jsonObj: object, headers: Headers): Promise<{
+        body: string,
+        options: object
+    }> {
+        const json = JSON.stringify(jsonObj);
+        const resp = await kvBlobTool.get(cache, [`${method}-OkResponse`]);
+        const cachedText = resp.value ? textDecoder.decode(resp.value) : '';
+        // Update cache only if the new value differs from currently cached value (avoid unnecessary writes to KV)
+        if (json.length && json !== cachedText) {
+            console.log(` --- ${nowStamp()} - Cached value for ${method}-OkResponse has length=${cachedText.length}.`);
+            if (method == 'user.getinfo') {
+                console.log(` +++ ${nowStamp()} - UPDATE CACHE for ${method}-OkResponse: \n`, json);
+            } else {
+                console.log(` +++ ${nowStamp()} - UPDATE CACHE for ${method}-OkResponse (length=${json.length}).`);
+            }
+            await kvBlobTool.set(cache, [`${method}-OkResponse`], kvBlobTool.toBlob(json));
+        } else {
+            // console.log(`SKIP updating cached json - there's no change in data for '${method}'`);
+        }
+        await cache.set([`${method}-OkTime`], Date.now().toString());
+        await cache.set([`${method}-NextTime`], String(waitUntil(method).ok));
+        return {
+            body: json,
+            options: {
+                status: 200,
+                statusText: 'OK',
+                headers: headers
+            }
+        };
+    }
+
+    async function fail(method: string, headers: Headers): Promise<{ body: string, options: object }> {
+        const resp = await kvBlobTool.get(cache, [`${method}-OkResponse`]);
+        const okResponse = resp.value ? textDecoder.decode(resp.value) : '';
+
+        console.log(` *** ${nowStamp()} - Failing - Fallback value from cache has length ${okResponse.length}...`);
+
+        await cache.set([`${method}-FailTime`], Date.now().toString());
+        if (okResponse) {
+            await cache.set([`${method}-NextTime`], String(waitUntil(method).failedWithFallback));
+        } else {
+            await cache.set([`${method}-NextTime`], String(waitUntil(method).failedWithoutFallback));
+        }
+        return await fallback(method, headers, okResponse);
+    }
+
+    async function fallback(method: string, headers: Headers, okResponse?: string): Promise<{ body: string, options: object }> {
+        if(!okResponse) {
+            const resp = await kvBlobTool.get(cache, [`${method}-OkResponse`]);
+            okResponse = resp.value ? textDecoder.decode(resp.value) : '';
+        }
+        if (okResponse) {
+            console.log(` *** ${nowStamp()} - Returning fallback ${method}-OkResponse value of length ${okResponse.length} from cache.`);
+            return {
+                body: okResponse,
+                options: {
+                    status: 200,
+                    statusText: 'OK - Using previously cached response',
+                    headers: headers
+                }
+            };
+        } else {
+            console.warn(` *** ${nowStamp()} - Fallback cache NOT ready for method ${method}-OkResponse`);
+            return {
+                body: `{error: 16, message: 'Not ready. Try again later'}`,
+                options: {
+                    status: 425,
+                    statusText: 'Not ready. Successful response not available in proxy cache',
+                    headers: headers
+                }
+            };
+        }
+    }
+
+    function waitUntil(method: string) {
+        const now = Date.now();
+        const data = waitNext.get(method);
+        if (hibernate || !data) {
+            if (!data) console.error(`ERROR! Unknown method "${method}"`);
+            return {
+                ok: 3600000 + now,
+                failedWithFallback: 3600000 + now,
+                failedWithoutFallback: 3600000 + now
+            };
+        }
+        return {
+            ok: data.ok * 1000 + now,
+            failedWithFallback: data.failedWithFallback * 1000 + now,
+            failedWithoutFallback: data.failedWithoutFallback * 1000 + now
+        };
     }
 
 }
@@ -152,111 +275,6 @@ function allowedForCors(origin: string) {
         }
     }
     return false;
-}
-
-function success(method: string, _status: string | number, _statusText: string, jsonObj: object, headers: Headers): { body: string, options: object } {
-    const json = JSON.stringify(jsonObj);
-    const cachedText = cache.get(`${method}-OkResponse`) ?? '';
-    // Update cache only if the new value differs from currently cached value (If/when using KV, we avoid unnecessary writes)...
-    if (json.length && json !== cachedText) {
-        console.log(` --- ${nowStamp()} - Current cached value for '${method}-OkResponse' has length=${cachedText.length}.`); // TODO
-        if (method == 'user.getinfo') {
-            console.log(` +++ ${nowStamp()} - DATA READ - UPDATE CACHE for '${method}-OkResponse': \n`, json); // TODO
-        } else {
-            console.log(` +++ ${nowStamp()} - DATA READ - UPDATE CACHE for '${method}-OkResponse' (length=${json.length}).`); // TODO
-        }
-        cache.set(`${method}-OkResponse`, json);
-        // console.log(`Updating the cached json for '${method}'...`); // TODO
-    } else {
-        console.log(` +++ ${nowStamp()} - DATA READ - SKIP updating cached json - there's no change in data for '${method}-OkResponse'`);
-    }
-    cache.set(`${method}-OkTime`, Date.now().toString());
-    cache.set(`${method}-NextTime`, String(waitUntil(method).ok));
-    return {
-        body: json,
-        options: {
-            status: 200,
-            statusText: 'OK',
-            headers: headers
-        }
-    };
-}
-
-function fail(method: string, headers: Headers): { body: string, options: object } {
-    const okResponse = cache.get(`${method}-OkResponse`) ?? '';
-
-    console.log(` *** ${nowStamp()} - Failback value from cache: \n`, okResponse); // TODO remove
-
-    cache.set(`${method}-FailTime`, Date.now().toString());
-    if (okResponse) {
-        cache.set(`${method}-NextTime`, String(waitUntil(method).failedWithFallback));
-    } else {
-        cache.set(`${method}-NextTime`, String(waitUntil(method).failedWithoutFallback));
-    }
-    return fallback(method, headers);
-}
-
-function fallback(method: string, headers: Headers, okResponse?: string): { body: string, options: object } {
-    if (!okResponse) {
-        okResponse = cache.get(`${method}-OkResponse`) ?? '';
-    }
-    if (okResponse) {
-        console.log(` *** ${nowStamp()} - Returning fallback '${method}-OkResponse' value of length ${okResponse.length} from cache.`); // TODO remove
-        return {
-            body: okResponse,
-            options: {
-                status: 200,
-                statusText: 'OK - Using previously cached response',
-                headers: headers
-            }
-        };
-    } else {
-        console.warn(` *** ${nowStamp()} - Fallback cache NOT ready for method '${method}-OkResponse'`);
-        return {
-            body: `{error: 16, message: 'Not ready. Try again later'}`,
-            options: {
-                status: 425,
-                statusText: 'Not ready. Successful response not available in proxy cache',
-                headers: headers
-            }
-        };
-    }
-}
-
-/**
- * Map containing waiting times for each last.fm method.
- */
-const waitNext = new Map([
-    // Seconds until next call to last.fm method is allowed.
-    // Avoid too fast retries when errors. Errors might be caused by overloaded last.fm servers.
-    // But well, I might actually be over-thinking this a bit :-) ...
-    ['user.getinfo', {
-        ok: 3600,
-        failedWithFallback: 1800,
-        failedWithoutFallback: 60
-    }],
-    ['user.getrecenttracks', {
-        ok: 30,
-        failedWithFallback: 120,
-        failedWithoutFallback: 60
-    }]
-]);
-function waitUntil(method: string) {
-    const now = Date.now();
-    const data = waitNext.get(method);
-    if (hibernate || !data) {
-        if (!data) console.error(`ERROR! Unknown method "${method}"`);
-        return {
-            ok: 3600000 + now,
-            failedWithFallback: 3600000 + now,
-            failedWithoutFallback: 3600000 + now
-        };
-    }
-    return {
-        ok: data.ok * 1000 + now,
-        failedWithFallback: data.failedWithFallback * 1000 + now,
-        failedWithoutFallback: data.failedWithoutFallback * 1000 + now
-    };
 }
 
 function apiKeyMissing(headers: Headers) {
@@ -296,22 +314,12 @@ function methodError(method: string, headers: Headers) {
 }
 
 
-
 function padTwoDigits(num: number) {
     return num.toString().padStart(2, "0");
 }
 
 function dateInYyyyMmDdHhMmSs(date: Date, dateDivider: string = "-") {
-    // :::: Exmple Usage ::::
     // The function takes a Date object as a parameter and formats the date as YYYY-MM-DD hh:mm:ss.
-    // 👇️ 2023-04-11 16:21:23 (yyyy-mm-dd hh:mm:ss)
-    //console.log(dateInYyyyMmDdHhMmSs(new Date()));
-
-    //  👇️️ 2025-05-04 05:24:07 (yyyy-mm-dd hh:mm:ss)
-    // console.log(dateInYyyyMmDdHhMmSs(new Date('May 04, 2025 05:24:07')));
-    // Date divider
-    // 👇️ 01/04/2023 10:20:07 (MM/DD/YYYY hh:mm:ss)
-    // console.log(dateInYyyyMmDdHhMmSs(new Date(), "/"));
     return (
         [
             date.getFullYear(),
@@ -330,7 +338,3 @@ function dateInYyyyMmDdHhMmSs(date: Date, dateDivider: string = "-") {
 function nowStamp() {
     return dateInYyyyMmDdHhMmSs(new Date());
 }
-
-// function byteSize(str: string) {
-//     return new Blob([str]).size; // byte-size of a string
-// }
