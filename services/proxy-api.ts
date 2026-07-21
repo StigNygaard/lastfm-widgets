@@ -23,6 +23,8 @@ const user = Deno.env.get('audioscrobbler_user') || 'rockland';
 const tracks = Deno.env.get('audioscrobbler_trackslimit');
 // Allow CORS for given hostname(s) and their subdomains. Multiple hostnames separated by semicolon:
 const corsAllowHostnames = Deno.env.get('audioscrobbler_cors_allow_hostnames')?.toLowerCase()?.split(/\s*(?:;|$)\s*/) ?? [];
+const msOneDay = 86400000;
+const expireKeyValue = 50 * msOneDay; // Don't use KV space forever if this proxy is abandoned
 
 /**
  * Map containing waiting times for each last.fm method.
@@ -106,7 +108,7 @@ export async function proxyApi(
     }
 
     // Temporary update to prevent multiple concurrent fetches
-    await cache.set([`${method}-NextTime`], String(waitUntil(method).ok));
+    await cache.set([`${method}-NextTime`], String(waitUntil(method).ok), {expireIn: expireKeyValue});
 
     try {
         // console.log(`fetching ${fUrl.href} ...`);
@@ -169,12 +171,12 @@ export async function proxyApi(
             } else {
                 console.log(` +++ ${nowStamp()} - UPDATE CACHE for ${method}-OkResponse (length=${json.length}).`);
             }
-            await kvBlobTool.set(cache, [`${method}-OkResponse`], kvBlobTool.toBlob(json));
+            await kvBlobTool.set(cache, [`${method}-OkResponse`], kvBlobTool.toBlob(json), {expireIn: expireKeyValue});
         } else {
             // console.log(`SKIP updating cached json - there's no change in data for '${method}'`);
         }
-        await cache.set([`${method}-OkTime`], Date.now().toString());
-        await cache.set([`${method}-NextTime`], String(waitUntil(method).ok));
+        await cache.set([`${method}-OkTime`], Date.now().toString(), {expireIn: expireKeyValue});
+        await cache.set([`${method}-NextTime`], String(waitUntil(method).ok), {expireIn: expireKeyValue});
         return {
             body: json,
             options: {
@@ -191,11 +193,11 @@ export async function proxyApi(
 
         console.log(` *** ${nowStamp()} - Failing - Fallback value from cache has length ${okResponse.length}...`);
 
-        await cache.set([`${method}-FailTime`], Date.now().toString());
+        await cache.set([`${method}-FailTime`], Date.now().toString(), {expireIn: expireKeyValue});
         if (okResponse) {
-            await cache.set([`${method}-NextTime`], String(waitUntil(method).failedWithFallback));
+            await cache.set([`${method}-NextTime`], String(waitUntil(method).failedWithFallback), {expireIn: expireKeyValue});
         } else {
-            await cache.set([`${method}-NextTime`], String(waitUntil(method).failedWithoutFallback));
+            await cache.set([`${method}-NextTime`], String(waitUntil(method).failedWithoutFallback), {expireIn: expireKeyValue});
         }
         return await fallback(method, headers, okResponse);
     }
