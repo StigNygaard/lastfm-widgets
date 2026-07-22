@@ -83,7 +83,7 @@ Frontend-code for the demo page seen on https://lastfm-widgets.stignygaard.deno.
 #### /website/promo/ folder
 
 Frontend-code for a simple promo page pointing to https://lastfm-widgets.stignygaard.deno.net/.
-This is the default webpage shown when project is deployed. However, you can configure it to
+This is the default webpage shown when project is deployed. However, you can configure a project to
 show the demo page instead.  
 
 #### /services/ folder
