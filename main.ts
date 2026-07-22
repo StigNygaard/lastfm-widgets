@@ -4,7 +4,7 @@ import { proxyApi } from './services/proxy-api.ts';
 import { log } from './services/log.ts';
 
 /**
- * @run --unstable-kv --allow-net --allow-env --allow-read=./demo,./widgets,./.env main.ts
+ * @run --unstable-kv --allow-net --allow-env --allow-read=./website,./widgets,./.env main.ts
  */
 
 const myHeaders = {
@@ -13,7 +13,7 @@ const myHeaders = {
     'X-Content-Type-Options': 'nosniff'
 };
 const myHeadersArr = Object.entries(myHeaders).map(([k, v]) => `${k}: ${v}`);
-
+const webpage = Deno.env.get('webpage_show')?.toLocaleLowerCase() === 'demo' ? 'demo' : 'promo';
 
 // we could set a port-number with Deno.serve({port: portno}, handler);
 Deno.serve(handler);
@@ -49,10 +49,10 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
             headers: myHeadersArr
         });
     } else if (req.method === 'GET') {
-        // The statically served demo-page - https://lastfm-widgets.stignygaard.deno.net/*
+        // The statically served demo or promo-page
         response = await serveDir(req, {
             urlRoot: '',
-            fsRoot: 'demo',
+            fsRoot: `website/${webpage}`, // 'website/demo' or 'website/promo'
             showDirListing: false,
             showDotfiles: false,
             showIndex: true, // index.html

@@ -16,12 +16,14 @@ Two implementations exist, functionally identical: A Deno KV based version and a
 
 Implementation is in `services/proxy-api.ts`. Cache state held in Deno KV Key-Value database. Deno KV is available on a Deno Deploy free-tier.
 
+KV is still considered 'in development' technology. But it has existed for a while and seems reliable - at least for non-critical use.
+
 ### Setup using Deno Deploy
 
 1. Fork/clone this repository and push it to your own GitHub account.
 2. Create a new project on [Deno Deploy](https://deno.com/deploy) linked to your repo.
-3. Go to "Databases" configuration for the created Deno Deploy project and attach a Deno KV database to the project.
-4. Set the entrypoint to `main.ts`, or write a minimal entry script that serves `proxyApi` directly if you only need the proxy and not the demo site.
+3. Set the entrypoint to `main.ts`.
+4. Go to "Databases" configuration for the created Deno Deploy project and attach a Deno KV database to the project.
 5. Set the following environment variables in the Deno Deploy project settings:
 
 | Variable | Required | Description |
@@ -31,13 +33,23 @@ Implementation is in `services/proxy-api.ts`. Cache state held in Deno KV Key-Va
 | `audioscrobbler_trackslimit` | No | Number of recent tracks to fetch per request. |
 | `audioscrobbler_cors_allow_hostnames` | No | Semicolon-separated list of allowed origins (e.g. `example.com;localhost`). If unset, no CORS headers are injected. |
 
+If you want the demo-page to run on your site too, you also need to set environment variable webpage_show=demo. However, to avoid confusion about where the official demo-page for the widget is located, I appreciate if you only do that temporary for test and verification.
+
 ### Local development
 
+Run locally with 
+
 ```bash
-deno run --unstable-kv --allow-net --allow-env --allow-read=./demo,./widgets main.ts
+deno task start
 ```
 
-Note: KV is still considered 'in development' technology. But it has existed for a while and seems reliable - at least for non-critical use.
+or in "developer-mode" with "auto-restart" when changes to code is detected
+
+```bash
+deno task dev
+```
+
+(Above *tasks* "start" and "dev" are defined in `deno.json`)
 
 ---
 
@@ -100,4 +112,4 @@ To serve the proxy from your own domain instead of `*.workers.dev`, add a route 
 
 ## Choosing between the two
 
-Both expose the same request/response contract, so the frontend widget works identically regardless of which backend is used. If you ain't already using either backend-technology, Deno KV solution on Deno Deploy is probably an easy and free way to get a backend-proxy for your widget. Deno Deploy free-tier has monthly storage/write limitations for Deno KV. If that could be an issue depends on factors like activity (usage) of widget, how often your scrobbles data updates, widget update-interval and widget playlist length. For most, I think a free-tier Deno Deploy is plenty if only used for this widget. But I'm also still collecting practical experience on this myself, as the KV-based proxy-implementation is still very new.
+Both expose the same request/response contract, so the frontend widget works identically regardless of which backend is used. If you ain't already using either backend-technology, Deno KV solution on Deno Deploy is probably an easy and free way to get a backend-proxy for your widget. Deno Deploy free-tier has monthly storage/write limitations for Deno KV. If that could be an issue depends on factors like activity (usage) of widget, how often your scrobble new tracks, widget update-interval and widget playlist length. For most, I think a free-tier Deno Deploy is plenty if only used for this widget. But I'm also still collecting practical experience on this myself, as the KV-based proxy-implementation is still very new.

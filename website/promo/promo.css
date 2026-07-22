@@ -1,0 +1,74 @@
+:root {
+  height: 100%;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  color: rgb(34 34 34);
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex; /* main.promo & footer */
+  flex-direction: column;
+}
+
+.promo {
+  flex: auto;
+  padding: 1.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+footer {
+  flex-shrink: 0;
+  padding: 1rem 2rem;
+  background-color: #fadcdc;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  margin-bottom: 4rem;
+}
+
+h1 {
+  font-size: 1.85rem;
+  text-align: center;
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+h3 {
+  font-size: 1.05rem;
+}
+
+p, li {
+  text-wrap: pretty;
+}
+
+a {
+  color: rgb(34 34 34);
+  font-style: italic;
+}
+
+a[href^='https://github.com/StigNygaard/']::after {
+  content: '';
+  background-image: url(GitHub-Mark-Light-32px.png);
+  background-size: .8lh .8lh;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: inline-block;
+  width: 1lh;
+  height: 1lh;
+  filter: invert(1);
+  opacity: 0.8;
+  vertical-align: bottom;
+}
+

@@ -5,7 +5,7 @@ See _Tracks_ in action on https://www.rockland.dk/ and https://lastfm-widgets.st
 At the latter site, you can not only find some more information and instructions for use, you can
 also play with some of the customization options, including setting the user to show scrobbles from.
 
-[![Tracks](demo/Tracks-lastfm-widget-header-1280x640-2.png "Tracks widget")](https://www.last.fm/user/rockland)
+[![Tracks](website/demo/Tracks-lastfm-widget-header-1280x640-2.png "Tracks widget")](https://www.last.fm/user/rockland)
 
 Long time Last.fm users might get a déjà vu feeling by the red album header-lines. As primarily an album listener
 myself, I have missed them. So I brought them (optionally) back in this widget.
@@ -76,9 +76,15 @@ The widget frontend code. _All_ that is needed for widget to work in _Demo_ or _
 content. And see https://lastfm-widgets.stignygaard.deno.net/ for more about widget _modes_
 and how to use and customize the widget.
 
-#### /demo/ folder
+#### /website/demo/ folder
 
 Frontend-code for the demo page seen on https://lastfm-widgets.stignygaard.deno.net/.
+
+#### /website/promo/ folder
+
+Frontend-code for a simple promo page pointing to https://lastfm-widgets.stignygaard.deno.net/.
+This is the default webpage shown when project is deployed. However, you can configure it to
+show the demo page instead.  
 
 #### /services/ folder
 

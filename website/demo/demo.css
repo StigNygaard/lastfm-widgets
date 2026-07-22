@@ -61,7 +61,7 @@ a {
 
 a[href^='https://github.com/StigNygaard/']::after {
   content: '';
-  background-image: url(./GitHub-Mark-Light-32px.png);
+  background-image: url(GitHub-Mark-Light-32px.png);
   background-size: .8lh .8lh;
   background-repeat: no-repeat;
   background-position: center;
