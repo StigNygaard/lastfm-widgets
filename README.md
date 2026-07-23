@@ -36,7 +36,7 @@ Using the widget in any HTML file is straightforward because it's a standard web
 </body>
 </html>
 ```
-Notice, you should _not_ include the stylesheet (tracks.css) yourself. The script (lastfm.js) will automatically include it.
+Notice, you should _not_ include the stylesheet (`tracks.css`) yourself. The script (`lastfm.js`) will automatically include it.
 Just make sure to place it at the same location as the script file, as that is where it will look for the stylesheet.
 
 ### Customization Attributes
@@ -60,14 +60,14 @@ supported by a custom backend "proxy-api". The latter is encouraged when possibl
 implement throttling of requests to Last.fm's API.
 
 This repository not only holds the widget itself, but also the demo-site (https://lastfm-widgets.stignygaard.deno.net/)
-and two backend proxy-api implementations. The "primary" proxy-api is made in [Deno](https://deno.com/) using [Deno KV](https://docs.deno.com/deploy/kv/).
-The "alternative" proxy-api is a Cloudflare Workers implementation made by [burnblazter](https://github.com/burnblazter). 
+and _three_ different backend proxy-api implementations. There are two proxy-APIs implemented in [Deno]([Deno](https://deno.com/)). The most recommended one using [Deno KV](https://docs.deno.com/deploy/kv/).
+But there's also a third alternative Cloudflare Workers (Node.js) proxy-api implementation made by [burnblazter](https://github.com/burnblazter). 
 Also, this repository is set up as a [Deno Deploy](https://deno.com/deploy) project. Any updates to the main-branch
-(widget, demo-page and the Deno proxy-api) are immediately deployed to the Deno Deploy demo-site.
+(widget, demo-page and the Deno proxy-apis) are immediately deployed to the Deno Deploy demo-site.
 
 The widget itself should be compatible back to at least Firefox 115 and Chromium 109 based web-browsers
 (so it also works for Windows 7/8 users stuck on these versions). It also runs in Safari, but I'm unsure how old versions are
-supported. The backend code (Deno proxy-api) is my first simple experiments/experience with Deno.
+supported. The backend code (Deno proxy-apis) is my first simple experiments/experience with Deno.
 
 #### /widgets/ folder
 
@@ -88,9 +88,11 @@ show the demo page instead.
 
 #### /services/ folder
 
-- _proxy-api.ts_ - A backend proxy-api made with Deno. The proxy-api is used on the demo page when widget is in
-  _Backend-supported_ mode, but also used by widget on [rockland.dk](https://www.rockland.dk/).
-- _log.ts_ - A simple log endpoint used by the demo page.
+- `proxy-api-kv.ts` - A Deno proxy-api using Deno KV as the cache. This is the generally recommended and default used backend proxy-api for this project.
+- `proxy-api-mem.ts` - An alternative Deno proxy-api using in-memory caching.
+- `log.ts` - A simple log endpoint used by the demo page.
+
+The Deno KV based proxy (`proxy-api-kv.ts`) is the normally used proxy-api on the demo page when widget is in _Backend-supported_ mode – and it is also used by widget on [rockland.dk](https://www.rockland.dk/). But no matter if KV or in-memory version is chosen, the proxy is served on the `/proxy-api` address of the deployed site.
 
 For full documentation on setting up the backend proxies, see [services/README.md](services/README.md).
 
@@ -102,8 +104,8 @@ For full documentation on setting up the backend proxies, see [services/README.m
 
 #### /main.ts file
 
-Basically the "web-server" or "router" for https://lastfm-widgets.stignygaard.deno.net/, serving
-the above-mentioned content (except /cf-worker/).
+Application "entrypoint". Basically the "web-server" or "router" for https://lastfm-widgets.stignygaard.deno.net/,
+serving the above-mentioned content (except `/cf-worker/`).
 
 ## Future updates?
 
