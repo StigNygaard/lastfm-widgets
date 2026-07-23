@@ -1,8 +1,8 @@
 {
     "exclude": ["cf-worker/"],
     "tasks": {
-        "dev": "deno --watch --unstable-kv --allow-net --allow-env --allow-read=./website,./widgets,./.env main.ts",
-        "start": "deno --unstable-kv --allow-net --allow-env --allow-read=./website,./widgets,./.env main.ts",
+        "dev": "deno --watch --unstable-kv --allow-net --allow-env --allow-read=./website,./widgets,./services,./.env main.ts",
+        "start": "deno --unstable-kv --allow-net --allow-env --allow-read=./website,./widgets,./services,./.env main.ts",
         "lint": "deno lint main.ts services/"
     },
     "deploy": {

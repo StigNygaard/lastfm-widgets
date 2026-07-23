@@ -2,12 +2,12 @@ import '@std/dotenv/load';
 
 /********************************************************************************/
 /*                    In-memory proxy/cache implementation                      */
-/*  This is a "backup" of my first quick in-memory proxy-implementation.        */
-/*  It kind of works, especially locally on my PC. Deno Deploy keeps an         */
-/*  application alive in 5sec to 10min when inactive, depending on its general  */
-/*  system load. Thus, an in-memory proxy is better than nothing, but it is     */
-/*  not really easy to say how effective exactly it is in practice protecting   */
-/*  Last.FM's API when running on Deno Deploy.                                  */
+/*  A simple quick in-memory proxy-implementation. It works kind of well,       */
+/*  especially locally on my PC. Deno Deploy keeps an application alive in      */
+/*  5 sec to 10 min when inactive, depending on general system load. Thus, an   */
+/*  in-memory proxy is better than nothing, but it is not really easy to say    */
+/*  how effective exactly it is in practice protecting Last.FM's API when       */
+/*  running on Deno Deploy.                                                     */
 /********************************************************************************/
 
 // Get the fixed values from .env file or environment variables
@@ -27,7 +27,26 @@ let fetchErrorCount = 0;
 
 let hibernate = false; // In case of error 26 or 29, enter Hibernate mode
 
-export async function proxyApi(
+/**
+ * Map containing waiting times for each last.fm method.
+ */
+const waitNext = new Map([
+    // Seconds until next call to last.fm method is allowed.
+    // Avoid too fast retries when errors. Errors might be caused by overloaded last.fm servers.
+    // But well, I might actually be over-thinking this a bit :-) ...
+    ['user.getinfo', {
+        ok: 3600,
+        failedWithFallback: 1800,
+        failedWithoutFallback: 60
+    }],
+    ['user.getrecenttracks', {
+        ok: 30,
+        failedWithFallback: 120,
+        failedWithoutFallback: 60
+    }]
+]);
+
+export async function serve(
     searchParams: URLSearchParams,
     reqHeaders: Headers,
     info: Deno.ServeHandlerInfo
@@ -226,24 +245,6 @@ function fallback(method: string, headers: Headers, okResponse?: string): { body
     }
 }
 
-/**
- * Map containing waiting times for each last.fm method.
- */
-const waitNext = new Map([
-    // Seconds until next call to last.fm method is allowed.
-    // Avoid too fast retries when errors. Errors might be caused by overloaded last.fm servers.
-    // But well, I might actually be over-thinking this a bit :-) ...
-    ['user.getinfo', {
-        ok: 3600,
-        failedWithFallback: 1800,
-        failedWithoutFallback: 60
-    }],
-    ['user.getrecenttracks', {
-        ok: 30,
-        failedWithFallback: 120,
-        failedWithoutFallback: 60
-    }]
-]);
 function waitUntil(method: string) {
     const now = Date.now();
     const data = waitNext.get(method);

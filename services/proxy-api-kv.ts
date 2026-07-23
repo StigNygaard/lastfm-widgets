@@ -34,8 +34,8 @@ const waitNext = new Map([
     // Avoid too fast retries when errors. Errors might be caused by overloaded last.fm servers.
     // But well, I might actually be over-thinking this a bit :-) ...
     ['user.getinfo', {
-        ok: 1800,
-        failedWithFallback: 900,
+        ok: 3600,
+        failedWithFallback: 1800,
         failedWithoutFallback: 60
     }],
     ['user.getrecenttracks', {
@@ -45,7 +45,7 @@ const waitNext = new Map([
     }]
 ]);
 
-export async function proxyApi(
+export async function serve(
     searchParams: URLSearchParams,
     reqHeaders: Headers,
     info: Deno.ServeHandlerInfo

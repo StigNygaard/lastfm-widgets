@@ -12,28 +12,31 @@ Two implementations exist, functionally identical: A Deno KV based version and a
 
 ---
 
-## Option 1: Deno KV (Deno Deploy compatible)
+## Option 1: Deno KV or in-memory (both Deno Deploy compatible)
 
-Implementation is in `services/proxy-api.ts`. Cache state held in Deno KV Key-Value database. Deno KV is available on a Deno Deploy free-tier.
+The default proxy-cache when deploying this project is Deno KV. Implementation is in `proxy-api-kv.ts` and the cache state is held in a key-value database.
+Alternatively, you can choose to use in-memory cache, which is implemented in `proxy-api-mem.ts`. KV is generally to be preferred when possible, but there's a monthly write-limit for KV-values if you are hosting on, for example, Deno Deploy. And if the limit becomes a problem, the in-memory implementation is good to have as a fallback option. 
 
-KV is still considered 'in development' technology. But it has existed for a while and seems reliable - at least for non-critical use.
+Also, KV is still considered an 'in development' technology. But it has existed for a while and seems reliable – at least for non-critical use.
 
 ### Setup using Deno Deploy
 
 1. Fork/clone this repository and push it to your own GitHub account.
 2. Create a new project on [Deno Deploy](https://deno.com/deploy) linked to your repo.
 3. Set the entrypoint to `main.ts`.
-4. Go to "Databases" configuration for the created Deno Deploy project and attach a Deno KV database to the project.
+4. *Only needed for KV:* Go to "Databases" configuration for the created Deno Deploy project and attach a Deno KV database to the project.
 5. Set the following environment variables in the Deno Deploy project settings:
 
-| Variable | Required | Description |
-| --- | --- | --- |
-| `audioscrobbler_apikey` | Yes | Your Last.fm API key. Get one [here](https://www.last.fm/api/account/create). |
-| `audioscrobbler_user` | No | Default username to fetch scrobbles for. Defaults to `rockland` if unset. |
-| `audioscrobbler_trackslimit` | No | Number of recent tracks to fetch per request. |
-| `audioscrobbler_cors_allow_hostnames` | No | Semicolon-separated list of allowed origins (e.g. `example.com;localhost`). If unset, no CORS headers are injected. |
+| Variable | Required | Description                                                                                                                                                                 |
+| --- | --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `audioscrobbler_apikey` | Yes | Your Last.fm API key. Get one [here](https://www.last.fm/api/account/create).                                                                                               |
+| `audioscrobbler_user` | No | Username to fetch scrobbles for. Defaults to `rockland` if unset.                                                                                                           |
+| `audioscrobbler_trackslimit` | No | Number of recent tracks to fetch per request.                                                                                                                               |
+| `audioscrobbler_cors_allow_hostnames` | No | Semicolon-separated list of allowed origins (e.g. `example.com;localhost`). If unset, no CORS headers are injected.                                                         |
+| `proxy_use` | No | If set to `mem`, the *in-memory* proxy-cache is used. Otherwise *Deno KV* proxy-cache is used (default and generally recommended).                                          |
+| `webpage_show` | No | If set to `demo`, the demo-page is shown on the deployed site. Otherwise a "promotion page" pointing to [the official demo site/page](https://lastfm-widgets.stignygaard.deno.net/) is shown (default and recommended). |
 
-If you want the demo-page to run on your site too, you also need to set environment variable webpage_show=demo. However, to avoid confusion about where the official demo-page for the widget is located, I appreciate if you only do that temporary for test and verification.
+To avoid confusion about where the official demo-page for the widget is located, I appreciate if you only enable that temporary on your deployments for test and verification.
 
 ### Local development
 
@@ -53,7 +56,7 @@ deno task dev
 
 ---
 
-## Option 2: Cloudflare Workers
+## Option 2: Cloudflare Workers (Node.js)
 
 Port located in `cf-worker/index.ts`. This version uses the native **Cloudflare Cache API**. This makes the fallback cache behavior consistent across Cloudflare's edge network.
 
@@ -110,6 +113,8 @@ To serve the proxy from your own domain instead of `*.workers.dev`, add a route 
   - `{error: 16}` — not ready; upstream fetch failed and no cached response exists yet to fall back on.
 - **Hibernate mode** — triggered by Last.fm error `26` (suspended API key) or `29` (rate limit exceeded). While active, the proxy stops issuing upstream requests and serves cached data only, until the cooldown period elapses.
 
-## Choosing between the two
+## Choosing which proxy to use
 
-Both expose the same request/response contract, so the frontend widget works identically regardless of which backend is used. If you ain't already using either backend-technology, Deno KV solution on Deno Deploy is probably an easy and free way to get a backend-proxy for your widget. Deno Deploy free-tier has monthly storage/write limitations for Deno KV. If that could be an issue depends on factors like activity (usage) of widget, how often your scrobble new tracks, widget update-interval and widget playlist length. For most, I think a free-tier Deno Deploy is plenty if only used for this widget. But I'm also still collecting practical experience on this myself, as the KV-based proxy-implementation is still very new.
+All options expose the same request/response contract, so the frontend widget works identically regardless of which backend is used. If you ain't already using either platform, Deno KV solution on Deno Deploy is probably an easy and free way to get a backend-proxy for your widget. Deno Deploy has monthly storage/write limitations for Deno KV. If that could be an issue depends on factors like activity (usage) of widget, how often your scrobble new tracks, widget update-interval and widget playlist length. For most, I think a free-tier Deno Deploy is plenty if only used for this widget. But I'm also still collecting practical experience on this myself, as the KV-based proxy-implementation is still very new. 
+
+The in-memory cache can be short-lived (Deno Deploy is said to keep in-active applications alive between 5 seconds to 10 minutes depending on general system load). Also, In-memory cache is per-node, not shared globally like it is for Deno KV and Cloudflare Workers. The in-memory option is probably better than nothing, but Deno KV or Cloudflare Workers are better choices when possible to use.    
