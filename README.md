@@ -60,7 +60,7 @@ supported by a custom backend "proxy-api". The latter is encouraged when possibl
 implement throttling of requests to Last.fm's API.
 
 This repository not only holds the widget itself, but also the demo-site (https://lastfm-widgets.stignygaard.deno.net/)
-and _three_ different backend proxy-api implementations. There are two proxy-APIs implemented in [Deno]([Deno](https://deno.com/)). The most recommended one using [Deno KV](https://docs.deno.com/deploy/kv/).
+and _three_ different backend proxy-api implementations. There are two proxy-APIs implemented in [Deno]([Deno](https://deno.com/)), with the most recommended one using [Deno KV](https://docs.deno.com/deploy/kv/).
 But there's also a third alternative Cloudflare Workers (Node.js) proxy-api implementation made by [burnblazter](https://github.com/burnblazter). 
 Also, this repository is set up as a [Deno Deploy](https://deno.com/deploy) project. Any updates to the main-branch
 (widget, demo-page and the Deno proxy-apis) are immediately deployed to the Deno Deploy demo-site.
@@ -73,7 +73,7 @@ supported. The backend code (Deno proxy-apis) is my first simple experiments/exp
 
 The widget frontend code. _All_ that is needed for widget to work in _Demo_ or _Basic_ mode. See
 [Releases](https://github.com/StigNygaard/lastfm-widgets/releases) to get the latest "release-version" of this folder's
-content. And see https://lastfm-widgets.stignygaard.deno.net/ for more about widget _modes_
+content. And see the demo page at https://lastfm-widgets.stignygaard.deno.net/ for more about widget _modes_
 and how to use and customize the widget.
 
 #### /website/demo/ folder
@@ -82,8 +82,8 @@ Frontend-code for the demo page seen on https://lastfm-widgets.stignygaard.deno.
 
 #### /website/promo/ folder
 
-Frontend-code for a simple promo page pointing to https://lastfm-widgets.stignygaard.deno.net/.
-This is the default webpage shown when project is deployed. However, you can configure a project to
+Frontend-code for a simple promo page pointing to the demo page at https://lastfm-widgets.stignygaard.deno.net/.
+This is the default webpage shown when the project is deployed. However, you can configure it to
 show the demo page instead.  
 
 #### /services/ folder

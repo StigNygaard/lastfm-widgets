@@ -8,7 +8,7 @@ Running the Last.fm widget purely client-side means exposing your Last.fm API ke
 2. **CORS handling** — Last.fm's API does not return permissive CORS headers by default. The proxy injects `Access-Control-Allow-Origin` based on a configurable hostname whitelist.
 3. **Caching and throttling** — Last.fm's API has intermittent downtime and aggressive rate limiting. The proxy caches the last successful response and serves it (stale-while-revalidate) when upstream requests fail. A hibernate mode also pauses outgoing requests entirely after a rate-limit response, to avoid getting the API key banned.
 
-Two implementations exist, functionally identical: A Deno KV based version and a Cloudflare Workers port.
+Three implementations exist, functionally identical: Two Deno versions and a Cloudflare Workers port.
 
 ---
 
