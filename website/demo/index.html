@@ -59,9 +59,9 @@
 
         <code>&lt;script src="lastfm.js" type="module"&gt;&lt;/script&gt;</code>
 
-        <p><em>Don't</em> include the stylesheet <code>tracks.css</code> yourself. Just make sure to place the file
-          <em>at same location</em> as the <code>lastfm.js</code> script file. The stylesheet will automatically be
-          read when a widget is created.</p>
+        <p><em>Don't</em> include the stylesheet <code>tracks.css</code> yourself. Just make sure to place the
+          stylesheet file <em>at the same location</em> as the <code>lastfm.js</code> script file. The stylesheet
+          will automatically be read from there when a widget is created.</p>
 
         <p>The script defines the custom html-element <code>&lt;lastfm-tracks/&gt;</code>. Now simply insert such an element
           on the webpage where you want a <em>Tracks</em> widget to be located.</p>
@@ -100,10 +100,10 @@
             <p>
               <code>&lt;lastfm-tracks backend="/proxy-api" interval="35"&gt;<wbr />&lt;/lastfm-tracks&gt;</code>
             </p>
-            <p>Add the <code>backend</code> attribute pointing to a custom "proxy API" to enable <em>Backend-supported</em>
-              mode. Depending on your proxy-api, you could (or should?) also add other attributes like <code>user</code>
-              and <code>apikey</code>. But usually it will be smarter - and simpler - to have fixed values for these
-              defined in the backend.</p>
+            <p>Add the <code>backend</code> attribute pointing to a custom "proxy API" to enable <em>Backend-supported</em> mode.
+              <a href="https://github.com/StigNygaard/lastfm-widgets/blob/main/services/README.md" title="How to set up a proxy API for the Tracks widget">In such a setup</a>,
+              you will usually define settings like API-key and username in the backend, rather than having them
+              defined by attributes on the widget.</p>
           </li>
         </ol>
 
@@ -122,28 +122,29 @@
         <p>Potential attributes to set on the <code>&lt;lastfm-tracks/&gt;</code> element:</p>
         <ul>
           <li>
-            <em>user</em> - last.fm username.
+            <em>user</em> - The Last.fm username to fetch scrobbles for.
           </li>
           <li>
-            <em>apikey</em> - last.fm api-key.
+            <em>apikey</em> - Your Last.fm API key (Required for widget in "Basic mode").
           </li>
           <li>
-            <em>backend</em> - address of a backend proxy-api.
+            <em>backend</em> - The address of a backend proxy-api. If you have set up a backend proxy,
+            provide its URL here.
           </li>
           <li>
-            <em>interval</em> - update interval in seconds for the tracks-list. On Last.fm profile pages, an update
-            interval of 30 seconds is used. So you should probably never go lower than that. Default value is 60 in
-            <em>Basic</em> and <em>Backend-supported</em> mode, and the widget doesn't allow lower than 30 in Basic
-            mode. The value is ignored in <em>Demo</em> mode.
+            <em>interval</em> - Refresh interval in seconds. On Last.fm profile pages, an update interval of 30 seconds
+            is used. So you should probably never go lower than that. The default value is 60 in <em>Basic</em> and
+            <em>Backend-supported</em> mode, and the widget doesn't allow lower than 30 in Basic mode. The value is
+            ignored in <em>Demo</em> mode.
           </li>
           <li>
-            <em>tracks</em> - max number of tracks to show. Widget default is 50 (but overridden to 100 in the proxy-api
-            used in this demo when in <em>Backend-supported</em> mode).
+            <em>tracks</em> - The maximum number of tracks to display. Widget default is 50, max. allowed value is 200.
           </li>
           <li>
-            <em>updates</em> - max. number of times to update tracks-list (0&nbsp;=&nbsp;unlimited,
-            1&nbsp;=&nbsp;initial&nbsp;only, or higher values for specific number of times). Default value is 0 in
-            <em>Basic</em> and <em>Backend-supported</em> mode. The attribute is ignored in <em>Demo</em> mode.
+            <em>updates</em> - Number of times the widget is allowed to refresh the tracks-list.
+            0&nbsp;=&nbsp;<em>unlimited</em> and 1&nbsp;=&nbsp;<em>initial&nbsp;only</em>. Set a higher value to specify a maximum number
+            of times the widget refreshes. The default value is 0 in <em>Basic</em> and <em>Backend-supported</em>
+            mode. The attribute is ignored in <em>Demo</em> mode.
           </li>
           <li>
             <em>ignorebots</em> - In <em>Backend-supported</em> mode this attribute enables "bot-filtering" in the

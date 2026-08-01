@@ -12,32 +12,12 @@ myself, I have missed them. So I brought them (optionally) back in this widget.
 
 As name of this repository hints, I might have more than one Last.fm widget planned for this space 🙂
 
-## How to Use / Installation
+## How to Use
 
 Using the widget in any HTML file is straightforward because it's a standard web component. You only need to import the script and place the custom HTML tag where you want it to appear.
+You can configure the widget by adding attributes to the custom HTML tag. Get the details and play with the customization options on the interactive [demo site](https://lastfm-widgets.stignygaard.deno.net/).
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My Last.fm Scrobbles</title>
-    <!-- 1. Import the widget's js as a module -->
-    <script type="module" src="./widgets/lastfm.js"></script>
-</head>
-<body>
-
-    <!-- 2. Use the custom web component tag -->
-    <lastfm-tracks 
-        user="rockland" 
-        tracks="50">
-    </lastfm-tracks>
-
-</body>
-</html>
-```
-Notice, you should _not_ include the stylesheet (`tracks.css`) yourself. The script (`lastfm.js`) will automatically include it.
-Just make sure to place it at the same location as the script file, as that is where it will look for the stylesheet.
+Optionally, you can also [add a "proxy-API" to your setup](https://github.com/StigNygaard/lastfm-widgets/blob/main/services/README.md).
 
 ### Customization Attributes
 
