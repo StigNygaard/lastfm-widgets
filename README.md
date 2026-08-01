@@ -19,19 +19,6 @@ You can configure the widget by adding attributes to the custom HTML tag. Get th
 
 Optionally, you can also [add a "proxy-API" to your setup](https://github.com/StigNygaard/lastfm-widgets/blob/main/services/README.md).
 
-### Customization Attributes
-
-You can easily customize the widget by adding attributes to the `<lastfm-tracks>` tag:
-
-- `user`: The Last.fm username to fetch scrobbles for.
-- `tracks`: The number of tracks to display (default 50, max 200).
-- `apikey`: Your Last.fm API key. (Only required if you are running in Basic mode directly from the browser without a proxy. If omitted, the widget runs in Demo mode, fetching once with a built-in demo key).
-- `backend`: If you've set up a backend proxy (see the `/services/` folder), provide its URL here instead of using the `apikey` attribute. This is highly recommended for production!
-- `interval`: Refresh interval in seconds (Basic mode min. 30, Backend mode min. 10).
-- `updates`: Number of updates before stopping.
-
-For a full list of attributes and an interactive customization playground, check out the [demo site](https://lastfm-widgets.stignygaard.deno.net/).
-
 ## The technical...
 
 The _Tracks_ widget itself is made as a _webcomponent_ using pure standard web client-side technologies (no frameworks
