@@ -15,9 +15,9 @@ As name of this repository hints, I might have more than one Last.fm widget plan
 ## How to Use
 
 Using the widget in any HTML file is straightforward because it's a standard web component. You only need to import the script and place the custom HTML tag where you want it to appear.
-You can configure the widget by adding attributes to the custom HTML tag. Get the details and play with the customization options on the interactive [demo site](https://lastfm-widgets.stignygaard.deno.net/).
+You can configure the widget by adding attributes to the custom HTML tag. Get the details and play with the customization options on the [interactive demo site](https://lastfm-widgets.stignygaard.deno.net/ "The demo-page is an interactive playground for widget customization").
 
-Optionally, you can also [add a "proxy-API" to your setup](https://github.com/StigNygaard/lastfm-widgets/blob/main/services/README.md).
+Optionally, you can also [add a "proxy-API" to your setup](https://github.com/StigNygaard/lastfm-widgets/blob/main/services/README.md "How to set up a proxy-API for the Tracks widget").
 
 ## The technical...
 
@@ -27,8 +27,9 @@ supported by a custom backend "proxy-api". The latter is encouraged when possibl
 implement throttling of requests to Last.fm's API.
 
 This repository not only holds the widget itself, but also the demo-site (https://lastfm-widgets.stignygaard.deno.net/)
-and _three_ different backend proxy-api implementations. There are two proxy-APIs implemented in [Deno]([Deno](https://deno.com/)), with the most recommended one using [Deno KV](https://docs.deno.com/deploy/kv/).
-But there's also a third alternative Cloudflare Workers (Node.js) proxy-api implementation made by [burnblazter](https://github.com/burnblazter). 
+and _three_ different backend proxy-api implementations. There are two proxy-APIs implemented in [Deno]([Deno](https://deno.com/)),
+with the most recommended one using [Deno KV](https://docs.deno.com/deploy/kv/). But there's also a third alternative
+Cloudflare Workers (Node.js) proxy-api implementation made by [burnblazter](https://github.com/burnblazter). 
 Also, this repository is set up as a [Deno Deploy](https://deno.com/deploy) project. Any updates to the main-branch
 (widget, demo-page and the Deno proxy-apis) are immediately deployed to the Deno Deploy demo-site.
 
@@ -61,13 +62,13 @@ show the demo page instead.
 
 The Deno KV based proxy (`proxy-api-kv.ts`) is the normally used proxy-api on the demo page when widget is in _Backend-supported_ mode – and it is also used by widget on [rockland.dk](https://www.rockland.dk/). But no matter if KV or in-memory version is chosen, the proxy is served on the `/proxy-api` address of the deployed site.
 
-For full documentation on setting up the backend proxies, see [services/README.md](services/README.md).
+For full documentation on setting up the backend proxies, see [services/README.md](services/README.md "How to set up a proxy-API for the Tracks widget").
 
 #### /cf-worker/ folder
 
 An alternative Cloudflare Worker backend proxy-api. Kindly contributed to this project by [burnblazter](https://github.com/burnblazter).
 
-For full documentation on setting up the backend proxies, see [services/README.md](services/README.md).
+For full documentation on setting up the backend proxies, see [services/README.md](services/README.md "How to set up a proxy-API for the Tracks widget").
 
 #### /main.ts file
 
