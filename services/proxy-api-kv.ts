@@ -14,7 +14,7 @@ import * as kvBlobTool from "@kitsonk/kv-toolbox/blob";
 /*      https://developer.mozilla.org/en-US/docs/Web/API/Cache                */
 /*   b) Deno Deploy HTTP Edge Cache:                                          */
 /*      https://docs.deno.com/deploy/reference/caching/                       */
-/*   (I'm still learning and experimenting here 😊)                           */
+/*   (I'm still learning and experimenting here)                              */
 /******************************************************************************/
 
 // Get the fixed values from .env file or environment variables
@@ -30,9 +30,9 @@ const expireKeyValue = 50 * msOneDay; // Don't use KV space forever if this prox
  * Map containing waiting times for each last.fm method.
  */
 const waitNext = new Map([
-    // Seconds until next call to last.fm method is allowed.
+    // Seconds until the next call to a last.fm method is allowed.
     // Avoid too fast retries when errors. Errors might be caused by overloaded last.fm servers.
-    // But well, I might actually be over-thinking this a bit :-) ...
+    // But well, I might actually be overthinking this a bit :-) ...
     ['user.getinfo', {
         ok: 3600,
         failedWithFallback: 1800,

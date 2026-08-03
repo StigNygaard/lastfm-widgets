@@ -17,7 +17,8 @@ There are three implementations in this repository, functionally identical: Two 
 ## Option 1: Deno KV or in-memory (both Deno Deploy compatible)
 
 The default proxy-cache implementation used when deploying this project is Deno KV. Implementation is in `proxy-api-kv.ts` and the cache state is held in a key-value database.
-Alternatively, you can choose to use in-memory cache, which is implemented in `proxy-api-mem.ts`. KV is generally to be preferred when possible, but there are monthly read and write limits for KV-values if you are hosting on, for example, Deno Deploy. And if the limits become a problem, the in-memory implementation is good to have as a fallback option. 
+Alternatively, you can choose to use in-memory cache, which is implemented in `proxy-api-mem.ts`. KV is generally to be preferred when possible, but there are monthly read and write limits for KV-values if you are hosting on, for example, Deno Deploy. And if the limits become a problem, the in-memory implementation is good to have as a fallback option.
+Notice, it might be [a good idea](https://github.com/StigNygaard/lastfm-widgets/issues/4) to set the _ignorebots_ attribute on current versions of the widget (v1.11.0 or earlier).
 
 Also, KV is still considered an 'in development' technology. But it has existed for a while and seems reliable – at least for non-critical use.
 
