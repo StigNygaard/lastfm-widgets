@@ -13,7 +13,7 @@
     },
     "imports": {
         "@kitsonk/kv-toolbox": "jsr:@kitsonk/kv-toolbox@^0.31.0",
-        "@std/dotenv": "jsr:@std/dotenv@^0.225.7",
-        "@std/http": "jsr:@std/http@^1.1.2"
+        "@std/dotenv": "jsr:@std/dotenv@^0.225.8",
+        "@std/http": "jsr:@std/http@^1.1.3"
     }
 }
