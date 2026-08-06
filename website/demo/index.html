@@ -20,6 +20,7 @@
     <link rel="me" href="https://www.rockland.dk/" />
     <link rel="me" href="https://mastodon.world/@stignygaard" />
     <link rel="me" href="https://bsky.app/profile/stignygaard.bsky.social" />
+    <link rel="me" href="https://www.last.fm/user/rockland" />
     <meta name="google-site-verification" content="GJg_3Y9qVf9BctWMGxy_zDuDUyExyDQpl0YjCi7mtds" />
 
     <meta property="og:title" content="Tracks last.fm widget demo site" />
@@ -107,15 +108,15 @@
           </li>
         </ol>
 
-        <p>Some advanced "bots" crawling the internet supports Javascript, and thus potentially trigger calls to the
+        <p>Some advanced "bots" crawling the internet support Javascript, and thus potentially trigger calls to the
           audioscrobbler API when loading the <em>Tracks</em> widget. To avoid overload of the API, <em>Tracks</em>
-          will in <em>Demo</em> and <em>Basic</em> modes ignore clients where useragent includes text like "bot",
-          "spider", "crawl", "archive", "harvest", "radar" and "headless". This so far seems effective preventing such
-          "bots" triggering calls the audioscrobbler API. <em>But note</em>, in <em>Backend-supported</em> mode this
-          feature is <em>disabled</em> by default, making it the responsibility of the "proxy-API" to avoid forwarding
-          every call directly to Last.fm's audioscrobbler API. You can however enable filtering in widget when using
-          <em>Backend-supported</em> mode too, by adding the attribute <code>ignorebots</code> to the
-          <code>&lt;lastfm-tracks/&gt;</code> html-element.</p>
+          will by default ignore clients where useragent includes text like "bot", "spider", "crawl", "archive",
+          "harvest", "radar" and "headless". This so far seems effective preventing such "bots" triggering calls
+          the audioscrobbler API.
+          <em>Notice</em>: In widget version 1.11 and older bots are by default only ignored in <em>Demo</em> and
+          <em>Basic</em> modes, but from version 1.12 bots are by default also ignored in <em>Backend-supported</em>
+          mode. If desired, you can disable the filtering in <em>Backend-supported</em> mode by adding attribute
+          <code>allowbots</code> to the <code>&lt;lastfm-tracks/&gt;</code> html-element.</p>
 
         <h2>Attributes</h2>
 
@@ -125,7 +126,7 @@
             <em>user</em> - The Last.fm username to fetch scrobbles for.
           </li>
           <li>
-            <em>apikey</em> - Your Last.fm API key (Required for widget in "Basic mode").
+            <em>apikey</em> - Your Last.fm API key.
           </li>
           <li>
             <em>backend</em> - The address of a backend proxy-api. If you have set up a backend proxy,
@@ -147,11 +148,18 @@
             mode. The attribute is ignored in <em>Demo</em> mode.
           </li>
           <li>
-            <em>ignorebots</em> - In <em>Backend-supported</em> mode this attribute enables "bot-filtering" in the
-            widget itself, to prevent calls to the "proxy-api" when useragent looks like a "bot". No value for the
-            attribute is needed, just the presence of the attribute.
-            In <em>Basic</em> and <em>Demo</em> mode, "bots-filtering" in widget is always enabled, so this attribute
-            is ignored/redundant in those modes.
+            <del><em>ignorebots</em> - In <em>Backend-supported</em> mode this attribute enables "bot-filtering" in
+            the widget itself, to prevent calls to the "proxy-api" when useragent looks like a "bot". No value for
+            the attribute is needed, just the presence of the attribute.
+            In <em>Basic</em> and <em>Demo</em> mode, "bots-filtering" is always enabled, so this attribute is
+            <span class="nobr">redundant/ignored</span> in those modes.</del> This attribute has no effect in
+            widget-version 1.12 or newer, because bots are now ignored by default in <em>all</em> widget modes.
+          </li>
+          <li>
+            <em>allowbots</em> - In <em>Backend-supported</em> mode this attribute <em>disables</em> "bot-filtering"
+            in the widget itself. No value for the attribute is needed, just the presence of the attribute.
+            In <em>Basic</em> and <em>Demo</em> mode, "bots-filtering" cannot be disabled, so this attribute
+            is ignored in those modes.
           </li>
           <li>
             css classes:

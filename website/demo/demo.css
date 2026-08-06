@@ -55,6 +55,10 @@ p, li {
   text-wrap: pretty;
 }
 
+.nobr {
+  white-space: nowrap;
+}
+
 a {
   color: rgb(34 34 34);
 }

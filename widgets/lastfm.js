@@ -3,11 +3,11 @@
  *    Except when in "demo"-mode, widget is able to show a continuously updated tracklist.
  *
  *    Stig Nygaard, 2024.
- *    https://www.rockland.dk/
- *    https://www.last.fm/user/rockland
  *    https://github.com/StigNygaard/lastfm-widgets
  *    https://lastfm-widgets.stignygaard.deno.net/
- */
+ *    https://www.rockland.dk/
+ *    https://www.last.fm/user/rockland
+ **/
 
 const scriptURI = import.meta.url;
 const LOG = false;
@@ -217,7 +217,7 @@ class Tracks extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['user', 'apikey', 'backend', 'tracks', 'updates', 'interval']; // Plus attrib. 'ignorebots' currently checked directly before API-calls
+        return ['user', 'apikey', 'backend', 'tracks', 'updates', 'interval']; // Plus attrib. 'allowbots' currently checked directly before API-calls
     }
 
     // Fires when an observed attribute was added, removed, or updated
@@ -440,7 +440,7 @@ class Tracks extends HTMLElement {
                 url.searchParams.append('user', it.#user);
             }
 
-            if ((it.#widgetMode === 'backend' && !it.hasAttribute('ignorebots')) || it.#okUserAgent) {
+            if (it.#okUserAgent || (it.#widgetMode === 'backend' && it.hasAttribute('allowbots'))) {
                 LOG && console.log(`Getting Profile with: ${url.href} ...`);
                 if (fetcher.isRunning(url.href)) {
                     console.warn(`Skipping Profile with ${url.href} because already running...`);
@@ -540,7 +540,7 @@ class Tracks extends HTMLElement {
             if (it.#user?.length) url.searchParams.append('user', it.#user);
             url.searchParams.append('limit', it.#tracks);
 
-            if ((it.#widgetMode === 'backend' && !it.hasAttribute('ignorebots')) || it.#okUserAgent) {
+            if (it.#okUserAgent || (it.#widgetMode === 'backend' && it.hasAttribute('allowbots'))) {
                 LOG && console.log(`[${updateCount + 1}] Getting Scrobbles with: ${url.href} ...`);
 
                 if (fetcher.isRunning(url.href)) {

@@ -18,7 +18,6 @@ There are three implementations in this repository, functionally identical: Two 
 
 The default proxy-cache implementation used when deploying this project is Deno KV. Implementation is in `proxy-api-kv.ts` and the cache state is held in a key-value database.
 Alternatively, you can choose to use in-memory cache, which is implemented in `proxy-api-mem.ts`. KV is generally to be preferred when possible, but there are monthly read and write limits for KV-values if you are hosting on, for example, Deno Deploy. And if the limits become a problem, the in-memory implementation is good to have as a fallback option.
-Notice, it might be [a good idea](https://github.com/StigNygaard/lastfm-widgets/issues/4) to set the _ignorebots_ attribute on current versions of the widget (v1.11.0 or earlier).
 
 Also, KV is still considered an 'in development' technology. But it has existed for a while and seems reliable – at least for non-critical use.
 
@@ -40,6 +39,8 @@ Also, KV is still considered an 'in development' technology. But it has existed 
 | `webpage_show` | No | If set to `demo`, the demo-page is shown on the deployed site. Otherwise a "promotion page" pointing to [the *official* demo site/page](https://lastfm-widgets.stignygaard.deno.net/) is shown (default and recommended). |
 
 To avoid confusion about where the official demo-page for the widget is located, I appreciate if you for public deployments, only enable demo-page *temporarily* for test and verification.
+
+Notice, it is recommended to use [v1.12 or newer](https://github.com/StigNygaard/lastfm-widgets/releases "Get latest version of the Tracks widget") of the widget. If you are using version 1.11 or older, it is [a good idea](https://github.com/StigNygaard/lastfm-widgets/issues/4) to set the _ignorebots_ attribute on the widget.
 
 ### Local development
 
