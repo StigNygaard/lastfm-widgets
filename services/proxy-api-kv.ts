@@ -155,11 +155,11 @@ export async function serve(
     }
 
 
-
-    async function success(method: string, _status: string | number, _statusText: string, jsonObj: object, headers: Headers): Promise<{
+    async function success(method: string, _status: string | number, _statusText: string, jsonObj: Record<string, unknown>, headers: Headers): Promise<{
         body: string,
         options: object
     }> {
+        if (method==='user.getrecenttracks') reduceRecenttracksData(jsonObj); // Slimming recenttracks data to reduce cache size used
         const json = JSON.stringify(jsonObj);
         const resp = await kvBlobTool.get(cache, [`${method}-OkResponse`]);
         const cachedText = resp.value ? textDecoder.decode(resp.value) : '';
@@ -170,10 +170,11 @@ export async function serve(
                 console.log(` +++ ${nowStamp()} - UPDATE CACHE for ${method}-OkResponse: \n`, json);
             } else {
                 console.log(` +++ ${nowStamp()} - UPDATE CACHE for ${method}-OkResponse (length=${json.length}).`);
+                // console.log(` +++ ${nowStamp()} - UPDATE CACHE for ${method}-OkResponse: \n`, json);
             }
             await kvBlobTool.set(cache, [`${method}-OkResponse`], kvBlobTool.toBlob(json), {expireIn: expireKeyValue});
         } else {
-            // console.log(`SKIP updating cached json - there's no change in data for '${method}'`);
+            // console.log(` *** SKIP updating cached json - there's no change in data for '${method}'`);
         }
         await cache.set([`${method}-OkTime`], Date.now().toString(), {expireIn: expireKeyValue});
         await cache.set([`${method}-NextTime`], String(waitUntil(method).ok), {expireIn: expireKeyValue});
@@ -248,6 +249,28 @@ export async function serve(
         };
     }
 
+}
+
+function reduceRecenttracksData(obj: Record<string, unknown>) {
+    function keep(obj?: Record<string, unknown>, ...keepProps: string[]){
+        if (obj) Object.keys(obj).forEach(key => {if (!keepProps.includes(key)) delete obj[key];})
+    }
+    // @ts-expect-error: I hate Typescript
+    const tracks = obj.recenttracks?.track;
+    if (tracks) {
+        for (const track of tracks) {
+            keep(track.artist, 'url', 'name');
+            if (track.image) { // Keep only "medium" data in track.image[] array
+                for (let i = track.image.length - 1; i >= 0; i--) {
+                    if (track.image[i].size != 'medium') {
+                        track.image.splice(i, 1);
+                    }
+                }
+            }
+            keep(track.album, '#text');
+            keep(track, 'artist', 'date', 'name', 'image', 'album', 'url', '@attr', 'loved');
+        }
+    }
 }
 
 function remoteAddr(info: Deno.ServeHandlerInfo): object {
