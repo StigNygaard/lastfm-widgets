@@ -159,10 +159,19 @@ export async function serve(
         body: string,
         options: object
     }> {
-        if (method==='user.getrecenttracks') reduceRecenttracksData(jsonObj); // Slimming recenttracks data to reduce cache size used
+        if (method==='user.getrecenttracks')
+            reduceRecenttracksData(jsonObj) // Slimming user.getrecenttracks data to reduce cache size used
+        else if (method==='user.getinfo')
+            reduceInfoData(jsonObj); // Slimming user.getinfo data to reduce cache size used
         const json = JSON.stringify(jsonObj);
-        const resp = await kvBlobTool.get(cache, [`${method}-OkResponse`]);
-        const cachedText = resp.value ? textDecoder.decode(resp.value) : '';
+        let cachedText = '';
+        if (method==='user.getrecenttracks') { // BIG recent tracks data was stored over multiple "KV-records" using kv-toolbox/blob
+            const cached = await kvBlobTool.get(cache, [`${method}-OkResponse`]);
+            cachedText = cached.value ? textDecoder.decode(cached.value) : '';
+        } else { // user profile data
+            const cached = await cache.get<string>([`${method}-OkResponse`]);
+            cachedText = cached.value ?? '';
+        }
         // Update cache only if the new value differs from currently cached value (avoid unnecessary writes to KV)
         if (json.length && json !== cachedText) {
             console.log(` --- ${nowStamp()} - Cached value for ${method}-OkResponse has length=${cachedText.length}.`);
@@ -172,7 +181,11 @@ export async function serve(
                 console.log(` +++ ${nowStamp()} - UPDATE CACHE for ${method}-OkResponse (length=${json.length}).`);
                 // console.log(` +++ ${nowStamp()} - UPDATE CACHE for ${method}-OkResponse: \n`, json);
             }
-            await kvBlobTool.set(cache, [`${method}-OkResponse`], kvBlobTool.toBlob(json), {expireIn: expireKeyValue});
+            if (method==='user.getrecenttracks') { // BIG recent tracks data. Use kv-toolbox/blob to spread over multiple "KV-records"
+                await kvBlobTool.set(cache, [`${method}-OkResponse`], kvBlobTool.toBlob(json), {expireIn: expireKeyValue});
+            } else { // user profile data
+                await cache.set([`${method}-OkResponse`], json, {expireIn: expireKeyValue});
+            }
         } else {
             // console.log(` *** SKIP updating cached json - there's no change in data for '${method}'`);
         }
@@ -251,18 +264,39 @@ export async function serve(
 
 }
 
-function reduceRecenttracksData(obj: Record<string, unknown>) {
-    function keep(obj?: Record<string, unknown>, ...keepProps: string[]){
-        if (obj) Object.keys(obj).forEach(key => {if (!keepProps.includes(key)) delete obj[key];})
+function keep(obj?: Record<string, unknown>, ...keepProps: string[]){
+    if (obj) Object.keys(obj).forEach(key => {
+        if (!keepProps.includes(key)) delete obj[key]
+    });
+}
+
+function reduceInfoData(obj: Record<string, unknown>) {
+    const user = obj.user;
+    if (user) {
+        // @ts-expect-error: I hate Typescript
+        keep(user, 'playcount', 'url', 'name', 'track_count', 'realname', 'image', 'registered', 'type');
+        // TODO: Slimming profile/avatar image array requires widget version >= 1.13. Enable later?:
+        // // @ts-expect-error: I hate Typescript
+        // const image = user.image;
+        // if (image) { // Keep only "large" and "extralarge" data in user.image[] array
+        //     for (let i = image.length - 1; i >= 0; i--) {
+        //         if (!['large', 'extralarge'].includes(image[i].size)) {
+        //             image.splice(i, 1);
+        //         }
+        //     }
+        // }
     }
+}
+
+function reduceRecenttracksData(obj: Record<string, unknown>) {
     // @ts-expect-error: I hate Typescript
     const tracks = obj.recenttracks?.track;
     if (tracks) {
         for (const track of tracks) {
             keep(track.artist, 'url', 'name');
-            if (track.image) { // Keep only "medium" data in track.image[] array
+            if (track.image) { // Keep only "medium" and "large" data in track.image[] array
                 for (let i = track.image.length - 1; i >= 0; i--) {
-                    if (track.image[i].size != 'medium') {
+                    if (!['medium', 'large'].includes(track.image[i].size)) {
                         track.image.splice(i, 1);
                     }
                 }
