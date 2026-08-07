@@ -473,7 +473,7 @@ class Tracks extends HTMLElement {
             console.log(`A: Updating profile with: \n`, o); // TODO remove !!!
 
             if (o?.user?.name) {
-                const avatar = o.user.image[2]['#text']; // TODO: filter on size=large !?
+                const avatar = o.user.image?.find( (i) => i.size === 'large')['#text']; // 174px ('medium' 64px, 'extralarge' 300px)
                 const sinceDt = new Date(Number(o.user.registered.unixtime) * 1000);
                 const scrobbleHistory = `Scrobbling since ${dtfDateMonthLong.format(sinceDt)}`;
                 const title = `${o.user.realname} (${o?.user?.name}) on Last.fm`;
@@ -725,8 +725,7 @@ class Tracks extends HTMLElement {
             item.trackUrl = (t.url ?? '').trim();
             item.artistName = (t.artist?.name ?? '').trim();
             item.artistUrl = (t.artist?.url ?? '').trim();
-            item.albumCover = t.image?.find( (i) => i.size === 'medium')['#text']; // 64px
-            // item.albumCover = t.image?.find(i => i.size === 'large')['#text']; // 174px
+            item.albumCover = t.image?.find( (i) => i.size === 'medium')['#text']; // 64px ('large' 174px)
             item.albumTitle = (t.album['#text'] ?? '').trim();
             item.albumUrl = t.artist?.url + '/' + encodeURIComponent(item.albumTitle).replaceAll('%20', '+');
             if (items.length > 1) {
