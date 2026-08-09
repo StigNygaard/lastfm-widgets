@@ -22,6 +22,7 @@
     <link rel="me" href="https://bsky.app/profile/stignygaard.bsky.social" />
     <link rel="me" href="https://www.last.fm/user/rockland" />
     <meta name="google-site-verification" content="GJg_3Y9qVf9BctWMGxy_zDuDUyExyDQpl0YjCi7mtds" />
+    <link rel="canonical" href="https://lastfm-widgets.stignygaard.deno.net/" />
 
     <meta property="og:title" content="Tracks last.fm widget demo site" />
     <meta property="og:type" content="website" />
@@ -110,9 +111,9 @@
 
         <p>Some advanced "bots" crawling the internet support Javascript, and thus potentially trigger calls to the
           audioscrobbler API when loading the <em>Tracks</em> widget. To avoid overload of the API, <em>Tracks</em>
-          will by default ignore clients where useragent includes text like "bot", "spider", "crawl", "archive",
-          "harvest", "radar" and "headless". This so far seems effective preventing such "bots" triggering calls
-          the audioscrobbler API.
+          will by default ignore clients identifying itself with a useragent string including text like "bot",
+          "spider", "crawl", "archive", "harvest", "radar" and "headless". This so far seems effective preventing
+          such "bots" triggering calls the audioscrobbler API.
           <em>Notice</em>: In widget version 1.11 and older bots are by default only ignored in <em>Demo</em> and
           <em>Basic</em> modes, but from version 1.12 bots are by default also ignored in <em>Backend-supported</em>
           mode. If desired, you can disable the filtering in <em>Backend-supported</em> mode by adding attribute
