@@ -202,8 +202,14 @@ export async function serve(
     }
 
     async function fail(method: string, headers: Headers): Promise<{ body: string, options: object }> {
-        const resp = await kvBlobTool.get(cache, [`${method}-OkResponse`]);
-        const okResponse = resp.value ? textDecoder.decode(resp.value) : '';
+        let okResponse = '';
+        if (method==='user.getrecenttracks') {
+            const resp = await kvBlobTool.get(cache, [`${method}-OkResponse`]);
+            okResponse = resp.value ? textDecoder.decode(resp.value) : '';
+        } else {
+            const resp = await cache.get([`${method}-OkResponse`]);
+            okResponse = resp.value ?? '';
+        }
 
         console.log(` *** ${nowStamp()} - Failing - Fallback value from cache has length ${okResponse.length}...`);
 
@@ -218,8 +224,13 @@ export async function serve(
 
     async function fallback(method: string, headers: Headers, okResponse?: string): Promise<{ body: string, options: object }> {
         if(!okResponse) {
-            const resp = await kvBlobTool.get(cache, [`${method}-OkResponse`]);
-            okResponse = resp.value ? textDecoder.decode(resp.value) : '';
+            if (method==='user.getrecenttracks') {
+                const resp = await kvBlobTool.get(cache, [`${method}-OkResponse`]);
+                okResponse = resp.value ? textDecoder.decode(resp.value) : '';
+            } else {
+                const resp = await cache.get([`${method}-OkResponse`]);
+                okResponse = resp.value ?? '';
+            }
         }
         if (okResponse) {
             console.log(` *** ${nowStamp()} - Returning fallback ${method}-OkResponse value of length ${okResponse.length} from cache.`);
