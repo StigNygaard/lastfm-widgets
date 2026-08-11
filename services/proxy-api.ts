@@ -55,8 +55,8 @@ const keysWithBigValues = ['user.getrecenttracks-OkResponse']; // Keys with big 
 const Caching = (function(kvCache?: Deno.Kv, keysHandleBig: string[] = [], expireIn = expireCachedValues) {
     async function get(key: string) {
         let strVal = MemCache.get<string>(key);
-        if (strVal && !kvCache) { // KV cache mode, but...
-            console.log(` *** ${key} was successfully read from 1st level cache!`);
+        if (strVal && kvCache) { // proxy using KV-cache, but...
+            console.log(` *** ${key} was successfully read from the 1st level memory-cache!`);
         }
         if (!strVal && kvCache) {
             if (keysHandleBig.includes(key)) {
@@ -66,6 +66,8 @@ const Caching = (function(kvCache?: Deno.Kv, keysHandleBig: string[] = [], expir
                 const val = await kvCache.get([key]);
                 strVal = val.value;
             }
+            // Update 1st level (in-memory) cache with value read from KV:
+            if (strVal) MemCache.set(key, strVal);
         }
         return strVal;
     }
@@ -217,7 +219,8 @@ export async function serve(
         } else {
             // console.log(` *** SKIP updating cached json - there's no change in data for '${method}-OkResponse'`);
         }
-        // await cache.set(`${method}-OkTime`, Date.now().toString()); // TODO make/set one cache-structure with both OkTime & NextTime?
+        // TODO make/set one cache-structure with both OkTime & NextTime?...
+        // await cache.set(`${method}-OkTime`, Date.now().toString());
         await cache.set(`${method}-NextTime`, String(waitUntil(method).ok));
         return {
             body: json,
