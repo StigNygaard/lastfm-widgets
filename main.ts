@@ -19,7 +19,7 @@ const ProxyApi = await import(`./services/proxy-api${postfix}.ts`);
 
 Deno.serve(handler);
 
-console.log(`${new Date().toISOString()} - Running on Deno ${Deno.version.deno} (${navigator.userAgent.toLowerCase()}) with proxy-api-${postfix}.`);
+console.log(`${new Date().toISOString()} - Running on Deno ${Deno.version.deno} (${navigator.userAgent.toLowerCase()}) with proxy-api${postfix}.`);
 
 async function handler(req: Request, info: Deno.ServeHandlerInfo) {
     const url = new URL(req.url);

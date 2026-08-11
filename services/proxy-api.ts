@@ -24,7 +24,7 @@ const tracks = Deno.env.get('audioscrobbler_trackslimit');
 // Allow CORS for given hostname(s) and their subdomains. Multiple hostnames separated by semicolon:
 const corsAllowHostnames = Deno.env.get('audioscrobbler_cors_allow_hostnames')?.toLowerCase()?.split(/\s*(?:;|$)\s*/) ?? [];
 const msOneDay = 86400000;
-const expireKeyValue = 50 * msOneDay; // Don't use KV space forever if this proxy is abandoned
+const expireCachedValues = 50 * msOneDay; // Don't keep cached values in KV forever if proxy/key is abandoned
 
 /**
  * Map containing waiting times for each last.fm method.
@@ -45,14 +45,50 @@ const waitNext = new Map([
     }]
 ]);
 
+const MemCache = new Map([ // Map for the "first-level" in-memory cache
+    ['user.getinfo-OkResponse', ''],
+    ['user.getrecenttracks-OkResponse', '']
+]);
+const textDecoder = new TextDecoder();
+const keysWithBigValues = ['user.getrecenttracks-OkResponse'];
+const Caching = (function(kvCache?: Deno.Kv, keysHandleBig: string[] = [], expireIn = expireCachedValues) {
+    async function get(key: string) {
+        let strVal = MemCache.get<string>(key);
+        if (!strVal && kvCache) {
+            if (keysHandleBig.includes(key)) {
+                const val = await kvBlobTool.get(kvCache, [key]);
+                strVal = val.value ? textDecoder.decode(val.value) : '';
+            } else {
+                const val = await kvCache.get([key]);
+                strVal = val.value;
+            }
+        }
+        return strVal;
+    }
+    async function set(key: string, value: string, firstLevelOnly = false) {
+        MemCache.set(key, value);
+        if (kvCache && !firstLevelOnly) {
+            /* todo: drop (async/)await to optimize?: */
+            if (keysHandleBig.includes(key)) {
+                await kvBlobTool.set(kvCache, [key], kvBlobTool.toBlob(value), {expireIn: expireIn});
+            } else {
+                await kvCache.set([key], value, {expireIn: expireIn});
+            }
+        }
+    }
+    return {
+        get: get,
+        set: set
+    }
+});
+
 export async function serve(
     searchParams: URLSearchParams,
     reqHeaders: Headers,
     info: Deno.ServeHandlerInfo
 ): Promise<{ body: string; options: object }> {
 
-    const textDecoder = new TextDecoder();
-    using cache = await Deno.openKv();
+    const cache = Caching(await Deno.openKv(), keysWithBigValues);
 
     let fetchSuccessCount = 0;
     let fetchErrorCount = 0;
@@ -86,8 +122,8 @@ export async function serve(
         };
         console.log(`[${fetchSuccessCount}/${fetchErrorCount}] proxy: `, logData);
     }
-    const nextTimeStr = await cache.get<string>([`${method}-NextTime`]);
-    const nextTime = Number.parseInt(nextTimeStr.value || '0', 10);
+    const nextTimeString = await cache.get(`${method}-NextTime`);
+    const nextTime = Number.parseInt(nextTimeString || '0', 10);
     if (Date.now() <= nextTime) {
         console.log(` *** ${nowStamp()} - Too early for '${method}' (Next time: ${dateInYyyyMmDdHhMmSs(new Date(nextTime))}). Will use cached data instead...`);
         return await fallback(method, respHeaders);
@@ -107,8 +143,7 @@ export async function serve(
         fUrl.searchParams.append('extended', '1');
     }
 
-    // Temporary update to prevent multiple concurrent fetches
-    await cache.set([`${method}-NextTime`], String(waitUntil(method).ok), {expireIn: expireKeyValue});
+    await cache.set(`${method}-NextTime`, String(waitUntil(method).ok), true); // to reduce risk of multiple concurrent fetches
 
     try {
         // console.log(`fetching ${fUrl.href} ...`);
@@ -160,37 +195,26 @@ export async function serve(
         options: object
     }> {
         if (method==='user.getrecenttracks')
-            reduceRecenttracksData(jsonObj) // Slimming user.getrecenttracks data to reduce cache size used
-        else if (method==='user.getinfo')
-            reduceInfoData(jsonObj); // Slimming user.getinfo data to reduce cache size used
-        const json = JSON.stringify(jsonObj);
-        let cachedText = '';
-        if (method==='user.getrecenttracks') { // BIG recent tracks data was stored over multiple "KV-records" using kv-toolbox/blob
-            const cached = await kvBlobTool.get(cache, [`${method}-OkResponse`]);
-            cachedText = cached.value ? textDecoder.decode(cached.value) : '';
-        } else { // user profile data
-            const cached = await cache.get<string>([`${method}-OkResponse`]);
-            cachedText = cached.value ?? '';
+            reduceRecenttracksData(jsonObj) // Slim down user.getrecenttracks data to reduce cache size used
+        else if (method==='user.getinfo') {
+            reduceInfoData(jsonObj); // Slim down user.getinfo data to reduce cache size used
         }
+        const json = JSON.stringify(jsonObj);
+        const cachedText = await cache.get(`${method}-OkResponse`);
         // Update cache only if the new value differs from currently cached value (avoid unnecessary writes to KV)
         if (json.length && json !== cachedText) {
-            console.log(` --- ${nowStamp()} - Cached value for ${method}-OkResponse has length=${cachedText.length}.`);
+            console.log(` --- ${nowStamp()} - Cached value for ${method}-OkResponse has length=${cachedText.length} (new length: ${json.length}).`);
             if (method == 'user.getinfo') {
                 console.log(` +++ ${nowStamp()} - UPDATE CACHE for ${method}-OkResponse: \n`, json);
             } else {
                 console.log(` +++ ${nowStamp()} - UPDATE CACHE for ${method}-OkResponse (length=${json.length}).`);
-                // console.log(` +++ ${nowStamp()} - UPDATE CACHE for ${method}-OkResponse: \n`, json);
             }
-            if (method==='user.getrecenttracks') { // BIG recent tracks data. Use kv-toolbox/blob to spread over multiple "KV-records"
-                await kvBlobTool.set(cache, [`${method}-OkResponse`], kvBlobTool.toBlob(json), {expireIn: expireKeyValue});
-            } else { // user profile data
-                await cache.set([`${method}-OkResponse`], json, {expireIn: expireKeyValue});
-            }
+            await cache.set(`${method}-OkResponse`, json);
         } else {
-            // console.log(` *** SKIP updating cached json - there's no change in data for '${method}'`);
+            // console.log(` *** SKIP updating cached json - there's no change in data for '${method}-OkResponse'`);
         }
-        await cache.set([`${method}-OkTime`], Date.now().toString(), {expireIn: expireKeyValue});
-        await cache.set([`${method}-NextTime`], String(waitUntil(method).ok), {expireIn: expireKeyValue});
+        await cache.set(`${method}-OkTime`, Date.now().toString());
+        await cache.set(`${method}-NextTime`, String(waitUntil(method).ok));
         return {
             body: json,
             options: {
@@ -202,38 +226,21 @@ export async function serve(
     }
 
     async function fail(method: string, headers: Headers): Promise<{ body: string, options: object }> {
-        let okResponse = '';
-        if (method==='user.getrecenttracks') {
-            const resp = await kvBlobTool.get(cache, [`${method}-OkResponse`]);
-            okResponse = resp.value ? textDecoder.decode(resp.value) : '';
-        } else {
-            const resp = await cache.get([`${method}-OkResponse`]);
-            okResponse = resp.value ?? '';
-        }
-
+        const okResponse = await cache.get(`${method}-OkResponse`);
         console.log(` *** ${nowStamp()} - Failing - Fallback value from cache has length ${okResponse.length}...`);
-
-        await cache.set([`${method}-FailTime`], Date.now().toString(), {expireIn: expireKeyValue});
+        await cache.set(`${method}-FailTime`, Date.now().toString());
         if (okResponse) {
-            await cache.set([`${method}-NextTime`], String(waitUntil(method).failedWithFallback), {expireIn: expireKeyValue});
+            await cache.set(`${method}-NextTime`, String(waitUntil(method).failedWithFallback));
         } else {
-            await cache.set([`${method}-NextTime`], String(waitUntil(method).failedWithoutFallback), {expireIn: expireKeyValue});
+            await cache.set(`${method}-NextTime`, String(waitUntil(method).failedWithoutFallback));
         }
         return await fallback(method, headers, okResponse);
     }
 
     async function fallback(method: string, headers: Headers, okResponse?: string): Promise<{ body: string, options: object }> {
-        if(!okResponse) {
-            if (method==='user.getrecenttracks') {
-                const resp = await kvBlobTool.get(cache, [`${method}-OkResponse`]);
-                okResponse = resp.value ? textDecoder.decode(resp.value) : '';
-            } else {
-                const resp = await cache.get([`${method}-OkResponse`]);
-                okResponse = resp.value ?? '';
-            }
-        }
+        okResponse ||= await cache.get(`${method}-OkResponse`);
         if (okResponse) {
-            console.log(` *** ${nowStamp()} - Returning fallback ${method}-OkResponse value of length ${okResponse.length} from cache.`);
+            console.log(` *** ${nowStamp()} - Returning cached/fallback ${method}-OkResponse value of length ${okResponse.length} from cache.`);
             return {
                 body: okResponse,
                 options: {
