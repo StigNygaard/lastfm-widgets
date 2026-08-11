@@ -14,13 +14,12 @@ const myHeaders = {
 };
 const myHeadersArr = Object.entries(myHeaders).map(([k, v]) => `${k}: ${v}`);
 const webpage = Deno.env.get('webpage_show')?.toLocaleLowerCase() === 'demo' ? 'demo' : 'promo';
-const cachetype = Deno.env.get('proxy_use')?.toLocaleLowerCase() === 'mem' ? 'mem' : 'kv';
-
-const ProxyApi = await import(`./services/proxy-api-${cachetype}.ts`);
+const postfix = Deno.env.get('proxy_use')?.toLocaleLowerCase() === 'mem' ? '-mem' : '';
+const ProxyApi = await import(`./services/proxy-api${postfix}.ts`);
 
 Deno.serve(handler);
 
-console.log(`${new Date().toISOString()} - Running on Deno ${Deno.version.deno} (${navigator.userAgent.toLowerCase()}) with proxy-api-${cachetype}.`);
+console.log(`${new Date().toISOString()} - Running on Deno ${Deno.version.deno} (${navigator.userAgent.toLowerCase()}) with proxy-api-${postfix}.`);
 
 async function handler(req: Request, info: Deno.ServeHandlerInfo) {
     const url = new URL(req.url);
