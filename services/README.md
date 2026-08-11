@@ -10,14 +10,14 @@ You should pretty easily be able to get your own proxy API up and running on [De
 2. **CORS handling** — Last.fm's API does not return permissive CORS headers by default. The proxy injects `Access-Control-Allow-Origin` based on a configurable hostname whitelist.
 3. **Caching and throttling** — Last.fm's API has intermittent downtime and aggressive rate limiting. The proxy caches the last successful response and serves it (stale-while-revalidate) when upstream requests fail. A hibernate mode also pauses outgoing requests entirely after a rate-limit response, to avoid getting the API key banned.
 
-There are three implementations in this repository, functionally identical: Two Deno variants and a Cloudflare Workers (Node.js) version.
+There are two implementations in this repository, functionally identical: The default Deno proxy and a Cloudflare Workers (Node.js) version.
 
 ---
 
-## Option 1: Deno KV or in-memory (both Deno Deploy compatible)
+## Option 1: Deno KV or in-memory (both variations Deno Deploy compatible)
 
 The default proxy-cache implementation used when deploying this project is Deno KV. Implementation is in `proxy-api.ts` and the cache state is held in a key-value database.
-Alternatively, you can choose to use in-memory cache, which is implemented in `proxy-api-mem.ts`. KV is generally to be preferred when possible, but there are monthly read and write limits for KV-values if you are hosting on, for example, Deno Deploy. And if the limits become a problem, the in-memory implementation is good to have as a fallback option.
+Alternatively, you can choose to use in-memory cache (_also_ implemented in `proxy-api.ts`). KV is generally to be preferred when possible, but there are monthly read and write limits for KV-values if you are hosting on, for example, Deno Deploy. And if the limits become a problem, the in-memory implementation is good to have as a fallback option.
 
 Also, KV is still considered an 'in development' technology. But it has existed for a while and seems reliable – at least for non-critical use.
 
@@ -38,9 +38,13 @@ Also, KV is still considered an 'in development' technology. But it has existed 
 | `proxy_use` | No | If set to `mem`, the *in-memory* proxy-cache is used. Otherwise *Deno KV* proxy-cache is used (default and generally recommended).                                                                                        |
 | `webpage_show` | No | If set to `demo`, the demo-page is shown on the deployed site. Otherwise a "promotion page" pointing to [the *official* demo site/page](https://lastfm-widgets.stignygaard.deno.net/) is shown (default and recommended). |
 
+Actually, the proxy in KV mode uses a "two-level cache" implementation. In-memory cache is still used for a short-living first-level cache.
+
+The proxy is served from `/proxy-api` of the deployed site. Set the backend attribute on your widget to point to this address.
+
 To avoid confusion about where the official demo-page for the widget is located, I appreciate if you for public deployments, only enable demo-page *temporarily* for test and verification.
 
-Notice, it is recommended to use [v1.12 or newer](https://github.com/StigNygaard/lastfm-widgets/releases "Get latest version of the Tracks widget") of the widget. If you are using version 1.11 or older, it is [a good idea](https://github.com/StigNygaard/lastfm-widgets/issues/4) to set the _ignorebots_ attribute on the widget.
+Notice, it is recommended to use [v1.13 or newer](https://github.com/StigNygaard/lastfm-widgets/releases "Get latest version of the Tracks widget") of the widget. If you are using version 1.11 or older, it is [a good idea](https://github.com/StigNygaard/lastfm-widgets/issues/4) to set the _ignorebots_ attribute on the widget.
 
 ### Local development
 

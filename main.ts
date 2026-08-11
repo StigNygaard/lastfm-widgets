@@ -1,6 +1,7 @@
 import { serveDir } from '@std/http/file-server';
 import '@std/dotenv/load';
 import { log } from './services/log.ts';
+import * as ProxyApi from './services/proxy-api.ts';
 
 /**
  * @run --unstable-kv --allow-net --allow-env --allow-read=./website,./widgets,./services,./.env main.ts
@@ -14,12 +15,11 @@ const myHeaders = {
 };
 const myHeadersArr = Object.entries(myHeaders).map(([k, v]) => `${k}: ${v}`);
 const webpage = Deno.env.get('webpage_show')?.toLocaleLowerCase() === 'demo' ? 'demo' : 'promo';
-const postfix = Deno.env.get('proxy_use')?.toLocaleLowerCase() === 'mem' ? '-mem' : '';
-const ProxyApi = await import(`./services/proxy-api${postfix}.ts`);
+const cachetype = Deno.env.get('proxy_use')?.toLocaleLowerCase() === 'mem' ? 'in-memory' : 'KV';
 
 Deno.serve(handler);
 
-console.log(`${new Date().toISOString()} - Running on Deno ${Deno.version.deno} (${navigator.userAgent.toLowerCase()}) with proxy-api${postfix}.`);
+console.log(`${new Date().toISOString()} - Running on Deno ${Deno.version.deno} (${navigator.userAgent.toLowerCase()}) with ${cachetype} proxy-cache.`);
 
 async function handler(req: Request, info: Deno.ServeHandlerInfo) {
     const url = new URL(req.url);

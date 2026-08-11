@@ -21,6 +21,7 @@ import * as kvBlobTool from "@kitsonk/kv-toolbox/blob";
 const apikey = Deno.env.get('audioscrobbler_apikey');
 const user = Deno.env.get('audioscrobbler_user') || 'rockland';
 const tracks = Deno.env.get('audioscrobbler_trackslimit');
+const cachetype = Deno.env.get('proxy_use')?.toLocaleLowerCase() === 'mem' ? 'in-memory' : 'KV';
 // Allow CORS for given hostname(s) and their subdomains. Multiple hostnames separated by semicolon:
 const corsAllowHostnames = Deno.env.get('audioscrobbler_cors_allow_hostnames')?.toLowerCase()?.split(/\s*(?:;|$)\s*/) ?? [];
 const msOneDay = 86400000;
@@ -88,7 +89,7 @@ export async function serve(
     info: Deno.ServeHandlerInfo
 ): Promise<{ body: string; options: object }> {
 
-    const cache = Caching(await Deno.openKv(), keysWithBigValues);
+    const cache = cachetype === 'KV' ? Caching(await Deno.openKv(), keysWithBigValues) : Caching();
 
     let fetchSuccessCount = 0;
     let fetchErrorCount = 0;
