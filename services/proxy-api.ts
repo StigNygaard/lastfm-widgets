@@ -293,7 +293,7 @@ function reduceInfoData(obj: Record<string, unknown>) {
     const user = obj.user;
     if (user) {
         // @ts-expect-error: I hate Typescript
-        keep(user, 'playcount', 'url', 'name', 'track_count', 'realname', 'image', 'registered', 'type');
+        keep(user, 'url', 'name', 'realname', 'image', 'registered', 'type');
         // TODO: Slimming profile/avatar image array requires widget version >= 1.13. Enable later?:
         // // @ts-expect-error: I hate Typescript
         // const image = user.image;
