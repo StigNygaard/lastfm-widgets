@@ -56,11 +56,11 @@ show the demo page instead.
 
 #### /services/ folder
 
-- `proxy-api-kv.ts` - A Deno proxy-api using Deno KV as the cache. This is the generally recommended and default used backend proxy-api for this project.
+- `proxy-api.ts` - A Deno proxy-api using Deno KV as the cache. This is the generally recommended and default used backend proxy-api for this project.
 - `proxy-api-mem.ts` - An alternative Deno proxy-api using in-memory caching.
 - `log.ts` - A simple log endpoint used by the demo page.
 
-The Deno KV based proxy (`proxy-api-kv.ts`) is the normally used proxy-api on the demo page when widget is in _Backend-supported_ mode – and it is also used by widget on [rockland.dk](https://www.rockland.dk/). But no matter if KV or in-memory version is chosen, the proxy is served on the `/proxy-api` address of the deployed site.
+The Deno KV based proxy (`proxy-api.ts`) is the normally used proxy-api on the demo page when widget is in _Backend-supported_ mode – and it is also used by widget on [rockland.dk](https://www.rockland.dk/). But no matter if KV or in-memory version is chosen, the proxy is served on the `/proxy-api` address of the deployed site.
 
 For full documentation on setting up the backend proxies, see [services/README.md](services/README.md "How to set up a proxy-API for the Tracks widget").
 
