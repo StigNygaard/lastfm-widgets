@@ -51,10 +51,13 @@ const MemCache = new Map([ // Map for the "first-level" in-memory cache
     ['user.getrecenttracks-OkResponse', '']
 ]);
 const textDecoder = new TextDecoder();
-const keysWithBigValues = ['user.getrecenttracks-OkResponse'];
+const keysWithBigValues = ['user.getrecenttracks-OkResponse']; // Keys with big values. Use @kitsonk/kv-toolbox/blob for these.
 const Caching = (function(kvCache?: Deno.Kv, keysHandleBig: string[] = [], expireIn = expireCachedValues) {
     async function get(key: string) {
         let strVal = MemCache.get<string>(key);
+        if (strVal && !kvCache) { // KV cache mode, but...
+            console.log(` *** ${key} was successfully read from 1st level cache!`);
+        }
         if (!strVal && kvCache) {
             if (keysHandleBig.includes(key)) {
                 const val = await kvBlobTool.get(kvCache, [key]);
@@ -214,7 +217,7 @@ export async function serve(
         } else {
             // console.log(` *** SKIP updating cached json - there's no change in data for '${method}-OkResponse'`);
         }
-        await cache.set(`${method}-OkTime`, Date.now().toString());
+        // await cache.set(`${method}-OkTime`, Date.now().toString()); // TODO make/set one cache-structure with both OkTime & NextTime?
         await cache.set(`${method}-NextTime`, String(waitUntil(method).ok));
         return {
             body: json,
