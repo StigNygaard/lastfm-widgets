@@ -1,6 +1,6 @@
 # Proxy API Services
 
-Running the Last.fm widget purely client-side means exposing your Last.fm API key to the public. This backend proxy sits between the frontend widget and Last.fm's Audioscrobbler API to avoid that, along with a few other practical problems.
+Running the Last.fm widget purely client-side means exposing your Last.fm API key to the public. A backend proxy sits between the frontend widget and Last.fm's Audioscrobbler API to avoid that, along with a few other practical problems.
 
 You should pretty easily be able to get your own proxy API up and running on [Deno Deploy](https://deno.com/deploy) by following the instructions here.
 
@@ -14,10 +14,10 @@ There are two implementations in this repository, functionally identical: The de
 
 ---
 
-## Option 1: Deno KV or in-memory (both variations Deno Deploy compatible)
+## Option 1: Deno KV or in-memory
 
-The default proxy-cache implementation used when deploying this project is Deno KV. Implementation is in `proxy-api.ts` and the cache state is held in a key-value database.
-Alternatively, you can choose to use in-memory cache (_also_ implemented in `proxy-api.ts`). KV is generally to be preferred when possible, but there are monthly read and write limits for KV-values if you are hosting on, for example, Deno Deploy. And if the limits become a problem, the in-memory implementation is good to have as a fallback option.
+The default Deno proxy-cache implementation used when deploying this project is using Deno KV. Implementation is in `proxy-api.ts` and the cache state is by default held in a key-value database (Deno KV).
+Alternatively, you can configure it to use in-memory cache instead. KV is generally to be preferred when possible, but there are monthly read and write limits for KV-values if you are hosting on, for example, Deno Deploy. And if the limits become a problem, the in-memory variant is good to have as a fallback option.
 
 Also, KV is still considered an 'in development' technology. But it has existed for a while and seems reliable – at least for non-critical use.
 
@@ -38,13 +38,13 @@ Also, KV is still considered an 'in development' technology. But it has existed 
 | `proxy_use` | No | If set to `mem`, the *in-memory* proxy-cache is used. Otherwise *Deno KV* proxy-cache is used (default and generally recommended).                                                                                        |
 | `webpage_show` | No | If set to `demo`, the demo-page is shown on the deployed site. Otherwise a "promotion page" pointing to [the *official* demo site/page](https://lastfm-widgets.stignygaard.deno.net/) is shown (default and recommended). |
 
-Actually, the proxy in KV mode uses a "two-level cache" implementation. In-memory cache is still used for a short-living first-level cache.
+Actually, the proxy in "KV-mode" uses a "two-level cache" implementation. KV is the "primary cache", but in-memory cache is also used for a "first-level cache".
 
-The proxy is served from `/proxy-api` of the deployed site. Set the backend attribute on your widget to point to this address.
+The proxy is served from `/proxy-api` on the deployed site. Set the `backend` attribute on your widget to point to this address.
 
-To avoid confusion about where the official demo-page for the widget is located, I appreciate if you for public deployments, only enable demo-page *temporarily* for test and verification.
+To avoid confusion about where the official demo-page for the widget is located, I appreciate if you for public deployments, only enable demo-page _temporarily_ for test and verification.
 
-Notice, it is recommended to use [v1.13 or newer](https://github.com/StigNygaard/lastfm-widgets/releases "Get latest version of the Tracks widget") of the widget. If you are using version 1.11 or older, it is [a good idea](https://github.com/StigNygaard/lastfm-widgets/issues/4) to set the _ignorebots_ attribute on the widget.
+Notice, it is recommended to use widget [v1.13 or newer](https://github.com/StigNygaard/lastfm-widgets/releases "Get latest version of the Tracks widget"). If you are using version 1.11 or older, it is [a good idea](https://github.com/StigNygaard/lastfm-widgets/issues/4) to set the `ignorebots` attribute on the widget.
 
 ### Local development
 
@@ -123,6 +123,6 @@ To serve the proxy from your own domain instead of `*.workers.dev`, add a route 
 
 ## Choosing which proxy to use
 
-All options expose the same request/response contract, so the frontend widget works identically regardless of which backend is used. If you ain't already using either platform, Deno KV solution on Deno Deploy is probably an easy and free way to get a backend-proxy for your widget. Deno Deploy has monthly read and write limits for Deno KV. If that could be an issue depends on factors like activity (usage) of widget, how often your scrobble new tracks, your widget's update-interval and playlist length. For most, I think a free-tier Deno Deploy is enough if KV is only used for this widget. But I'm also still collecting practical experience on this myself, as the KV-based proxy-implementation is still very new. 
+All options expose the same request/response contract, so the frontend widget works identically regardless of which backend is used. If you ain't already using either platform, Deno KV solution on Deno Deploy is probably an easy and free way to get a backend-proxy for your widget. Deno Deploy has monthly read and write limits for Deno KV. If that could be an issue depends on factors like activity (usage) of widget, how often your scrobble new tracks, your widget's update-interval and length of widget's shown playlist. For most, I think a free-tier Deno Deploy account is enough for a Deno KV proxy, if Deno KV is used only for the Tracks widget. But I'm also still collecting practical experience on this myself, as the KV-based proxy-implementation is still very new. 
 
-The in-memory cache can be short-lived (Deno Deploy is said to keep in-active applications alive between 5 seconds to 10 minutes depending on general system load). Also, In-memory cache is per-node, not shared globally like it is for Deno KV and Cloudflare Workers. The in-memory option is better than nothing, but Deno KV or Cloudflare Workers are better choices when possible to use.    
+The in-memory cache can be short-living (Deno Deploy is said to keep in-active applications alive between 5 seconds to 10 minutes depending on general system load). Also, In-memory cache is per-node in an "edge network" like Deno Deploy. The in-memory option is better than nothing, but Deno KV or Cloudflare Workers are better choices when possible to use.    

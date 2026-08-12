@@ -2,12 +2,22 @@ import '@std/dotenv/load';
 import * as kvBlobTool from "@kitsonk/kv-toolbox/blob";
 
 /******************************************************************************/
-/*                   Proxy/cache implemented with Deno KV                     */
+/*      * Proxy/cache implementation with both KV and in-memory modes *       */
+/*                                                                            */
+/*   This proxy supports two modes:                                           */
+/*   1) KV-mode. Deno KV is the "primary" cache, but also using in-memory     */
+/*      as a "first level" cache. This is the default mode.                   */
+/*   2) In-memory mode. Caching is only done in-memory.                       */
+/*   Notice, on an "edge network", like Deno Deploy, in-memory cache might    */
+/*   be relatively short-living, and is only for the current node in the      */
+/*   network. But it is still better than communicating directly with the     */
+/*   last.fm API all the time.                                                */
+/*                                                                            */
 /*   Since Deno KV has a max record size of 64K per value, also using         */
-/*   @kitsonk/kv-toolbox/blob to spread the large audioscrobbler response     */
-/*   data over multiple records. Could the monthly write-limit for KV on a    */
-/*   free tier of Deno Deploy become a problem? As an alternative to KV,      */
-/*   I should probably also consider/try...                                   */
+/*   @kitsonk/kv-toolbox/blob to spread a large audioscrobbler response       */
+/*   over multiple records. Could the monthly write-limit for KV on a free    */
+/*   tier of Deno Deploy become a problem? As an alternative to KV, I         */
+/*   should probably also consider/try...                                     */
 /*   a) Deno Deploy Web Cache API:                                            */
 /*      https://deno.com/blog/deploy-cache-api                                */
 /*      https://docs.deno.com/deploy/classic/edge_cache/                      */
