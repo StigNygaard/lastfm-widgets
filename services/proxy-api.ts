@@ -104,7 +104,9 @@ export async function serve(
     info: Deno.ServeHandlerInfo
 ): Promise<{ body: string; options: object }> {
 
-    const cache = cachetype === 'KV' ? Caching(await Deno.openKv(), keysWithBigValues) : Caching();
+    // KV or "in-memory" cache:
+    using cacheImpl = cachetype === 'KV' ? await Deno.openKv() : undefined;
+    const cache = Caching(cacheImpl, keysWithBigValues);
 
     let fetchSuccessCount = 0;
     let fetchErrorCount = 0;
