@@ -186,6 +186,7 @@ class Tracks extends HTMLElement {
 
     #initiated = false;
     #userAgent = navigator.userAgent.toLowerCase();
+    #ref = `${new URL(document.URL).hostname};${this.#userAgent}`.substring(0,250);
     #okUserAgent = this.#notBot(this.#userAgent);
 
     #fetcher = fetcher.json;
@@ -439,6 +440,9 @@ class Tracks extends HTMLElement {
             if (it.#user?.length) {
                 url.searchParams.append('user', it.#user);
             }
+            if (it.#widgetMode === 'backend') {
+                url.searchParams.append('ref', it.#ref)
+            }
 
             if (it.#okUserAgent || (it.#widgetMode === 'backend' && it.hasAttribute('allowbots'))) {
                 LOG && console.log(`Getting Profile with: ${url.href} ...`);
@@ -539,6 +543,9 @@ class Tracks extends HTMLElement {
             }
             if (it.#user?.length) url.searchParams.append('user', it.#user);
             url.searchParams.append('limit', it.#tracks);
+            if (it.#widgetMode === 'backend') {
+                url.searchParams.append('ref', it.#ref)
+            }
 
             if (it.#okUserAgent || (it.#widgetMode === 'backend' && it.hasAttribute('allowbots'))) {
                 LOG && console.log(`[${updateCount + 1}] Getting Scrobbles with: ${url.href} ...`);
