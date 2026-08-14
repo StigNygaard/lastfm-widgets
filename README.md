@@ -19,6 +19,51 @@ You can configure the widget by adding attributes to the custom HTML tag. Get th
 
 Optionally, you can also [add a "proxy-API" to your setup](https://github.com/StigNygaard/lastfm-widgets/blob/main/services/README.md "How to set up a proxy-API for the Tracks widget").
 
+
+## Dark Mode
+Dark mode is supported automatically based on the user's OS or browser preference (`prefers-color-scheme: dark`), no configuration is required.
+
+If your site has its own theme switcher and you want the widget to follow it instead of, or in addition to, the OS preference, you can override the widget's CSS custom properties directly in your own stylesheet, scoped to whatever selector your switcher toggles. Custom properties inherit through the shadow DOM by default, so this works in all modern browsers without needing `:host-context()`, which is deprecated and was only ever implemented in Chromium. ([MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:host-context), [Can I Use](https://caniuse.com/mdn-css_selectors_host-context))
+
+
+```css
+/* example: force dark/light to follow bootstrap's data-bs-theme */
+[data-bs-theme="dark"] lastfm-tracks {
+  --bg: #222;
+  --fg: #fff;
+  --border: #444;
+  --bg-hover: #333;
+  --bg-nowplaying: #3a3219;
+  --bg-nowplaying-hover: #4a4020;
+  --bg-album: #3a1e1e;
+  --bg-album-hover: #4a2626;
+  --fg-muted: #aaa;
+  --fg-ext: rgb(255 255 255 / 0.7);
+  --footer-bg: #222;
+  --footer-border: #454;
+  --footer-fg: #9a9;
+}
+
+[data-bs-theme="light"] lastfm-tracks {
+  --bg: #fff;
+  --fg: rgb(34 34 34);
+  --border: #eee;
+  --bg-hover: #f9f9f9;
+  --bg-nowplaying: #fff9e5;
+  --bg-nowplaying-hover: #fcf2cf;
+  --bg-album: #fbe9e9;
+  --bg-album-hover: #fadcdc;
+  --fg-muted: rgb(136 136 136 / 1);
+  --fg-ext: rgb(34 34 34 / .7);
+  --footer-bg: #fff;
+  --footer-border: #787;
+  --footer-fg: #787;
+}
+```
+Replace [data-bs-theme="dark"]/[data-bs-theme="light"] with whatever selector your theme switcher actually uses, for example .dark or [data-theme="dark"]. The widget does not care which convention is used, it only reads the custom properties that are set on it.
+
+Note that if only the dark override is defined, the widget will still fall back to prefers-color-scheme whenever the site's switcher is set to light while the OS preference is dark. Define both overrides, as shown above, if the site's switcher should fully take priority over the OS preference.
+
 ## The technical...
 
 The _Tracks_ widget itself is made as a _webcomponent_ using pure standard web client-side technologies (no frameworks
@@ -81,5 +126,4 @@ serving the above-mentioned content (except `/cf-worker/`).
 What could future updates bring? _Maybe_:
 
 - A layout that adapts nicer to wider display dimensions of widget
-- Dark mode
 - Another widget
