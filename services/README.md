@@ -16,8 +16,7 @@ There are two implementations in this repository, functionally identical: The de
 
 ## Option 1: Deno KV or in-memory
 
-The default Deno proxy-cache implementation used when deploying this project is using Deno KV. Implementation is in `proxy-api.ts` and the cache state is by default held in a key-value database (Deno KV).
-Alternatively, you can configure it to use in-memory cache instead. KV is generally to be preferred when possible, but there are monthly read and write limits for KV-values if you are hosting on, for example, Deno Deploy. And if the limits become a problem, the in-memory variant is good to have as a fallback option.
+A Deno proxy-API implementation is located in `proxy-api.ts`. It is by default using _Deno KV_ (A Key-Value storage in Deno) for caching. Alternatively, you can configure it to use in-memory cache instead. But KV should be the preferred cache when possible. There are however monthly read and write limits for KV-values if you are hosting on for example Deno Deploy. And if the limits become a problem, the in-memory variant is good to have as a fallback option.
 
 Also, KV is still considered an 'in development' technology. But it has existed for a while and seems reliable – at least for non-critical use.
 
@@ -47,14 +46,15 @@ To avoid confusion about where the official demo-page for the widget is located,
 Notice, it is recommended to use widget [v1.13 or newer](https://github.com/StigNygaard/lastfm-widgets/releases "Get latest version of the Tracks widget"). If you are using version 1.11 or older, it is [a good idea](https://github.com/StigNygaard/lastfm-widgets/issues/4) to set the `ignorebots` attribute on the widget.
 
 ### Local development
+[Install Deno](https://docs.deno.com/runtime/getting_started/installation/) if you don't already have it. Also make sure to have the necessary environment variables (above) defined in your local setup. For example by adding them to a `.env` file in the root of the repository. Then...
 
-Run locally with 
+Run locally with:
 
 ```bash
 deno task start
 ```
 
-or in "developer-mode" with "auto-restart" when changes to code is detected
+or in "developer-mode" with "auto-restart" when changes to code is detected:
 
 ```bash
 deno task dev

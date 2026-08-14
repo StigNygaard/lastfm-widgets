@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="demo.css" />
     <script src="/widgets/lastfm.js" type="module"></script>
     <script src="demo.js" type="module"></script>
-    <meta name="description" content="Tracks - a last.fm scrobbles widget. Customize the widget for your use, and show your latest played tracks on your blog or homepage." />
-    <meta name="keywords" content="last.fm,lastfm,scrobbles,scrobble,scrobbling,audioscrobbler,playlist,tracks,tracklist,recently played,play history,listening to,now playing,widget,webcomponent,javascript,Stig Nygaard,music,deno,deno deploy,lastfm-widgets.stignygaard.deno.net,lastfm-widgets.deno.dev" />
+    <meta name="description" content="Interactively playground for the Tracks website widget. Make it show your own scrobbles and see how you can customize and integrate the widget on your own blog or homepage." />
+    <meta name="keywords" content="last.fm,lastfm,scrobbles,scrobble,scrobbling,audioscrobbler,playlist,tracks,tracklist,recently played,play history,listening to,now playing,widget,webcomponent,javascript,Stig Nygaard,music,deno,deno deploy,lastfm-widgets.stignygaard.deno.net,lastfm-widgets.deno.dev,demo,playground,configure,customize,instructions,guide" />
 
     <meta name="dc.language" content="en" />
     <meta name="dc.creator.name" content="Stig Nygaard" />
@@ -24,10 +24,10 @@
     <meta name="google-site-verification" content="GJg_3Y9qVf9BctWMGxy_zDuDUyExyDQpl0YjCi7mtds" />
     <link rel="canonical" href="https://lastfm-widgets.stignygaard.deno.net/" />
 
-    <meta property="og:title" content="Tracks last.fm widget demo site" />
+    <meta property="og:title" content="Tracks - Interactive demo site for the Last.Fm website widget" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://lastfm-widgets.stignygaard.deno.net/" />
-    <meta property="og:description" content="Tracks - a last.fm scrobbles widget. Customize the widget for your use, and show your latest played tracks on your blog or homepage." />
+    <meta property="og:description" content="Interactively playground for the Tracks website widget. Make it show your own scrobbles and see how you can customize and integrate the widget on your own blog or homepage." />
     <meta property="og:image" content="https://lastfm-widgets.stignygaard.deno.net/Tracks-lastfm-widget-header-1280x640-2.png" />
     <meta property="og:image:alt" content="Tracks widget header" />
 
@@ -71,11 +71,11 @@
         <p>The widget has 3 modes. The <em>Demo</em> and <em>Basic</em> modes are "standalone" modes where widget
           communicates <em>directly</em> with last.fm's API to get the "scrobbles". The third mode is
           <em>Backend-supported</em> mode where you need to have a "proxy-api" that the widget can communicate
-          with. The idea is that the proxy-api should mirror/forward the two methods
+          with. The idea is that the proxy-api should "forward" the two methods
           (<em><a href="https://www.last.fm/api/show/user.getInfo">user.getinfo</a></em> and
           <em><a href="https://www.last.fm/api/show/user.getRecentTracks">user.getrecenttracks</a></em>) from last.fm's
           audioscrobbler 2.0 api that the widget needs to function. Your own backend proxy-api is a very good idea, if
-          widget is to be placed on a page with <em>more</em> than very modest amounts of traffic, because you can
+          your widget is to be placed on a page with <em>more</em> than very modest amounts of traffic, because you can
           implement "throttling" in the proxy-api to prevent overwhelming numbers of requests being sent directly to
           last.fm's API.</p>
 
@@ -113,11 +113,11 @@
           audioscrobbler API when loading the <em>Tracks</em> widget. To avoid overload of the API, <em>Tracks</em>
           will by default ignore clients identifying itself with a useragent string including text like "bot",
           "spider", "crawl", "archive", "harvest", "radar" and "headless". This so far seems effective preventing
-          such "bots" triggering calls the audioscrobbler API.
-          <em>Notice</em>: In widget version 1.11 and older, bots are by default only ignored in <em>Demo</em> and
+          most such "bots" triggering calls the audioscrobbler API.
+          <em>Notice</em>: In widget version 1.11 or older, bots are by default only ignored in <em>Demo</em> and
           <em>Basic</em> modes. But from widget version 1.12, bots are by default also ignored in
-          <em>Backend-supported</em> mode. If desired, you can disable filtering in <em>Backend-supported</em> mode
-          by adding attribute <code>allowbots</code> to the <code>&lt;lastfm-tracks/&gt;</code> html-element.</p>
+          <em>Backend-supported</em> mode. If desired, you can disable "bot-filtering" in <em>Backend-supported</em>
+          mode by adding attribute <code>allowbots</code> to the <code>&lt;lastfm-tracks/&gt;</code> html-element.</p>
 
         <h2>Attributes</h2>
 
@@ -135,7 +135,7 @@
           </li>
           <li>
             <em>interval</em> - Refresh interval in seconds. On Last.fm profile pages, an update interval of 30 seconds
-            is used. So you should probably never go lower than that. The default value is 60 in <em>Basic</em> and
+            is used, so you should probably never go lower than that. The default value is 60 in <em>Basic</em> and
             <em>Backend-supported</em> mode, and the widget doesn't allow lower than 30 in Basic mode. The value is
             ignored in <em>Demo</em> mode.
           </li>

@@ -4,20 +4,22 @@ import * as kvBlobTool from "@kitsonk/kv-toolbox/blob";
 /******************************************************************************/
 /*      * Proxy/cache implementation with both KV and in-memory modes *       */
 /*                                                                            */
-/*   This proxy supports two modes:                                           */
-/*   1) KV-mode. Deno KV is the "primary" cache, but also using in-memory     */
-/*      as a "first level" cache. This is the default mode.                   */
-/*   2) In-memory mode. Caching is only done in-memory.                       */
-/*   Notice, on an "edge network", like Deno Deploy, in-memory cache might    */
-/*   be relatively short-living, and is only for the current node in the      */
+/*   This proxy-api supports two modes:                                       */
+/*   1) KV-mode. Deno KV is the "primary" cache, but also using memory as     */
+/*      a shorter-living "first level" cache. This is the default mode.       */
+/*   2) In-memory mode. Caching is only done in memory.                       */
+/*   Notice, on a "global edge network" like Deno Deploy, in-memory cache     */
+/*   might be very short-living, and is only for the current node in the      */
 /*   network. But it is still better than communicating directly with the     */
 /*   last.fm API all the time.                                                */
 /*                                                                            */
-/*   Since Deno KV has a max record size of 64K per value, also using         */
-/*   @kitsonk/kv-toolbox/blob to spread a large audioscrobbler response       */
-/*   over multiple records. Could the monthly write-limit for KV on a free    */
-/*   tier of Deno Deploy become a problem? As an alternative to KV, I         */
-/*   should probably also consider/try...                                     */
+/*   Since Deno KV has a max record size of 64K per value, we are using       */
+/*   @kitsonk/kv-toolbox/blob to spread large audioscrobbler responses        */
+/*   over multiple records.                                                   */
+/*                                                                            */
+/*   Could monthly KV read/write limits for accounts on a platform like       */
+/*   Deno Deploy become a problem? As an alternative to KV, I should          */
+/*   probably also look into...                                               */
 /*   a) Deno Deploy Web Cache API:                                            */
 /*      https://deno.com/blog/deploy-cache-api                                */
 /*      https://docs.deno.com/deploy/classic/edge_cache/                      */
@@ -61,13 +63,11 @@ const MemCache = new Map([ // Map for the "first-level" in-memory cache
     ['user.getrecenttracks-OkResponse', '']
 ]);
 const textDecoder = new TextDecoder();
-const keysWithBigValues = ['user.getrecenttracks-OkResponse']; // Keys with big values. Use @kitsonk/kv-toolbox/blob for these.
-const Caching = (function(kvCache?: Deno.Kv, keysHandleBig: string[] = [], expireIn = expireCachedValues) {
+const keysWithBigValues = ['user.getrecenttracks-OkResponse']; // Keys with big values. To store values in KV, use @kitsonk/kv-toolbox/blob for these.
+const Caching = function(kvCache?: Deno.Kv, keysHandleBig: string[] = [], expireIn = expireCachedValues) {
     async function get(key: string) {
         let strVal = MemCache.get<string>(key);
-        if (strVal && kvCache) { // proxy using KV-cache, but...
-            console.log(` *** ${key} was successfully read from the 1st level memory-cache!`);
-        }
+        if (strVal && kvCache) console.log(` $$$ ${key} was SUCCESSFULLY READ from the 1ST LEVEL in-memory cache!`);
         if (!strVal && kvCache) {
             if (keysHandleBig.includes(key)) {
                 const val = await kvBlobTool.get(kvCache, [key]);
@@ -76,27 +76,31 @@ const Caching = (function(kvCache?: Deno.Kv, keysHandleBig: string[] = [], expir
                 const val = await kvCache.get([key]);
                 strVal = val.value;
             }
-            // Update 1st level (in-memory) cache with value read from KV:
-            if (strVal) MemCache.set(key, strVal);
+            if (strVal) { // Update 1st level (in-memory) cache with value read from KV
+                MemCache.set(key, strVal);
+                // console.log(` $$$ ${key} was UPDATED in 1st level in-memory cache with data from 2nd level KV-cache`);
+            }
         }
         return strVal;
     }
     async function set(key: string, value: string, firstLevelOnly = false) {
         MemCache.set(key, value);
         if (kvCache && !firstLevelOnly) {
-            /* todo: drop (async/)await to optimize?: */
             if (keysHandleBig.includes(key)) {
                 await kvBlobTool.set(kvCache, [key], kvBlobTool.toBlob(value), {expireIn: expireIn});
             } else {
                 await kvCache.set([key], value, {expireIn: expireIn});
             }
+            // console.log(` $$$ ${key} was UPDATED with new data in 1st and 2nd level cache`);
+        } else {
+            // console.log(` $$$ ${key} was UPDATED with new data ONLY in 1st level in-memory cache`);
         }
     }
-    return {
+    return { // The Caching methods:
         get: get,
         set: set
     }
-});
+}
 
 export async function serve(
     searchParams: URLSearchParams,
@@ -161,7 +165,7 @@ export async function serve(
         fUrl.searchParams.append('extended', '1');
     }
 
-    await cache.set(`${method}-NextTime`, String(waitUntil(method).ok), true); // to reduce risk of multiple concurrent fetches
+    await cache.set(`${method}-NextTime`, String(waitUntil(method).ok), { firstLevelOnly: true } ); // To reduce risk of multiple concurrent similar fetches {Using "js destructuring" trick for named function argument}
 
     try {
         // console.log(`fetching ${fUrl.href} ...`);
@@ -221,7 +225,7 @@ export async function serve(
         const cachedText = await cache.get(`${method}-OkResponse`);
         // Update cache only if the new value differs from currently cached value (avoid unnecessary writes to KV)
         if (json.length && json !== cachedText) {
-            console.log(` --- ${nowStamp()} - Cached value for ${method}-OkResponse has length=${cachedText.length} (new length: ${json.length}).`);
+            console.log(` --- ${nowStamp()} - Cached value for ${method}-OkResponse has length=${cachedText?.length} (new length: ${json.length}).`);
             if (method == 'user.getinfo') {
                 console.log(` +++ ${nowStamp()} - UPDATE CACHE for ${method}-OkResponse: \n`, json);
             } else {
