@@ -46,7 +46,7 @@ To avoid confusion about where the official demo-page for the widget is located,
 Notice, it is recommended to use widget [v1.13 or newer](https://github.com/StigNygaard/lastfm-widgets/releases "Get latest version of the Tracks widget"). If you are using version 1.11 or older, it is [a good idea](https://github.com/StigNygaard/lastfm-widgets/issues/4) to set the `ignorebots` attribute on the widget.
 
 ### Local development
-[Install Deno](https://docs.deno.com/runtime/getting_started/installation/) if you don't already have it. Also make sure to have the necessary environment variables (above) defined in your local setup. For example by adding them to a `.env` file in the root of the repository. Then...
+[Install Deno](https://docs.deno.com/runtime/getting_started/installation/) if you haven't already done that. Next, make sure to have the relevants of above-mentioned environment variables defined in your local setup (including `webpage_show=demo` if you want the demo-page to play with). For example by adding the variables to a `.env` file in the root of the repository. Then...
 
 Run locally with:
 
