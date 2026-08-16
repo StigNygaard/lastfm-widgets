@@ -359,7 +359,7 @@ a.username {
 
 /* Dark Mode */
 @media (prefers-color-scheme: dark) {
-  :host {
+  :host(.autodark) {
     --bg: #222;
     --fg: #fff;
     --border: #444;
