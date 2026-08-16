@@ -37,7 +37,7 @@ Also, KV is still considered an 'in development' technology. But it has existed 
 | `proxy_use` | No | If set to `mem`, the *in-memory* proxy-cache is used. Otherwise *Deno KV* proxy-cache is used (default and generally recommended).                                                                                        |
 | `webpage_show` | No | If set to `demo`, the demo-page is shown on the deployed site. Otherwise a "promotion page" pointing to [the *official* demo site/page](https://lastfm-widgets.stignygaard.deno.net/) is shown (default and recommended). |
 
-Actually, the proxy in "KV-mode" uses a "two-level cache" implementation. KV is the "primary cache", but in-memory cache is also used for a "first-level cache".
+Actually, the proxy in "KV-mode" uses a "two-level cache" implementation. KV is the "primary cache", but in-memory cache is also used for a non-persistent - possibly short-living - "first-level cache".
 
 The proxy is served from `/proxy-api` on the deployed site. Set the `backend` attribute on your widget to point to this address.
 
@@ -46,7 +46,7 @@ To avoid confusion about where the official demo-page for the widget is located,
 Notice, it is recommended to use widget [v1.13 or newer](https://github.com/StigNygaard/lastfm-widgets/releases "Get latest version of the Tracks widget"). If you are using version 1.11 or older, it is [a good idea](https://github.com/StigNygaard/lastfm-widgets/issues/4) to set the `ignorebots` attribute on the widget.
 
 ### Local development
-[Install Deno](https://docs.deno.com/runtime/getting_started/installation/) if you haven't already done that. Next, make sure to have the relevants of above-mentioned environment variables defined in your local setup (including `webpage_show=demo` if you want the demo-page to play with). For example by adding the variables to a `.env` file in the root of the repository. Then...
+To run a local clone of this project, you need to have [Deno installed](https://docs.deno.com/runtime/getting_started/installation/ "Install Deno"). Next, make sure you have the relevants of above-mentioned environment variables defined (including `webpage_show=demo` if you want the demo-page to play with). The easiest way to define these variables in a local setup, is to add them in a `.env` file in the root of the project-folder (see `.env.example`). Then...
 
 Run locally with:
 
@@ -54,7 +54,7 @@ Run locally with:
 deno task start
 ```
 
-or in "developer-mode" with "auto-restart" when changes to code is detected:
+or run in "developer-mode" with "auto-restart" when changes to code are detected:
 
 ```bash
 deno task dev
@@ -125,4 +125,4 @@ To serve the proxy from your own domain instead of `*.workers.dev`, add a route 
 
 All options expose the same request/response contract, so the frontend widget works identically regardless of which backend is used. If you ain't already using either platform, Deno KV solution on Deno Deploy is probably an easy and free way to get a backend-proxy for your widget. Deno Deploy has monthly read and write limits for Deno KV. If that could be an issue depends on factors like activity (usage) of widget, how often your scrobble new tracks, your widget's update-interval and length of widget's shown playlist. For most, I think a free-tier Deno Deploy account is enough for a Deno KV proxy, if Deno KV is used only for the Tracks widget. But I'm also still collecting practical experience on this myself, as the KV-based proxy-implementation is still very new. 
 
-The in-memory cache can be short-living (Deno Deploy is said to keep in-active applications alive between 5 seconds to 10 minutes depending on general system load). Also, In-memory cache is per-node in an "edge network" like Deno Deploy. The in-memory option is better than nothing, but Deno KV or Cloudflare Workers are better choices when possible to use.    
+The in-memory cache can be very short-living (Deno Deploy is said to keep in-active applications alive between 5 seconds to 10 minutes depending on the general system load). Also, In-memory cache is per-node in an "edge network" like Deno Deploy. The in-memory option is better than nothing, but Deno KV or Cloudflare Workers are better choices when possible to use.    
