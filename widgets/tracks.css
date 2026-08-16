@@ -10,6 +10,20 @@
  */
 
 :host {
+
+  --bg: #fff;
+  --fg: rgb(34 34 34);
+  --border: #eee;
+  --bg-hover: #f9f9f9;
+  --bg-nowplaying: #fff9e5;
+  --bg-nowplaying-hover: #fcf2cf;
+  --bg-album: #fbe9e9;
+  --bg-album-hover: #fadcdc;
+  --fg-muted: rgb(136 136 136 / 1);
+  --fg-ext: rgb(34 34 34 / .7);
+  --footer-bg: #fff;
+  --footer-border: #787;
+  --footer-fg: #787;
   all: initial; /* In this webcomponent I don't want to inherit anything */
   display: block; /* By default, custom elements are "inline" */
   position: relative;
@@ -18,8 +32,8 @@
   overflow: clip;
   max-height: 100%;
   opacity: 1;
-  color: rgb(34 34 34); /* #222; */
-  background-color: #fff;
+  color: var(--fg); /* #222; */
+  background-color: var(--bg);
   margin: 0;
   padding: 0 !important;
   line-height: 1.2 !important;
@@ -169,11 +183,11 @@ a.username {
 .footer {
   font-size: smaller;
   text-align: center;
-  background-color: #fff;
+  background-color: var(--footer-bg);
   border-radius: .8em .8em 0 0;
-  border: 1px solid #787;
+  border: 1px solid var(--footer-border);
   border-bottom: none;
-  color: #787;
+  color: var(--footer-fg);
   margin: 0 auto 0 auto;
   padding: .4em .1em .4em .1em;
   position: absolute;
@@ -186,7 +200,7 @@ a.username {
   transition: transform var(--transition-time-out) ease-in-out var(--transition-delay-out);
 }
 .footer a {
-  color: #787;
+  color: var(--footer-fg);
 }
 .footer > a::before {
   background-image: var(--icon-github);
@@ -224,14 +238,14 @@ a.username {
 }
 
 #playlist a {
-  color: rgb(34 34 34 / 1);
+  color: var(--fg);
 }
 
 #playlist > div {
   margin: 0;
   padding: 1px;
-  border-bottom: 1px solid #eee;
-  background-color: #fff;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg);
 }
 #playlist > div:last-child {
   border-bottom: none;
@@ -244,7 +258,7 @@ a.username {
       'cover albumline';
   column-gap: 1px;
 
-  background-color: #fbe9e9;
+  background-color: var(--bg-album);
   padding-right: 4px;
 }
 :host(.no-albums) #playlist > div.albuminfo {
@@ -261,16 +275,16 @@ a.username {
   column-gap: 1px;
 }
 #playlist > div.albuminfo:hover {
-  background-color: #fadcdc;
+  background-color: var(--bg-album-hover);
 }
 #playlist > div.trackinfo:hover {
-  background-color: #f9f9f9;
+  background-color: var(--bg-hover);
 }
 #playlist > div.trackinfo.nowplaying {
-  background-color: #fff9e5;
+  background-color: var(--bg-nowplaying);
 }
 #playlist > div.trackinfo.nowplaying:hover {
-  background-color: #fcf2cf;
+  background-color: var(--bg-nowplaying-hover);
 }
 
 #playlist div.trackinfo > *, div.albuminfo > * {
@@ -313,7 +327,7 @@ a.username {
 #playlist div.trackinfo > .play {
   grid-area: play;
   font-size: 85%;
-  color: rgb(136 136 136 / 1);
+  color: var(--fg-muted);
   line-height: 32px; /* equals height -> center vertically */
   text-align: right;
   padding-right: 4px;
@@ -340,5 +354,24 @@ a.username {
   font-style: italic;
 }
 #playlist div.albuminfo > .albumline a.album-title.extension {
-  color: rgb(34 34 34 / .7);
+  color: var(--fg-ext);
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :host(.autodark) {
+    --bg: #222;
+    --fg: #fff;
+    --border: #444;
+    --bg-hover: #333;
+    --bg-nowplaying: #3a3219;
+    --bg-nowplaying-hover: #4a4020;
+    --bg-album: #3a1e1e;
+    --bg-album-hover: #4a2626;
+    --fg-muted: #aaa;
+    --fg-ext: rgb(255 255 255 / 0.7);
+    --footer-bg: #222;
+    --footer-border: #454;
+    --footer-fg: #9a9;
+  }
 }

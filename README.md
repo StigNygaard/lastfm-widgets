@@ -81,5 +81,4 @@ serving the above-mentioned content (except `/cf-worker/`).
 What could future updates bring? _Maybe_:
 
 - A layout that adapts nicer to wider display dimensions of widget
-- Dark mode
 - Another widget
