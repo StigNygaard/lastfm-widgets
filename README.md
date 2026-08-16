@@ -80,5 +80,6 @@ serving the above-mentioned content (except `/cf-worker/`).
 
 What could future updates bring? _Maybe_:
 
+- Dark mode (Not official yet – But there's a "secret" way to [enable some early experiments](https://github.com/StigNygaard/lastfm-widgets/issues/3#issuecomment-5308275385))
 - A layout that adapts nicer to wider display dimensions of widget
 - Another widget
