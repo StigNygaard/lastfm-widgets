@@ -24,6 +24,8 @@ console.log(`${new Date().toISOString()} - Running on Deno ${Deno.version.deno} 
 async function handler(req: Request, info: Deno.ServeHandlerInfo) {
     const url = new URL(req.url);
     const pathname = url.pathname;
+    const robots = `User-agent: *\nDisallow:\nSitemap: ${url.origin}/sitemap.txt`;
+    const sitemap = `${url.origin}/`;
 
     // The "Router"...
     let response: Response;
@@ -47,6 +49,10 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
             quiet: true, // logging of errors
             headers: myHeadersArr
         });
+    } else if (pathname === '/robots.txt' && req.method === 'GET') {
+        response = new Response(robots, { status: 200, statusText: 'OK', headers: myHeaders, 'Content-Type': 'text/plain' });
+    } else if (pathname === '/sitemap.txt' && req.method === 'GET') {
+        response = new Response(sitemap, { status: 200, statusText: 'OK', headers: myHeaders, 'Content-Type': 'text/plain' });
     } else if (req.method === 'GET') {
         // The statically served demo or promo-page
         response = await serveDir(req, {
