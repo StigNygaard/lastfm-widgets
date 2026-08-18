@@ -59,24 +59,22 @@ const waitNext = new Map([
 ]);
 
 const MemCache = new Map([ // Map for the "first-level" in-memory cache
-    ['user.getinfo-OkResponse', ''],
-    ['user.getrecenttracks-OkResponse', '']
 ]);
 const textDecoder = new TextDecoder();
 const keysWithBigValues = ['user.getrecenttracks-OkResponse']; // Keys with big values. To store values in KV, use @kitsonk/kv-toolbox/blob for these.
 const Caching = function(kvCache?: Deno.Kv, keysHandleBig: string[] = [], expireIn = expireCachedValues) {
-    async function get(key: string) {
-        let strVal = MemCache.get<string>(key);
-        if (strVal && kvCache) console.log(` $$$ ${key} was SUCCESSFULLY READ from the 1ST LEVEL in-memory cache!`);
-        if (!strVal && kvCache) {
+    async function get(key: string): Promise<string | undefined> {
+        let strVal = MemCache.get<string>(key) ?? undefined;
+        // if (strVal !== undefined && kvCache) console.log(` $$$ ${key} was SUCCESSFULLY READ from the 1ST LEVEL in-memory cache!`);
+        if (strVal === undefined && kvCache) {
             if (keysHandleBig.includes(key)) {
                 const val = await kvBlobTool.get(kvCache, [key]);
-                strVal = val.value ? textDecoder.decode(val.value) : '';
+                strVal = val.value ? textDecoder.decode(val.value) : undefined;
             } else {
-                const val = await kvCache.get([key]);
-                strVal = val.value;
+                const val = await kvCache.get<string>([key]);
+                strVal = val.value ?? undefined;
             }
-            if (strVal) { // Update 1st level (in-memory) cache with value read from KV
+            if (strVal !== undefined) { // Update 1st level (in-memory) cache with value read from KV
                 MemCache.set(key, strVal);
                 // console.log(` $$$ ${key} was UPDATED in 1st level in-memory cache with data from 2nd level KV-cache`);
             }
@@ -109,8 +107,8 @@ export async function serve(
 ): Promise<{ body: string; options: object }> {
 
     // KV or "in-memory" cache:
-    using cacheImpl = cachetype === 'KV' ? await Deno.openKv() : undefined;
-    const cache = Caching(cacheImpl, keysWithBigValues);
+    using kvCache = cachetype === 'KV' ? await Deno.openKv() : undefined;
+    const cache = Caching(kvCache, keysWithBigValues);
 
     let fetchSuccessCount = 0;
     let fetchErrorCount = 0;
