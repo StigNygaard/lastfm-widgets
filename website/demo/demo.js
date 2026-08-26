@@ -178,7 +178,11 @@ window.addEventListener(
          * Tracks widget
          * @type {Tracks}
          */
-        const widget = create('lastfm-tracks', { backend: '/proxy-api', interval: 35, allowbots: /Googlebot/.test(navigator.userAgent) }); // TODO temporarily allowing googlebot fetching playlists
+        const widget = create('lastfm-tracks', {
+            backend: '/proxy-api',
+            interval: 35,
+            allowbots: /Googlebot/.test(navigator.userAgent)
+        });
         widgetResizeable.appendChild(widget);
         const stopButton = document.querySelector('button#stopBtn');
         const incIntervalButton = document.querySelector('button#incIntervalBtn');
