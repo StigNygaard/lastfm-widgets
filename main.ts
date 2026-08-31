@@ -8,8 +8,8 @@ import * as ProxyApi from './services/proxy-api.ts';
  */
 
 const myHeaders = {
-    // 'Content-Security-Policy': `default-src 'none' ; script-src 'self' ; connect-src https: ; img-src https: blob: data: ; style-src 'self' ; frame-ancestors 'none' ; form-action 'self' ; base-uri 'none'`,
-    'Content-Security-Policy': `default-src 'self' ; connect-src https: ; img-src https: blob: data: ; base-uri 'none'`,
+    // 'Content-Security-Policy': `default-src 'none' ; script-src 'self' ; connect-src https: 'self' ; img-src https: blob: data: 'self' ; style-src 'self' ; frame-ancestors 'none' ; form-action 'self' ; base-uri 'none'`,
+    'Content-Security-Policy': `default-src 'self' ; connect-src https: 'self' ; img-src https: blob: data: 'self' ; base-uri 'none'`,
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'X-Content-Type-Options': 'nosniff'
 };
