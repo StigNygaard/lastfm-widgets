@@ -74,10 +74,5 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
         // for other routing examples, see f.ex: https://youtu.be/p541Je4J_ws?si=-tWmB355467gtFIP
     }
 
-    if (url.origin.startsWith('http://localhost:')) { // if http://localhost development, modify slightly
-        response.headers.set('Content-Security-Policy',
-            `default-src 'none' ; script-src 'self' ; connect-src https: ${url.origin} ; img-src https: blob: data: ${url.origin} ; style-src 'self' ; frame-ancestors 'none' ; form-action 'self' ; base-uri 'none'`);
-    }
-
     return response;
 }
