@@ -17,7 +17,7 @@ As name of this repository hints, I might have more than one Last.fm widget plan
 Using the widget in any HTML file is straightforward because it's a standard web component. You only need to import the script and place the custom HTML tag where you want it to appear.
 You can configure the widget by adding attributes to the custom HTML tag. Get the details and play with the customization options on the [interactive demo site](https://lastfm-widgets.stignygaard.deno.net/ "The demo-page is an interactive playground for widget customization").
 
-Optionally, you can also [add a "proxy-API" to your setup](https://github.com/StigNygaard/lastfm-widgets/blob/main/services/README.md "How to set up a proxy-API for the Tracks widget").
+Optionally, you can also [add a "proxy-API" to your setup](https://github.com/StigNygaard/lastfm-widgets/blob/main/services/README.md "How to set up a proxy-API for the Tracks widget"). If you have your own GitHub account and know how to fork or clone a project, it is actually not very difficult to set up on [Deno Deploy](https://deno.com/deploy). A _free_ Deno Deploy account should be sufficient for most users.
 
 ## The technical...
 
@@ -81,5 +81,5 @@ serving the above-mentioned content (except `/cf-worker/`).
 What could future updates bring? _Maybe_:
 
 - Dark mode
-- A layout that adapts nicer to wider display dimensions of widget
+- A layout that adapts nicer to wider display dimensions of the widget
 - Another widget
