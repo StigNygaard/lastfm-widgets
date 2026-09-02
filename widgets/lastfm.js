@@ -874,7 +874,7 @@ class Tracks extends HTMLElement {
                                 coverLink,
                                 create('div', {class: 'albumline'},
                                     artistLink,
-                                    ' — ',
+                                    ' – ',
                                     albumBasicLink,
                                     item.splitTitle.spacer,
                                     albumExtensionLink
@@ -891,7 +891,7 @@ class Tracks extends HTMLElement {
                                 coverLink,
                                 create('div', {class: 'albumline'},
                                     artistLink,
-                                    ' — ',
+                                    ' – ',
                                     albumLink
                                 )
                             ));
