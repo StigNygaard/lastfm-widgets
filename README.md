@@ -17,7 +17,7 @@ As name of this repository hints, I might have more than one Last.fm widget plan
 Using the widget in any HTML file is straightforward because it's a standard web component. You only need to import the script and place the custom HTML tag where you want it to appear.
 You can configure the widget by adding attributes to the custom HTML tag. Get the details and play with the customization options on the [interactive demo site](https://lastfm-widgets.stignygaard.deno.net/ "The demo-page is an interactive playground for widget customization").
 
-Optionally, you can also [add a "proxy-API" to your setup](https://github.com/StigNygaard/lastfm-widgets/blob/main/services/README.md "How to set up a proxy-API for the Tracks widget"). If you have your own GitHub account and know how to fork or clone a project, it is actually not very difficult to set up on [Deno Deploy](https://deno.com/deploy). A _free_ Deno Deploy account should be sufficient for most users.
+_Optionally_, you can also [add a "proxy-API" to your setup](https://github.com/StigNygaard/lastfm-widgets/blob/main/services/README.md "How to set up a proxy-API for the Tracks widget"). If you have your own GitHub account and know how to fork/clone this project, it is actually pretty straight forward to set up using [Deno Deploy](https://deno.com/deploy). A [_free_](https://deno.com/deploy/pricing "Deno Deploy plans and prices") Deno Deploy account should be sufficient for most users.
 
 ## The technical...
 
@@ -34,14 +34,14 @@ by [burnblazter](https://github.com/burnblazter).
 Also, this repository is set up as a [Deno Deploy](https://deno.com/deploy) project. Any updates to the main-branch
 (widget, demo-page and the Deno proxy-api) are immediately deployed to the Deno Deploy demo-site.
 
-The widget itself should be compatible back to at least Firefox 115 and Chromium 109 based web-browsers
-(so it also works for Windows 7/8 users stuck on these versions). It should also run in Safari versions going pretty
-far back, but I'm unsure exactly how old versions that are supported. The backend code (Deno proxy-api) is my
-first simple experiments/experience with Deno (and server-side Javascript in general).
+I don't have the setup to test it anymore, but I believe the widget is compatible back to Firefox 115 and
+Chromium 109 based web-browsers (so it also works for Windows 7/8 users stuck on these versions). It should
+also run in Safari versions going pretty far back. The backend code (Deno proxy-api) is my first simple
+experiments/experience with Deno (and server-side Javascript in general).
 
 #### /widgets/ folder
 
-The widget frontend code. _All_ that is needed for widget to work in _Demo_ or _Basic_ mode. See
+The widget frontend code. _Everything_ that is needed for widget to work in _Demo_ or _Basic_ mode. See
 [Releases](https://github.com/StigNygaard/lastfm-widgets/releases) to get the latest "release-version" of this folder's
 content. And see the demo page at https://lastfm-widgets.stignygaard.deno.net/ for more about widget _modes_
 and how to use and customize the widget.
@@ -58,18 +58,19 @@ show the demo page instead.
 
 #### /services/ folder
 
-- `proxy-api.ts` - A Deno proxy-api using either in-memory or (by default) Deno KV cache.
+- `proxy-api.ts` - A Deno proxy-api using either in-memory or (by default) Deno KV cache to "throttle" data.
 - `log.ts` - A simple log endpoint used by the demo page.
 
-On the demo-page, Deno KV is the normally used proxy-api when widget is in _Backend-supported_ mode – and it is also used by widget on [rockland.dk](https://www.rockland.dk/).
+This _proxy-api_ service is used by widget on the demo-page when the widget is in _Backend-supported_ mode – 
+and it is also used by the widget on [rockland.dk](https://www.rockland.dk/).
 
-For full documentation on setting up the backend proxies, see [services/README.md](services/README.md "How to set up a proxy-API for the Tracks widget").
+For full documentation on setting up backend proxies, see [services/README.md](services/README.md "How to set up a proxy-API for the Tracks widget").
 
 #### /cf-worker/ folder
 
 An alternative Cloudflare Worker backend proxy-api. Kindly contributed to this project by [burnblazter](https://github.com/burnblazter).
 
-For full documentation on setting up the backend proxies, see [services/README.md](services/README.md "How to set up a proxy-API for the Tracks widget").
+For full documentation on setting up backend proxies, see [services/README.md](services/README.md "How to set up a proxy-API for the Tracks widget").
 
 #### /main.ts file
 
