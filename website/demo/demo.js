@@ -203,6 +203,7 @@ window.addEventListener(
             widget.classList.toggle('no-scroll', toggleNoScroll.checked);
             updateTagDef();
         };
+        // widget.classList.add('autodark');
         const userChanged = () => {
             const username = usernameInput.value?.trim();
             if (username.length) {

@@ -13,7 +13,7 @@
 
   --bg: #fff;
   --fg: rgb(34 34 34);
-  --border: #eee;
+  --border: #787;
   --bg-hover: #f9f9f9;
   --bg-nowplaying: #fff9e5;
   --bg-nowplaying-hover: #fcf2cf;
@@ -21,9 +21,11 @@
   --bg-album-hover: #fadcdc;
   --fg-muted: rgb(136 136 136 / 1);
   --fg-ext: rgb(34 34 34 / .7);
+  --header-fg: #fff;
+  --header-bg: #787;
+  --tracks-separator: #eee;
   --footer-bg: #fff;
-  --footer-border: #787;
-  --footer-fg: #787;
+  --footer-fg: var(--border);
   all: initial; /* In this webcomponent I don't want to inherit anything */
   display: block; /* By default, custom elements are "inline" */
   position: relative;
@@ -89,7 +91,7 @@ a:hover {
   top: 0;
   width: 100%;
   height: var(--header-height);
-  background-color: #787;
+  background-color: var(--header-bg);
   background-image: var(--header-background);
   background-position: center;
   background-repeat: no-repeat;
@@ -104,7 +106,7 @@ a:hover {
   backdrop-filter: blur(10px) brightness(60%);
   width: calc(100% - 10px);
   height: calc(var(--header-height) - 4px);
-  color: #fff;
+  color: var(--header-fg);
   padding: 2px 5px;
   line-height: 1.4;
 }
@@ -134,7 +136,7 @@ a:hover {
 .header .avatar {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid #787;
+  border: 1px solid var(--border);
   margin: 0;
   padding: 0;
   aspect-ratio: 1 / 1;
@@ -162,7 +164,7 @@ a:hover {
   white-space: nowrap;
 }
 a.username {
-  color: #fff;
+  color: var(--header-fg);
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -185,7 +187,7 @@ a.username {
   text-align: center;
   background-color: var(--footer-bg);
   border-radius: .8em .8em 0 0;
-  border: 1px solid var(--footer-border);
+  border: 1px solid var(--border);
   border-bottom: none;
   color: var(--footer-fg);
   margin: 0 auto 0 auto;
@@ -244,7 +246,7 @@ a.username {
 #playlist > div {
   margin: 0;
   padding: 1px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--tracks-separator);
   background-color: var(--bg);
 }
 #playlist > div:last-child {
@@ -357,21 +359,26 @@ a.username {
   color: var(--fg-ext);
 }
 
-/* Dark Mode */
+/* Dark Mode experiments */
 @media (prefers-color-scheme: dark) {
   :host(.autodark) {
     --bg: #222;
     --fg: #fff;
-    --border: #444;
+    --border: #ab9;
     --bg-hover: #333;
-    --bg-nowplaying: #3a3219;
-    --bg-nowplaying-hover: #4a4020;
-    --bg-album: #3a1e1e;
-    --bg-album-hover: #4a2626;
+    --bg-nowplaying: #5e5120;
+    --bg-nowplaying-hover: #8e7227;
+    --bg-album: #592323;
+    --bg-album-hover: #832d2d;
     --fg-muted: #aaa;
     --fg-ext: rgb(255 255 255 / 0.7);
+    --header-fg: #fff;
+    --header-bg: #787;
+    --tracks-separator: #444;
     --footer-bg: #222;
-    --footer-border: #454;
-    --footer-fg: #9a9;
+    --footer-fg: var(--border);
+  }
+  :host(.autodark) .footer > a::before {
+    filter: invert(100%) brightness(120%);
   }
 }
