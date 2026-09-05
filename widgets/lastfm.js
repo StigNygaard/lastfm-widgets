@@ -223,6 +223,7 @@ class Tracks extends HTMLElement {
     #userAgent = navigator.userAgent.toLowerCase();
     #ref = `${new URL(document.URL).hostname};${this.#userAgent}`.substring(0,250);
     #okUserAgent = this.#notBot(this.#userAgent);
+    #prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     #fetcher = fetcher.json;
     #resizeObserver = new ResizeObserver(entries => {
@@ -645,50 +646,52 @@ class Tracks extends HTMLElement {
         if (track) {
             it.style.setProperty('--trackcol', `${track.offsetWidth - 1}px`);
             if (album) it.style.setProperty('--albumcol', `${album.offsetWidth - 1}px`);
-            // and find the texts that need to be able to scroll...
-            const trackTitles = it.shadowRoot.querySelectorAll('.track > span');
-            const albumLines = it.shadowRoot.querySelectorAll('.albumline > span');
-            const playlist = it.shadowRoot.getElementById('playlist');
-            playlist.classList.add('measuring'); // Make sure to use display:inline-block when reading scrollWidth
-            for (const trackTitle of trackTitles) {
-                const diff = trackTitle.scrollWidth - track.offsetWidth;
-                if (diff >= 0) {
-                    const percentageDiff = diff * 100 / track.offsetWidth;
-                    if (percentageDiff < 5) { // TODO: might make more sense to look relative to number of characters?
-                        trackTitle.dataset.scrolly = '1';
-                    } else if (percentageDiff < 20) {
-                        trackTitle.dataset.scrolly = '2';
-                    } else if (percentageDiff < 35) {
-                        trackTitle.dataset.scrolly = '3';
-                    } else if (percentageDiff < 50){
-                        trackTitle.dataset.scrolly = '4';
+            if (!it.#prefersReducedMotion) { // Skip "scrolly" it prefers-reduced-motion...
+                // Find the texts that need to be able to scroll...
+                const trackTitles = it.shadowRoot.querySelectorAll('.track > span');
+                const albumLines = it.shadowRoot.querySelectorAll('.albumline > span');
+                const playlist = it.shadowRoot.getElementById('playlist');
+                playlist.classList.add('measuring'); // Make sure to use display:inline-block when reading scrollWidth
+                for (const trackTitle of trackTitles) {
+                    const diff = trackTitle.scrollWidth - track.offsetWidth;
+                    if (diff >= 0) {
+                        const percentageDiff = diff * 100 / track.offsetWidth;
+                        if (percentageDiff < 5) { // TODO: might make more sense to look relative to number of characters?
+                            trackTitle.dataset.scrolly = '1';
+                        } else if (percentageDiff < 20) {
+                            trackTitle.dataset.scrolly = '2';
+                        } else if (percentageDiff < 35) {
+                            trackTitle.dataset.scrolly = '3';
+                        } else if (percentageDiff < 50) {
+                            trackTitle.dataset.scrolly = '4';
+                        } else {
+                            trackTitle.dataset.scrolly = '5';
+                        }
                     } else {
-                        trackTitle.dataset.scrolly = '5';
+                        delete trackTitle.dataset.scrolly;
                     }
-                } else {
-                    delete trackTitle.dataset.scrolly;
                 }
-            }
-            for (const albumLine of albumLines) {
-                const diff = albumLine.scrollWidth - album.offsetWidth;
-                if (diff >= 0) {
-                    const percentageDiff = diff * 100 / album.offsetWidth;
-                    if (percentageDiff < 5) { // TODO: might make more sense to look relative to number of characters?
-                        albumLine.dataset.scrolly = '1';
-                    } else if (percentageDiff < 20) {
-                        albumLine.dataset.scrolly = '2';
-                    } else if (percentageDiff < 35) {
-                        albumLine.dataset.scrolly = '3';
-                    } else if (percentageDiff < 50){
-                        albumLine.dataset.scrolly = '4';
+                for (const albumLine of albumLines) {
+                    const diff = albumLine.scrollWidth - album.offsetWidth;
+                    if (diff >= 0) {
+                        const percentageDiff = diff * 100 / album.offsetWidth;
+                        if (percentageDiff < 5) { // TODO: might make more sense to look relative to number of characters?
+                            albumLine.dataset.scrolly = '1';
+                        } else if (percentageDiff < 20) {
+                            albumLine.dataset.scrolly = '2';
+                        } else if (percentageDiff < 35) {
+                            albumLine.dataset.scrolly = '3';
+                        } else if (percentageDiff < 50) {
+                            albumLine.dataset.scrolly = '4';
+                        } else {
+                            albumLine.dataset.scrolly = '5';
+                        }
                     } else {
-                        albumLine.dataset.scrolly = '5';
+                        delete albumLine.dataset.scrolly;
                     }
-                } else {
-                    delete albumLine.dataset.scrolly;
                 }
+                playlist.classList.remove('measuring');
             }
-            playlist.classList.remove('measuring');
         }
     }
     #adjustDimensionsDebounced = debounce(this.#adjustDimensions, 300);
@@ -918,7 +921,7 @@ class Tracks extends HTMLElement {
                             create('a', {
                                 class: item.loved ? 'track loved' : 'track',
                                 href: item.trackUrl,
-                                // title: item.trackName, // TODO: Maybe still have titles if window.matchMedia('(prefers-reduced-motion: reduce)').matches? (https://joshcollinsworth.com/blog/great-transitions#bonus-respect-the-users-preferences)
+                                title: this.#prefersReducedMotion ? item.trackName : false,
                                 tabindex: '-1'
                             }, create('span', {}, item.trackName)),
                             create('div', {class: 'artist'},
@@ -944,20 +947,20 @@ class Tracks extends HTMLElement {
                                 : '');
                         const artistLink = create('a', {
                             href: item.artistUrl,
-                            // title: item.artistName,
+                            title: this.#prefersReducedMotion ? item.artistName : false,
                             class: 'albumArtist',
                             tabindex: '-1'
                         }, item.artistName);
                         if (item.splitTitle.extension) {
                             const albumBasicLink = create('a', {
                                 href: `${item.artistUrl}/${encodeURIComponent(item.splitTitle.basic).replaceAll('%20', '+')}`,
-                                // title: item.splitTitle.basic,
+                                title: this.#prefersReducedMotion ? item.splitTitle.basic : false,
                                 class: 'album-title',
                                 tabindex: '-1'
                             }, item.splitTitle.basic);
                             const albumExtensionLink = create('a', {
                                 href: item.albumUrl,
-                                // title: item.albumTitle,
+                                title: this.#prefersReducedMotion ? item.albumTitle : false,
                                 class: 'album-title extension',
                                 tabindex: '-1'
                             }, item.splitTitle.extension);
@@ -976,7 +979,7 @@ class Tracks extends HTMLElement {
                         } else {
                             const albumLink = create('a', {
                                 href: item.albumUrl,
-                                // title: item.albumTitle,
+                                title: this.#prefersReducedMotion ? item.albumTitle : false,
                                 class: 'album-title',
                                 tabindex: '-1'
                             }, item.albumTitle);
