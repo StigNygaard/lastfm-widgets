@@ -260,8 +260,8 @@ a.username {
 }
 #playlist > div.albuminfo {
   display: grid;
-  grid-template-columns: [coverstart] 32px [albumlinestart] auto [end];
-  grid-template-rows: [top] 32px [bottom];
+  grid-template-columns: [coverstart] 32px [albumlinestart] auto [theend];
+  grid-template-rows: [thetop] 32px [thebottom];
   grid-template-areas:
       'cover albumline';
   column-gap: 1px;
@@ -275,8 +275,8 @@ a.username {
 
 #playlist > div.trackinfo {
   display: grid;
-  grid-template-columns: [coverstart] 32px [trackstart] auto [timestart] var(--playcol) [end];
-  grid-template-rows: [top] 18px [middle] 14px [bottom];
+  grid-template-columns: [coverstart] 32px [trackstart] auto [timestart] var(--playcol) [theend];
+  grid-template-rows: [thetop] 18px [themiddle] 14px [thebottom];
   grid-template-areas:
     'cover track play'
     'cover artist play';
