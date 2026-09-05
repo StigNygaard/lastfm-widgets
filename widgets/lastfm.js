@@ -123,7 +123,7 @@ const fetcher = (function () {
         running.add(uri);
         const ts = Date.now();
 
-        console.log(`json-fetcher: Fetching ${uri}...`); // TODO remove
+        console.log(`json-fetcher: Fetching ${uri}...`);
 
         return fetch(uri)
             .then(function (response) {
@@ -154,6 +154,41 @@ const fetcher = (function () {
     };
 })();
 
+/**
+ * Throttles the execution of a given function by a specified interval.
+ *
+ * @param {function} func - The function to throttle.
+ * @param {number} interval - The interval in milliseconds.
+ * @returns {function} - The throttled function.
+ */
+function throttle(func, interval) {
+    let timeout = null;
+    return function (...args) {
+        if (timeout) return;
+        const later = () => {
+            func.apply(this, args);
+            timeout = null;
+        };
+        timeout = setTimeout(later, interval);
+    };
+}
+
+/**
+ * Debounces a function, ensuring that it is only called after a certain delay has passed since the last invocation.
+ *
+ * @param {function} func - The function to be debounced.
+ * @param {number} delay - The delay time in milliseconds.
+ * @returns {function} - The debounced function.
+ */
+function debounce(func, delay) {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            func.apply(this, args);
+        }, delay);
+    };
+}
 
 
 class Tracks extends HTMLElement {
@@ -190,6 +225,9 @@ class Tracks extends HTMLElement {
     #okUserAgent = this.#notBot(this.#userAgent);
 
     #fetcher = fetcher.json;
+    #resizeObserver = new ResizeObserver(entries => {
+        this.#adjustDimensionsDebounced(this, 'RESIZE');
+    });
 
     // Fires when an instance of the element is created or updated
     constructor() {
@@ -198,20 +236,22 @@ class Tracks extends HTMLElement {
     }
 
     // Fires when an instance was inserted into the document
-    connectedCallback() {
+    async connectedCallback() {
         const cachevalue = new Date().toISOString().substring(0,10);
         const basestyles = new URL('tracks.css', scriptURI);
         if (!basestyles.searchParams.get('cache')) {
             basestyles.searchParams.set('cache', cachevalue.toString());
         }
         this.shadowRoot.appendChild(create('link', { rel: 'stylesheet', id: 'basestyles', href: basestyles.href }));
-        this.#init();
+        await this.#init();
+        this.#resizeObserver.observe(this.shadowRoot.getElementById('playlist'));
         this.#dispatchStateChange();
     }
 
     // Fires when an instance was removed from the document
     disconnectedCallback() {
         this.stopUpdating();
+        this.#resizeObserver.unobserve(this.shadowRoot.getElementById('playlist'));
         if (this.shadowRoot) {
             this.shadowRoot.replaceChildren();
         }
@@ -371,7 +411,7 @@ class Tracks extends HTMLElement {
         this.#scrobbles.stop();
     }
 
-    #init() {
+    async #init() {
         const skeleton = create('div', { 'class': 'wrap', 'lang': 'en-GB' },
             create('div', { 'class': 'header' }, create('div', { 'class': 'content' },
                     create('a', { 'href': '#', 'class': 'userlink' },
@@ -451,9 +491,7 @@ class Tracks extends HTMLElement {
                 } else {
                     return it.#fetcher(url.href)
                         .then((o) => {
-
-                            console.log(`Profile fetcher ${url.href} returned \n`, o); // TODO remove !!!
-
+                            // console.log(`Profile fetcher ${url.href} returned \n`, o);
                             if (o.error) {
                                 if ([26, 29].includes(o.error)) {
                                     console.error(`Tracks widget: ⛔ ${o.error} - ${o.message} !`);
@@ -473,9 +511,7 @@ class Tracks extends HTMLElement {
         }
 
         function update(o) {
-
-            console.log(`A: Updating profile with: \n`, o); // TODO remove !!!
-
+            // console.log(`A: Updating profile with: \n`, o);
             if (o?.user?.name) {
                 const avatar = o.user.image?.find( (i) => i.size === 'large')['#text']; // 174px ('medium' 64px, 'extralarge' 300px)
                 const sinceDt = new Date(Number(o.user.registered.unixtime) * 1000);
@@ -499,8 +535,7 @@ class Tracks extends HTMLElement {
             } else {
                 console.error(`Skipping update profile because unexpected data: \n`, o);
             }
-
-            console.log(`B: Updating profile ended.`); // TODO remove !!!
+            // console.log(`B: Updating profile ended.`);
         }
 
         return {
@@ -602,7 +637,63 @@ class Tracks extends HTMLElement {
         };
     })(this);
 
-    /**
+    #adjustDimensions(it, loginfo) {
+        // Find width available to show album-lines and track titles (run on create/update playlist and on resize)
+        // console.log(loginfo ?? 'RENDER');
+        const track = it.shadowRoot.querySelector('.track');
+        const album = it.shadowRoot.querySelector('.albumline');
+        if (track) {
+            it.style.setProperty('--trackcol', `${track.offsetWidth - 1}px`);
+            if (album) it.style.setProperty('--albumcol', `${album.offsetWidth - 1}px`);
+            // and find the texts that need to be able to scroll...
+            const trackTitles = it.shadowRoot.querySelectorAll('.track > span');
+            const albumLines = it.shadowRoot.querySelectorAll('.albumline > span');
+            const playlist = it.shadowRoot.getElementById('playlist');
+            playlist.classList.add('measuring'); // Make sure to use display:inline-block when reading scrollWidth
+            for (const trackTitle of trackTitles) {
+                const diff = trackTitle.scrollWidth - track.offsetWidth;
+                if (diff >= 0) {
+                    const percentageDiff = diff * 100 / track.offsetWidth;
+                    if (percentageDiff < 5) { // TODO: might make more sense to look relative to number of characters?
+                        trackTitle.dataset.scrolly = '1';
+                    } else if (percentageDiff < 20) {
+                        trackTitle.dataset.scrolly = '2';
+                    } else if (percentageDiff < 35) {
+                        trackTitle.dataset.scrolly = '3';
+                    } else if (percentageDiff < 50){
+                        trackTitle.dataset.scrolly = '4';
+                    } else {
+                        trackTitle.dataset.scrolly = '5';
+                    }
+                } else {
+                    delete trackTitle.dataset.scrolly;
+                }
+            }
+            for (const albumLine of albumLines) {
+                const diff = albumLine.scrollWidth - album.offsetWidth;
+                if (diff >= 0) {
+                    const percentageDiff = diff * 100 / album.offsetWidth;
+                    if (percentageDiff < 5) { // TODO: might make more sense to look relative to number of characters?
+                        albumLine.dataset.scrolly = '1';
+                    } else if (percentageDiff < 20) {
+                        albumLine.dataset.scrolly = '2';
+                    } else if (percentageDiff < 35) {
+                        albumLine.dataset.scrolly = '3';
+                    } else if (percentageDiff < 50){
+                        albumLine.dataset.scrolly = '4';
+                    } else {
+                        albumLine.dataset.scrolly = '5';
+                    }
+                } else {
+                    delete albumLine.dataset.scrolly;
+                }
+            }
+            playlist.classList.remove('measuring');
+        }
+    }
+    #adjustDimensionsDebounced = debounce(this.#adjustDimensions, 300);
+
+     /**
      * Engine for "pre-processing" received scrobbles data. Making album-lines etc.
      */
     #scrobblesProcessor = (function () {
@@ -827,9 +918,9 @@ class Tracks extends HTMLElement {
                             create('a', {
                                 class: item.loved ? 'track loved' : 'track',
                                 href: item.trackUrl,
-                                title: item.trackName,
+                                // title: item.trackName, // TODO: Maybe still have titles if window.matchMedia('(prefers-reduced-motion: reduce)').matches? (https://joshcollinsworth.com/blog/great-transitions#bonus-respect-the-users-preferences)
                                 tabindex: '-1'
-                            }, item.trackName),
+                            }, create('span', {}, item.trackName)),
                             create('div', {class: 'artist'},
                                 create('a', {
                                     href: item.artistUrl,
@@ -840,7 +931,7 @@ class Tracks extends HTMLElement {
                                     class: 'play',
                                     title: item.pinfo.text === 'playing' ? 'Scrobbling now...' : item.pinfo.title
                                 },
-                                item.pinfo.text)
+                                create('span', {}, item.pinfo.text))
                         ));
                     } else if (item.type === 'album') {
                         const coverLink = create('a', {class: 'cover', href: item.albumUrl, tabindex: '-1'},
@@ -853,46 +944,50 @@ class Tracks extends HTMLElement {
                                 : '');
                         const artistLink = create('a', {
                             href: item.artistUrl,
-                            title: item.artistName,
+                            // title: item.artistName,
                             class: 'albumArtist',
                             tabindex: '-1'
                         }, item.artistName);
                         if (item.splitTitle.extension) {
                             const albumBasicLink = create('a', {
                                 href: `${item.artistUrl}/${encodeURIComponent(item.splitTitle.basic).replaceAll('%20', '+')}`,
-                                title: item.splitTitle.basic,
+                                // title: item.splitTitle.basic,
                                 class: 'album-title',
                                 tabindex: '-1'
                             }, item.splitTitle.basic);
                             const albumExtensionLink = create('a', {
                                 href: item.albumUrl,
-                                title: item.albumTitle,
+                                // title: item.albumTitle,
                                 class: 'album-title extension',
                                 tabindex: '-1'
                             }, item.splitTitle.extension);
                             lines.push(create('div', {class: 'albuminfo'},
                                 coverLink,
                                 create('div', {class: 'albumline'},
-                                    artistLink,
-                                    ' – ',
-                                    albumBasicLink,
-                                    item.splitTitle.spacer,
-                                    albumExtensionLink
+                                    create('span', {},
+                                        artistLink,
+                                        ' – ',
+                                        albumBasicLink,
+                                        item.splitTitle.spacer,
+                                        albumExtensionLink
+                                    ),
                                 )
                             ));
                         } else {
                             const albumLink = create('a', {
                                 href: item.albumUrl,
-                                title: item.albumTitle,
+                                // title: item.albumTitle,
                                 class: 'album-title',
                                 tabindex: '-1'
                             }, item.albumTitle);
                             lines.push(create('div', {class: 'albuminfo'},
                                 coverLink,
                                 create('div', {class: 'albumline'},
-                                    artistLink,
-                                    ' – ',
-                                    albumLink
+                                    create('span', {},
+                                        artistLink,
+                                        ' – ',
+                                        albumLink
+                                    ),
                                 )
                             ));
                         }
@@ -900,7 +995,21 @@ class Tracks extends HTMLElement {
                 }
             );
             this.shadowRoot.getElementById('playlist').replaceChildren(...lines);
-
+            // Find/set width of .play elements...
+            const playTimes = this.shadowRoot.querySelectorAll('.play > span');
+            let playWidth = 0;
+            for (const playTime of playTimes) {
+                // console.log(playTime.scrollWidth);
+                if (playTime.scrollWidth + 1 > playWidth) {
+                    playWidth = playTime.scrollWidth + 1;
+                }
+            }
+            if (playWidth > 0) {
+                this.style.setProperty('--playcol', `${playWidth + 8}px`); /* including 2x 4px padding */
+                // console.log(`Playtime colomn: playWidth=${playWidth}, setting --playcol=${playWidth + 8}px.`);
+            }
+            // Adjust other widths and "scrolly-functionality"...
+            this.#adjustDimensions(this);
         } else {
             console.error('Error or aborted getting scrobbles!');
         }
