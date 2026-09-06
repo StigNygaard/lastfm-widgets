@@ -26,13 +26,14 @@ or build tools needed). It can work "alone" communicating directly with Last.fm'
 supported by a custom backend "proxy-api". The latter is encouraged when possible, because it makes it possible to
 implement throttling of requests to Last.fm's API.
 
-This repository not only holds the widget itself, but also the demo-site (https://lastfm-widgets.stignygaard.deno.net/)
+This repository not only holds the widget code, but also code for demo-site (https://lastfm-widgets.stignygaard.deno.net/)
 and [_two_ different backend proxy-api implementations](services/README.md "How to set up a proxy-API for the Tracks widget").
 The default/primary proxy-API is implemented in [Deno]([Deno](https://deno.com/)) and uses either Deno KV or just
 memory for caching. But there's also an alternative Cloudflare Workers (Node.js) proxy-api implementation made
 by [burnblazter](https://github.com/burnblazter). 
-Also, this repository is set up as a [Deno Deploy](https://deno.com/deploy) project. Any updates to the main-branch
-(widget, demo-page and the Deno proxy-api) are immediately deployed to the Deno Deploy demo-site.
+Also, [this repository](https://github.com/StigNygaard/lastfm-widgets "StigNygaard/lastfm-widgets") is connected to a
+[Deno Deploy](https://deno.com/deploy) project. Any updates to the main-branch (widget, demo-page and the
+Deno proxy-api) are immediately deployed to the associated website on Deno Deploy.
 
 I don't have the setup to test it anymore, but I believe the widget is compatible back to Firefox 115 and
 Chromium 109 based web-browsers (so it also works for Windows 7/8 users stuck on these versions). It should
