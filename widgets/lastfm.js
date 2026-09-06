@@ -662,11 +662,11 @@ class Tracks extends HTMLElement {
                         const percentageDiff = diff * 100 / track.offsetWidth;
                         if (percentageDiff < 5) { // TODO: might make more sense to look relative to number of characters?
                             trackTitle.dataset.scrolly = '1';
-                        } else if (percentageDiff < 20) {
+                        } else if (percentageDiff < 25) {
                             trackTitle.dataset.scrolly = '2';
-                        } else if (percentageDiff < 35) {
+                        } else if (percentageDiff < 45) {
                             trackTitle.dataset.scrolly = '3';
-                        } else if (percentageDiff < 50) {
+                        } else if (percentageDiff < 70) {
                             trackTitle.dataset.scrolly = '4';
                         } else {
                             trackTitle.dataset.scrolly = '5';
@@ -681,11 +681,11 @@ class Tracks extends HTMLElement {
                         const percentageDiff = diff * 100 / album.offsetWidth;
                         if (percentageDiff < 5) { // TODO: might make more sense to look relative to number of characters?
                             albumLine.dataset.scrolly = '1';
-                        } else if (percentageDiff < 20) {
+                        } else if (percentageDiff < 25) {
                             albumLine.dataset.scrolly = '2';
-                        } else if (percentageDiff < 35) {
+                        } else if (percentageDiff < 45) {
                             albumLine.dataset.scrolly = '3';
-                        } else if (percentageDiff < 50) {
+                        } else if (percentageDiff < 70) {
                             albumLine.dataset.scrolly = '4';
                         } else {
                             albumLine.dataset.scrolly = '5';

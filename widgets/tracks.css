@@ -343,24 +343,23 @@ a.username {
 /*  animation: scrolly attr(data-scrolly s) var(--easing) 1;*/
 /*}*/
 #playlist > div.trackinfo:hover > .track > span[data-scrolly="1"] {
-  animation: scrolly 1.3s var(--easing) 1;
+  animation: scrolly 1.3s var(--easing) .4s 1;
 }
 #playlist > div.trackinfo:hover > .track > span[data-scrolly="2"] {
-  animation: scrolly 2s var(--easing) 1;
+  animation: scrolly 2s var(--easing) .4s 1;
 }
 #playlist > div.trackinfo:hover > .track > span[data-scrolly="3"] {
-  animation: scrolly 3s var(--easing) 1;
+  animation: scrolly 3s var(--easing) .4s 1;
 }
 #playlist > div.trackinfo:hover > .track > span[data-scrolly="4"] {
-  animation: scrolly 4s var(--easing) 1;
+  animation: scrolly 4s var(--easing) .4s 1;
 }
 #playlist > div.trackinfo:hover > .track > span[data-scrolly="5"] {
-  animation: scrolly 5s var(--easing) 1;
+  animation: scrolly 5s var(--easing) .4s 1;
 }
 @keyframes scrolly {
-  10% { transform: translateX(0); }
-  60% { transform: translateX(calc(-100% + var(--trackcol) - 5px)); }
-  70% { transform: translateX(calc(-100% + var(--trackcol) - 5px)); }
+  55% { transform: translateX(calc(-100% + var(--trackcol) - 5px)); }
+  65% { transform: translateX(calc(-100% + var(--trackcol) - 5px)); }
   100% { transform: translateX(0); }
 }
 #playlist div.trackinfo > .track.loved > span::after {
@@ -421,24 +420,23 @@ a.username {
 /*  animation: scrolly-album attr(data-scrolly s) var(--easing) 1;*/
 /*}*/
 #playlist div.albuminfo:hover > .albumline > span[data-scrolly="1"] {
-  animation: scrolly-album 1.3s var(--easing) 1;
+  animation: scrolly-album 1.3s var(--easing) .4s 1;
 }
 #playlist div.albuminfo:hover > .albumline > span[data-scrolly="2"] {
-  animation: scrolly-album 2s var(--easing) 1;
+  animation: scrolly-album 2s var(--easing) .4s 1;
 }
 #playlist div.albuminfo:hover > .albumline > span[data-scrolly="3"] {
-  animation: scrolly-album 3s var(--easing) 1;
+  animation: scrolly-album 3s var(--easing) .4s 1;
 }
 #playlist div.albuminfo:hover > .albumline > span[data-scrolly="4"] {
-  animation: scrolly-album 4s var(--easing) 1;
+  animation: scrolly-album 4s var(--easing) .4s 1;
 }
 #playlist div.albuminfo:hover > .albumline > span[data-scrolly="5"] {
-  animation: scrolly-album 5s var(--easing) 1;
+  animation: scrolly-album 5s var(--easing) .4s 1;
 }
 @keyframes scrolly-album {
-  10% { transform: translateX(0); }
-  60% { transform: translateX(calc(-100% + var(--albumcol) - 5px)); }
-  70% { transform: translateX(calc(-100% + var(--albumcol) - 5px)); }
+  55% { transform: translateX(calc(-100% + var(--albumcol) - 5px)); }
+  65% { transform: translateX(calc(-100% + var(--albumcol) - 5px)); }
   100% { transform: translateX(0); }
 }
 #playlist div.albuminfo > .albumline .album-title {
