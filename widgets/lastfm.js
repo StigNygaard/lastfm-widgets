@@ -350,7 +350,7 @@ class Tracks extends HTMLElement {
                 this.shadowRoot.getElementById('playlist')?.replaceChildren(); // clear currently shown tracks
                 console.log(`Tracks User/WidgetMode has changed to ${this.#user}/${this.#widgetMode} - Update profile-header and tracklist now...`);
                 this.#profile.setup();
-                this.#scrobbles.update();
+                this.#scrobbles.update(true);
             }
         }
 
@@ -440,16 +440,9 @@ class Tracks extends HTMLElement {
         );
         this.shadowRoot.appendChild(skeleton);
 
-        // TODO: Maybe use the Intersection Observer API and not start until into view?:
-        //  https://usefulangle.com/post/113/javascript-detecting-element-visible-during-scroll
-        //  https://caniuse.com/intersectionobserver
-        Promise.all([this.#profile.setup(), this.#scrobbles.update()]).then(
+        Promise.all([this.#profile.setup(), this.#scrobbles.update(true)]).then(
             () => this.#initiated = true
         );
-        // TODO Also might pause updates when page is not visible?
-        //  https://developer.mozilla.org/en-US/blog/using-the-page-visibility-api/
-        //  https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
-        //  https://developer.mozilla.org/en-US/docs/Web/API/Element/checkVisibility
 
         console.log(
             `Tracks widget initializing in '${this.#widgetMode}'-mode. ${
@@ -564,7 +557,18 @@ class Tracks extends HTMLElement {
             successiveErrors = 0;
         }
 
-        function update() {
+        function update(force) {
+            // console.log(` 👁️ update(): page is ${document.hidden ? 'hidden' : 'visible'}! (force=${!!force})`);
+            if (!force && document.hidden) {
+                // Wait until visible...
+                document.addEventListener("visibilitychange", update, {once: true});
+                // console.log(' 😴 update() postponed - waiting to be visible...');
+                return;
+                // TODO: In the future, maybe also try the Intersection Observer API and not start/update until into view?:
+                //  https://usefulangle.com/post/113/javascript-detecting-element-visible-during-scroll
+                //  https://caniuse.com/intersectionobserver
+            }
+
             const url = it.#widgetMode === 'backend'
                 ? new URL(it.#backend, it.baseURI)
                 : new URL(`https:${it.#apiRoot}`);
