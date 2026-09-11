@@ -45,9 +45,9 @@
           widget on a webpage. But for a start, you can try customizing the widget shown here, including making it show
           scrobbles from your own (or any) Last.fm account with public "scrobbles".</p>
 
-        <p>A unique feature of this widget, is that it (optionally) displays red "album-headers" in tracklist when it
-          detects multiple tracks from same album has been played successively. Just like Last.fm itself did in the
-          "old days".</p>
+        <p>A unique feature of this widget is that it (optionally) displays red "album-headers" in the tracklist when
+          it detects multiple tracks from the same album has been played successively. Just like Last.fm itself did in
+          the "old days".</p>
 
         <p>You can also see the widget in practical use on
           <a href="https://www.rockland.dk/" title="Rockland - Homepage of Stig Nygaard, developer of the Tracks widget">Rockland</a>.</p>
@@ -68,15 +68,15 @@
         <p>The script defines the custom html-element <code>&lt;lastfm-tracks/&gt;</code>. Now simply insert such an element
           on the webpage where you want a <em>Tracks</em> widget to be located.</p>
 
-        <p>The widget has 3 modes. The <em>Demo</em> and <em>Basic</em> modes are "standalone" modes where widget
-          communicates <em>directly</em> with last.fm's API to get the "scrobbles". The third mode is
+        <p>The widget has three modes. The <em>Demo</em> and <em>Basic</em> modes are "standalone" modes where the
+          widget communicates <em>directly</em> with last.fm's API to get the "scrobbles". The third mode is
           <em>Backend-supported</em> mode where you need to have a "proxy-api" that the widget can communicate
           with. The idea is that the proxy-api should "forward" the two methods
           (<em><a href="https://www.last.fm/api/show/user.getInfo">user.getinfo</a></em> and
           <em><a href="https://www.last.fm/api/show/user.getRecentTracks">user.getrecenttracks</a></em>) from last.fm's
-          audioscrobbler 2.0 api that the widget needs to function. Your own backend proxy-api is a very good idea, if
-          your widget is to be placed on a page with <em>more</em> than very modest amounts of traffic, because you can
-          implement "throttling" in the proxy-api to prevent overwhelming numbers of requests being sent directly to
+          audioscrobbler 2.0 api that the widget needs to function. Your own backend proxy-api is a very good idea if
+          your widget is to be placed on a page with more than modest amounts of traffic, because you can implement
+          "throttling" in the proxy-api to prevent overwhelming numbers of requests being sent directly to
           last.fm's API.</p>
 
         <ol>
@@ -85,8 +85,8 @@
             <p>
               <code>&lt;lastfm-tracks user="your username"&gt;<wbr />&lt;/lastfm-tracks&gt;</code>
             </p>
-            <p>In the "standalone" <em>Demo</em> mode, the widget is "static". Latest "scrobbles" will be loaded upon
-              creation of the widget, but tracklist will <em>not</em> be refreshed after that.</p>
+            <p>In the "standalone" <em>Demo</em> mode, the widget is "static". Latest "scrobbles" will be loaded
+              initially upon creation of the widget, but the tracklist will <em>not</em> be refreshed after that.</p>
           </li>
           <li>
             <h3>"Basic" mode</h3>
@@ -94,7 +94,7 @@
               <code>&lt;lastfm-tracks user="your username" apikey="your own api key" interval="60"&gt;<wbr />&lt;/lastfm-tracks&gt;</code>
             </p>
             <p>Adding your own API-key - which you can <a href="https://www.last.fm/api/authentication">get for free</a>
-              - puts the widget into the <em>Basic</em> mode where it supports periodically refresh of the tracks-list.
+              - puts the widget into the <em>Basic</em> mode where it supports periodical refresh of the tracks-list.
               With the <code>interval</code> attribute, you can also set the track-list's refresh-rate in seconds.</p>
           </li>
           <li>
@@ -113,15 +113,13 @@
           audioscrobbler API when loading the <em>Tracks</em> widget. To avoid overload of the API, <em>Tracks</em>
           will by default ignore clients identifying itself with a useragent string including text like "bot",
           "spider", "crawl", "archive", "harvest", "radar" and "headless". This so far seems effective preventing
-          most such "bots" triggering calls the audioscrobbler API.
-          <em>Notice</em>: In widget version 1.11 or older, bots are by default only ignored in <em>Demo</em> and
-          <em>Basic</em> modes. But from widget version 1.12, bots are by default also ignored in
-          <em>Backend-supported</em> mode. If desired, you can disable "bot-filtering" in <em>Backend-supported</em>
-          mode by adding attribute <code>allowbots</code> to the <code>&lt;lastfm-tracks/&gt;</code> html-element.</p>
+          most such "bots" triggering calls the audioscrobbler API.</p>
 
         <h2>Attributes</h2>
 
-        <p>Potential attributes to set on the <code>&lt;lastfm-tracks/&gt;</code> element:</p>
+        <p>You can use the following attributes (and CSS classes) on the <code class="nobr">&lt;lastfm-tracks/&gt;</code>
+          element to configure the widget. The <a href="https://github.com/StigNygaard/lastfm-widgets">latest version of the widget</a>
+          is assumed, details may vary on older versions of the widget:</p>
         <ul>
           <li>
             <em>user</em> - The Last.fm username to fetch scrobbles for.
@@ -140,21 +138,13 @@
             ignored in <em>Demo</em> mode.
           </li>
           <li>
-            <em>tracks</em> - The maximum number of tracks to display. Widget default is 50, max. allowed value is 200.
+            <em>tracks</em> - The maximum number of tracks to display. Default is 50, max. allowed value is 200.
           </li>
           <li>
             <em>updates</em> - Number of times the widget is allowed to refresh the tracks-list.
             0&nbsp;=&nbsp;<em>unlimited</em> and 1&nbsp;=&nbsp;<em>initial&nbsp;only</em>. Set a higher value to specify a maximum number
             of times the widget refreshes. The default value is 0 in <em>Basic</em> and <em>Backend-supported</em>
-            mode. The attribute is ignored in <em>Demo</em> mode.
-          </li>
-          <li>
-            <del><em>ignorebots</em> - In <em>Backend-supported</em> mode this attribute enables "bot-filtering" in
-            the widget itself, to prevent calls to the "proxy-api" when useragent looks like a "bot". No value for
-            the attribute is needed, just the presence of the attribute.
-            In <em>Basic</em> and <em>Demo</em> mode, "bots-filtering" is always enabled, so this attribute is
-            <span class="nobr">redundant/ignored</span> in those modes.</del> This attribute has no effect in
-            widget-version 1.12 or newer, because bots are now ignored by default in <em>all</em> widget modes.
+            mode. The attribute is ignored in <em>Demo</em> mode (always <em>initial&nbsp;only</em>).
           </li>
           <li>
             <em>allowbots</em> - In <em>Backend-supported</em> mode this attribute <em>disables</em> "bot-filtering"
@@ -166,8 +156,8 @@
             css classes:
             <ul>
               <li>
-                <em>dynaheader</em> - When added, the profile-widget header becomes "dynamic" (Header only shown when
-                the mouse is over the widget).
+                <em>dynaheader</em> - When added, the profile-header becomes "dynamic" (Header only shown when the
+                mouse is over the widget).
               </li>
               <li>
                 <em>no-albums</em> - When added, the red album header-lines will <em>not</em> be shown.
@@ -238,9 +228,9 @@
           ℹ️ Try the widget in other sizes by dragging the <em>handle</em> shown next to the lower right corner of the widget.
         </p>
         <p>You can create a widget like it is shown, with css and html like the following:</p>
-        <pre class="style">
+        <pre class="style" title="CSS">
         </pre>
-        <pre class="tag">
+        <pre class="tag" title="HTML">
         </pre>
       </div>
     </main>
