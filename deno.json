@@ -7,7 +7,6 @@
     },
     "deploy": {
         "exclude": [
-            "cf-worker/",
             "**/node_modules"
         ],
         "include": []
