@@ -16,8 +16,13 @@ const myHeaders = {
 const myHeadersArr = Object.entries(myHeaders).map(([k, v]) => `${k}: ${v}`);
 const webpage = Deno.env.get('webpage_show')?.toLocaleLowerCase() === 'demo' ? 'demo' : 'promo';
 const cachetype = Deno.env.get('proxy_use')?.toLocaleLowerCase() === 'mem' ? 'in-memory' : 'KV';
+const serveOptions = {};
+const servePort = Deno.env.get('serve_port')?.trim();
+if (servePort?.length) {
+    serveOptions.port = Number.parseInt(servePort, 10);
+}
 
-Deno.serve(handler);
+Deno.serve(serveOptions, handler);
 
 console.log(`${new Date().toISOString()} - Running on Deno ${Deno.version.deno} (${navigator.userAgent.toLowerCase()}) with ${cachetype} proxy-cache.`);
 
