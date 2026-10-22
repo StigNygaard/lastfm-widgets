@@ -107,7 +107,7 @@ export async function serve(
 ): Promise<{ body: string; options: object }> {
 
     // KV or "in-memory" cache:
-    using kvCache = cachetype === 'KV' ? await Deno.openKv() : undefined;
+    using kvCache = cachetype === 'KV' ? await Deno.openKv(Deno.env.get('proxy_kv_path')?.trim()) : undefined;
     const cache = Caching(kvCache, keysWithBigValues);
 
     let fetchSuccessCount = 0;

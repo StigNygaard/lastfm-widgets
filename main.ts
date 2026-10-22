@@ -17,14 +17,19 @@ const myHeadersArr = Object.entries(myHeaders).map(([k, v]) => `${k}: ${v}`);
 const webpage = Deno.env.get('webpage_show')?.toLocaleLowerCase() === 'demo' ? 'demo' : 'promo';
 const cachetype = Deno.env.get('proxy_use')?.toLocaleLowerCase() === 'mem' ? 'in-memory' : 'KV';
 const serveOptions = {};
+const proxyKVPath = Deno.env.get('proxy_kv_path')?.trim();
 const servePort = Deno.env.get('serve_port')?.trim();
 if (servePort?.length) {
     serveOptions.port = Number.parseInt(servePort, 10);
 }
+const serveHostname = Deno.env.get('serve_hostname')?.trim();
+if (serveHostname?.length) {
+    serveOptions.hostname = serveHostname;
+}
 
 Deno.serve(serveOptions, handler);
 
-console.log(`${new Date().toISOString()} - Running on Deno ${Deno.version.deno} (${navigator.userAgent.toLowerCase()}) with ${cachetype} proxy-cache.`);
+console.log(`${new Date().toISOString()} - 🏃‍♂️‍➡️ Running on Deno ${Deno.version.deno} (${navigator.userAgent.toLowerCase()}) with ${cachetype}${ (cachetype === 'KV' && proxyKVPath?.length) ? ` (${proxyKVPath})` : ''} proxy-cache.`);
 
 async function handler(req: Request, info: Deno.ServeHandlerInfo) {
     const url = new URL(req.url);
