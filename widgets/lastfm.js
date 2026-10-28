@@ -107,7 +107,7 @@ const fetcher = (function () {
             (document.getElementsByTagName('head')[0] ?? document.body ?? document.documentElement).appendChild(script);
         }).finally(
             () => {
-                LOG && console.log(`${uri} time by jsonp: ${Date.now() - ts}ms.`);
+                LOG && console.log(`Fetch(jsonp) time ${Date.now() - ts}ms for ${uri}`);
                 running.delete(uri);
             }
         );
@@ -125,18 +125,21 @@ const fetcher = (function () {
 
         console.log(`json-fetcher: Fetching ${uri}...`);
 
-        return fetch(uri)
+        return fetch(uri, {headers: {"Accept": "application/json"}})
             .then(function (response) {
-                if (response.headers.get('content-type')?.includes('application/json')) {
-                    if (!response.ok) {
-                        console.warn(`[${uri}] ${response.status} - ${response.statusText} \n`, response);
-                    }
-                    return response.json(); // Despite header, could this fail json parsing(?)...
+                if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
+                    return response.json();
                 }
-                throw new Error(`Network response from ${uri.href} was NOT ok. Status: ${response.status}. statusText:${response.statusText}.`);
-            }).finally(
+                console.warn(`[${uri}] did not successfully return expected json: ${response.status} - ${response.statusText} (content-type: ${response.headers.get('content-type')})`);
+                throw new Error(`Network response from ${uri} was NOT ok. Status: ${response.status}. statusText:${response.statusText}.`);
+            }).catch(
+                (err) => {
+                    console.error(`Error when fetching ${uri}`, err);
+                    throw new Error(`Error when fetching ${uri}: ${err}`, { cause: err });
+                }
+            ).finally(
                 () => {
-                    LOG && console.log(`${uri} time: ${Date.now() - ts}ms.`);
+                    LOG && console.log(`Fetch(json) time ${Date.now() - ts}ms for ${uri}`);
                     running.delete(uri);
                 }
             );
@@ -205,7 +208,7 @@ class Tracks extends HTMLElement {
     #backend = null;
     #tracks = 50;
     #interval = 60;
-    #updates = 1; // 1 in demo-mode (initial only). 0 default in basic and backend-mode (unlimited/"forever")
+    #updateLimit = 1; // 1 in demo-mode (initial only). 0 default in basic and backend-mode (unlimited/"forever")
     #widgetMode = 'demo'; // backend, basic or demo
     get state() {
         return {
@@ -214,7 +217,7 @@ class Tracks extends HTMLElement {
             backend: this.#backend,
             tracks: this.#tracks,
             interval: this.#interval,
-            updates: this.#updates,
+            updates: this.#updateLimit,
             widgetMode: this.#widgetMode
         };
     }
@@ -299,12 +302,12 @@ class Tracks extends HTMLElement {
 
         const potential_updates = Math.abs(Number.parseInt(this.getAttribute('updates'), 10));
         if (this.#widgetMode === 'demo') {
-            this.#updates = 1;
+            this.#updateLimit = 1;
         } else { // 'basic' or 'backend' mode
             if (potential_updates) {
-                this.#updates = Math.max(0, potential_updates);
+                this.#updateLimit = Math.max(0, potential_updates);
             } else { // null, NaN or 0
-                this.#updates = 0;
+                this.#updateLimit = 0;
             }
         }
 
@@ -349,8 +352,8 @@ class Tracks extends HTMLElement {
                 this.#scrobbles.clearUpdatesState();
                 this.shadowRoot.getElementById('playlist')?.replaceChildren(); // clear currently shown tracks
                 console.log(`Tracks User/WidgetMode has changed to ${this.#user}/${this.#widgetMode} - Update profile-header and tracklist now...`);
-                this.#profile.setup();
-                this.#scrobbles.update(true);
+                void this.#profile.setup();
+                void this.#scrobbles.update(true); // force = true (do it immediately)
             }
         }
 
@@ -442,11 +445,13 @@ class Tracks extends HTMLElement {
 
         Promise.all([this.#profile.setup(), this.#scrobbles.update(true)]).then(
             () => this.#initiated = true
-        );
+        ).catch((e) => {
+            console.error('Error initializing tracks widget:', e);
+        });
 
         console.log(
             `Tracks widget initializing in '${this.#widgetMode}'-mode. ${
-                this.#updates || 'Forever'
+                this.#updateLimit || 'Forever'
             } times getting ${this.#tracks} tracks for user ${
                 this.#user ?? '(unknown)'
             } every ${this.#interval} seconds.`,
@@ -483,10 +488,12 @@ class Tracks extends HTMLElement {
                 if (fetcher.isRunning(url.href)) {
                     console.warn(`Skipping Profile with ${url.href} because already running...`);
                 } else {
+                    let failed = false;
                     return it.#fetcher(url.href)
                         .then((o) => {
                             // console.log(`Profile fetcher ${url.href} returned \n`, o);
                             if (o.error) {
+                                console.warn(`Tracks widget: Error fetching scrobbles: ${o.error} - ${o.message}`);
                                 if ([26, 29].includes(o.error)) {
                                     console.error(`Tracks widget: ⛔ ${o.error} - ${o.message} !`);
                                 }
@@ -497,8 +504,16 @@ class Tracks extends HTMLElement {
                         })
                         .catch((e) => {
                             console.error(`Error calling audioscrobbler user.getinfo. \n`, e);
+                            // if (e.cause) {
+                            //     console.error(' - cause: \n', e.cause);
+                            // }
+                            failed = true;
                         })
                         .finally(() => {
+                            if (failed && !_secondTry) {
+                                console.log(`Profile-data: Allow a quick re-try in 5s, because the *initial* fetch of profile data failed...`);
+                                setTimeout(setup, 5000, true); // _secondTry = true
+                            }
                         });
                 }
             }
@@ -593,9 +608,11 @@ class Tracks extends HTMLElement {
                 if (fetcher.isRunning(url.href)) {
                     console.warn(`Skipping fetching scrobbles with ${url.href} because already running...`);
                 } else {
+                    let failed= false;
                     return it.#fetcher(url.href) /* or '/widgets/test.json' */
                         .then((o) => {
                             if (o.error) {
+                                console.warn(`Tracks widget: Error fetching scrobbles: ${o.error} - ${o.message}`);
                                 if ([10, 17, 26, 29].includes(o.error)) { // 17: "Login: User required to be logged in"
                                     updatesCanceled = true;
                                     console.error(`Tracks widget: ⛔ Updates has stopped because error: ${o.error} - ${o.message} !`);
@@ -607,6 +624,10 @@ class Tracks extends HTMLElement {
                         })
                         .catch((e) => {
                             console.error(`Error calling audioscrobbler user.getrecenttracks. \n`, e);
+                            // if (e.cause) {
+                            //     console.error(' - cause: \n', e.cause);
+                            // }
+                            failed = true;
                             successiveErrors++;
                         })
                         .finally(() => {
@@ -618,9 +639,14 @@ class Tracks extends HTMLElement {
                                 updatesCanceled = true;
                                 console.warn(`Updates stopped in ${it.#widgetMode}-mode, because of ${successiveErrors} successive errors occurring.`);
                             }
-                            if (!updatesCanceled && (it.#updates === 0 || updateCount < it.#updates)) {
-                                LOG && console.log(`Waiting ${it.#interval} seconds until next update...`);
-                                timer = setTimeout(update, it.#interval * 1000);
+                            if (!updatesCanceled && (it.#updateLimit === 0 || updateCount < it.#updateLimit)) {
+                                if (failed && updateCount ===1) { // Allow a quick retry (only) when the *first* fetch fails...
+                                    console.log(`Playlist-data: Allow a quick re-try in 5s, because the *initial* fetch of playlist failed...`);
+                                    timer = setTimeout(update, 5000);
+                                } else {
+                                    LOG && console.log(`Waiting ${it.#interval} seconds until next update of playlist...`);
+                                    timer = setTimeout(update, it.#interval * 1000);
+                                }
                             }
                         });
                 }
