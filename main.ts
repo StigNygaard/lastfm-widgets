@@ -68,30 +68,38 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
 
 
         // Temporary while migrating demo-page to new lastfm-widgets.com domain/address
-        if (webpage==='demo' && hostname === 'lastfm-widgets.stignygaard.deno.net') {
+        if (webpage==='demo' && hostname === 'lastfm-widgets.stignygaard.deno.net' && pathname.length < 2) { // '' '/' '?' ... THIS IS AN UGLY HACK, I KNOW...
             // console.log('Demo on old domain - use legacy-demo');
-            webpage = 'demo-legacy';
-            /* TODO?
+
+            // webpage = 'demo-legacy';
+
+            /*
             Deno.serve((_req) => {
                 const destination = "https://lastfm-widgets.com";
                 // 301 marks it as a permanent redirect
                 return Response.redirect(destination, 301);
             });
              */
+
+            const destination = "https://lastfm-widgets.com";
+            // 301 marks it as a permanent redirect
+            response = Response.redirect(destination, 301);
+        } else {
+
+
+            // The statically served demo or promo-page
+            response = await serveDir(req, {
+                urlRoot: '',
+                fsRoot: `website/${webpage}`, // 'website/demo' (or 'website/demo-legacy') or 'website/promo'
+                showDirListing: false,
+                showDotfiles: false,
+                showIndex: true, // index.html
+                enableCors: false, // CORS not allowed/enabled (no CORS headers)
+                quiet: true, // logging of errors
+                headers: myHeadersArr
+            });
+
         }
-
-
-        // The statically served demo or promo-page
-        response = await serveDir(req, {
-            urlRoot: '',
-            fsRoot: `website/${webpage}`, // 'website/demo' (or 'website/demo-legacy') or 'website/promo'
-            showDirListing: false,
-            showDotfiles: false,
-            showIndex: true, // index.html
-            enableCors: false, // CORS not allowed/enabled (no CORS headers)
-            quiet: true, // logging of errors
-            headers: myHeadersArr
-        });
     } else {
         response = new Response('Not found', {
             status: 404,
