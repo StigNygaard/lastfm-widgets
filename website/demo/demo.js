@@ -162,6 +162,7 @@ function isLocalhost() {
     return window.location.href.startsWith('http://localhost');
 }
 
+const proxyApiUrl = '/proxy-api';
 window.addEventListener(
     'DOMContentLoaded',
     function () {
@@ -179,7 +180,7 @@ window.addEventListener(
          * @type {Tracks}
          */
         const widget = create('lastfm-tracks', {
-            backend: '/proxy-api',
+            backend: proxyApiUrl,
             interval: 35,
             allowbots: /Googlebot/.test(navigator.userAgent)
         });
@@ -211,7 +212,7 @@ window.addEventListener(
                 widget.setAttribute('user', username);
             } else {
                 widget.removeAttribute('user');
-                widget.setAttribute('backend', '/proxy-api');
+                widget.setAttribute('backend', proxyApiUrl);
             }
             // updateTagDef() will be called from stateChangeHandler()
         };
