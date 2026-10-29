@@ -1,0 +1,160 @@
+:root {
+  height: 100%;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  color: rgb(34 34 34);
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex; /* main.demo & footer */
+  flex-direction: column;
+}
+
+.demo {
+  flex: 1 0 auto;
+  padding: 1.8rem;
+  display: flex; /* .info, .widget & .options */
+  flex-wrap: wrap;
+  column-gap: 1.5rem;
+}
+
+.info {
+  flex: 0 1 38rem;
+}
+
+.widget {
+}
+
+.options {
+  flex: 0 1 19.2rem;
+}
+
+footer {
+  flex-shrink: 0;
+  padding: 1rem 2rem;
+  background-color: #fadcdc;
+}
+
+h1 {
+  font-size: 1.85rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+h3 {
+  font-size: 1.05rem;
+}
+
+p, li {
+  text-wrap: pretty;
+}
+
+.nobr {
+  white-space: nowrap;
+}
+
+a {
+  color: rgb(34 34 34);
+}
+
+a[href^='https://github.com/StigNygaard/']::after {
+  content: '';
+  background-image: url(GitHub-Mark-Light-32px.png);
+  background-size: .8lh .8lh;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: inline-block;
+  width: 1lh;
+  height: 1lh;
+  filter: invert(1);
+  opacity: 0.8;
+  vertical-align: bottom;
+}
+
+ul {
+  margin-inline-start: 0;
+  padding-inline-start: 20px;
+}
+
+ul ul {
+  margin-block-start: .2em;
+}
+
+.keyshot summary {
+  cursor: pointer;
+}
+
+.keyshot a {
+  display: block;
+}
+
+.keyshot img {
+  display: block;
+  width: calc(100% - 2px);
+  max-width: max-content;
+  border: 1px solid #000;
+}
+
+
+.resizeable {
+  border: none;
+  padding: 1rem;
+  width: 18em;
+  min-width: 14em;
+  height: min(714px, 75svh);
+  min-height: 7em;
+  overflow: auto;
+}
+body.desktop-mode .resizeable {
+  resize: both;
+}
+
+lastfm-tracks {
+  box-sizing: border-box;
+  border: 1px solid #000;
+  height: 100%;
+}
+
+button {
+  margin: 1em 0;
+  display: none;
+}
+
+body.local-mode #stopBtn {
+  display: initial;
+}
+
+
+#show-mode {
+  font-weight: bold;
+}
+
+.textinput {
+  display: flex;
+  flex-direction: column;
+}
+
+.drag-info {
+  display: none;
+}
+body.desktop-mode .drag-info {
+  display: block;
+}
+
+.options pre {
+  overflow: auto;
+  font-size: 85%;
+  padding: 0 0 1em 0;
+  border-bottom: 1px #eee solid;
+}
+
+.options pre.style {
+  padding-top: 1em;
+  border-top: 1px #eee solid;
+}

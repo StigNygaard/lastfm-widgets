@@ -33,6 +33,7 @@ console.log(`${new Date().toISOString()} - 🏃‍♂️‍➡️ Running on Den
 
 async function handler(req: Request, info: Deno.ServeHandlerInfo) {
     const url = new URL(req.url);
+    const hostname = url.hostname;
     const pathname = url.pathname;
     const robots = `User-agent: *\nDisallow:\nSitemap: ${url.origin}/sitemap.txt`;
     const sitemap = `${url.origin}/`;
@@ -64,10 +65,17 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
     } else if (pathname === '/sitemap.txt' && req.method === 'GET') {
         response = new Response(sitemap, { status: 200, statusText: 'OK', headers: myHeaders, 'Content-Type': 'text/plain' });
     } else if (req.method === 'GET') {
+
+        // Temporary while migrating demo-page to new lastfm-widgets.com domain/address
+        if (webpage==='demo' && !(['localhost', 'lastfm-widgets.com'].includes(hostname))) {
+            console.log('Demo on old domain - use legacy-demo');
+            webpage = 'demo-legacy';
+        }
+
         // The statically served demo or promo-page
         response = await serveDir(req, {
             urlRoot: '',
-            fsRoot: `website/${webpage}`, // 'website/demo' or 'website/promo'
+            fsRoot: `website/${webpage}`, // 'website/demo' (or 'website/demo-legacy') or 'website/promo'
             showDirListing: false,
             showDotfiles: false,
             showIndex: true, // index.html
