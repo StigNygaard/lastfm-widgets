@@ -116,7 +116,7 @@ export default {
         const apikey = env.audioscrobbler_apikey;
         if (!apikey) {
             console.error('API key not defined');
-            return new Response(`{error: 8, message: 'API key not defined'}`, {
+            return new Response(`{"error": 8, "message": "API key not defined"}`, {
                 status: 404,
                 statusText: 'API key not defined in proxy',
                 headers: respHeaders
@@ -130,14 +130,14 @@ export default {
         if (!['user.getrecenttracks', 'user.getinfo'].includes(method)) {
             console.error(`Method '${method}' missing or not supported`);
             if (method === '') {
-                return new Response(`{error: 6, message: 'Method not specified'}`, {
+                return new Response(`{"error": 6, "message": "Method not specified"}`, {
                     status: 400,
                     statusText: 'Method not specified',
                     headers: respHeaders
                 });
             } else {
                 const msg = `Specified method '${method}' not available in proxy`;
-                return new Response(`{error: 3, message: '${msg}'}`, {
+                return new Response(`{"error": 3, "message": "${msg}"}`, {
                     status: 404,
                     statusText: 'Specified method not available in proxy',
                     headers: respHeaders
@@ -259,7 +259,7 @@ export default {
                     headers: headers
                 });
             } else {
-                return new Response(`{error: 16, message: 'Not ready. Try again later'}`, {
+                return new Response(`{"error": 16, "message": "Not ready. Try again later"}`, {
                     status: 425,
                     statusText: 'Not ready. Successful response not available in proxy cache',
                     headers: headers
