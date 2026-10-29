@@ -273,7 +273,7 @@ export async function serve(
         } else {
             console.warn(` *** ${nowStamp()} - Fallback cache NOT ready for method ${method}-OkResponse`);
             return {
-                body: `{error: 16, message: 'Not ready. Try again later'}`,
+                body: `{"error": 16, "message": "Not ready. Try again later"}`,
                 options: {
                     status: 425,
                     statusText: 'Not ready. Successful response not available in proxy cache',
@@ -378,7 +378,7 @@ function allowedForCors(origin: string) {
 function apiKeyMissing(headers: Headers) {
     console.error('API key not defined');
     return {
-        body: `{error: 8, message: 'API key not defined'}`,
+        body: `{"error": 8, "message": "API key not defined"}`,
         options: {
             status: 404,
             statusText: 'API key not defined in proxy',
@@ -391,7 +391,7 @@ function methodError(method: string, headers: Headers) {
     console.error(`Method '${method}' missing or not supported`);
     if (method.trim() === '') {
         return {
-            body: `{error: 6, message: 'Method not specified'}`,
+            body: `{"error": 6, "message": "Method not specified"}`,
             options: {
                 status: 400,
                 statusText: 'Method not specified',
@@ -401,7 +401,7 @@ function methodError(method: string, headers: Headers) {
     } else {
         const msg = `Specified method '${method}' not available in proxy`;
         return {
-            body: `{error: 3, message: '${msg}'}`,
+            body: `{"error": 3, "message": "${msg}"}`,
             options: {
                 status: 404,
                 statusText: 'Specified method not available in proxy',
