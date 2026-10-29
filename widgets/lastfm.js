@@ -4,7 +4,7 @@
  *
  *    Stig Nygaard, 2024.
  *    https://github.com/StigNygaard/lastfm-widgets
- *    https://lastfm-widgets.stignygaard.deno.net/
+ *    https://lastfm-widgets.com/
  *    https://www.rockland.dk/
  *    https://www.last.fm/user/rockland
  **/

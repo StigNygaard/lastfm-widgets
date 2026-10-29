@@ -35,7 +35,7 @@ Also, KV is still considered an 'in development' technology. But it has existed 
 | `audioscrobbler_trackslimit` | No | Number of recent tracks to fetch per request. Using the Last.fm default if unset (currently 50).                                                                                                                                                 |
 | `audioscrobbler_cors_allow_hostnames` | No | Semicolon-separated list of allowed origins (e.g. `example.com;localhost`). If unset, no CORS headers are injected.                                                                                                                              |
 | `proxy_use` | No | If set to `mem`, the *in-memory* proxy-cache is used. If unset, *Deno KV* proxy-cache is used (default and generally recommended).                                                                                                               |
-| `webpage_show` | No | If set to `demo`, the demo-page is shown on the deployed site. If unset, a "promotion page" pointing to [the *official* demo site/page](https://lastfm-widgets.stignygaard.deno.net/) is shown (default and recommended for public deployments). |
+| `webpage_show` | No | If set to `demo`, the demo-page is shown on the deployed site. If unset, a "promotion page" pointing to [the *official* demo site/page](https://lastfm-widgets.com/) is shown (default and recommended for public deployments). |
 
 Actually, the proxy in "KV-mode" uses a "two-level cache" implementation. KV is the "primary cache", but in-memory cache is also used for a non-persistent - possibly very short-living - "first-level cache".
 

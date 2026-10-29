@@ -1,7 +1,7 @@
 # 🔴 lastfm-widgets
 
 _Tracks_ is a javascript web-widget to show "scrobbles" (play history) from a [Last-fm](https://www.last.fm/) account.
-See _Tracks_ in action on https://www.rockland.dk/ and https://lastfm-widgets.stignygaard.deno.net/.
+See _Tracks_ in action on https://www.rockland.dk/ and https://lastfm-widgets.com/.
 At the latter site, you can not only find some more information and instructions for use, you can
 also play with some of the customization options, including setting the user to show scrobbles from.
 
@@ -15,7 +15,7 @@ As name of this repository hints, I might have more than one Last.fm widget plan
 ## How to Use
 
 Using the widget in any HTML file is straightforward because it's a standard web component. You only need to import the script and place the custom HTML tag where you want it to appear.
-You can configure the widget by adding attributes to the custom HTML tag. Get the details and play with the customization options on the [interactive demo site](https://lastfm-widgets.stignygaard.deno.net/ "The demo-page is an interactive playground for widget customization").
+You can configure the widget by adding attributes to the custom HTML tag. Get the details and play with the customization options on the [interactive demo site](https://lastfm-widgets.com/ "The demo-page is an interactive playground for widget customization").
 
 _Optionally_, you can also [add a "proxy-API" to your setup](https://github.com/StigNygaard/lastfm-widgets/blob/main/services/README.md "How to set up a proxy-API for the Tracks widget"). If you have your own GitHub account and know how to fork/clone this project, it is actually pretty straight forward to set up using [Deno Deploy](https://deno.com/deploy). A [_free_](https://deno.com/deploy/pricing "Deno Deploy plans and prices") Deno Deploy account should be sufficient for most users.
 
@@ -26,7 +26,7 @@ or build tools needed). It can work "alone" communicating directly with Last.fm'
 supported by a custom backend "proxy-api". The latter is encouraged when possible, because it makes it possible to
 implement throttling of requests to Last.fm's API.
 
-This repository not only holds the widget code, but also code for demo-site (https://lastfm-widgets.stignygaard.deno.net/)
+This repository not only holds the widget code, but also code for demo-site (https://lastfm-widgets.com/)
 and [_two_ different backend proxy-api implementations](services/README.md "How to set up a proxy-API for the Tracks widget").
 The default/primary proxy-API is implemented in [Deno]([Deno](https://deno.com/)) and uses either Deno KV or just
 memory for caching. But there's also an alternative Cloudflare Workers (Node.js) proxy-api implementation made
@@ -44,16 +44,16 @@ experiments/experience with Deno (and server-side Javascript in general).
 
 The widget frontend code. _Everything_ that is needed for widget to work in _Demo_ or _Basic_ mode. See
 [Releases](https://github.com/StigNygaard/lastfm-widgets/releases) to get the latest "release-version" of this folder's
-content. And see the demo page at https://lastfm-widgets.stignygaard.deno.net/ for more about widget _modes_
+content. And see the demo page at https://lastfm-widgets.com/ for more about widget _modes_
 and how to use and customize the widget.
 
 #### /website/demo/ folder
 
-Frontend-code for the demo page seen on https://lastfm-widgets.stignygaard.deno.net/.
+Frontend-code for the demo page seen on https://lastfm-widgets.com/.
 
 #### /website/promo/ folder
 
-Frontend-code for a simple promo page pointing to the demo page at https://lastfm-widgets.stignygaard.deno.net/.
+Frontend-code for a simple promo page pointing to the demo page at https://lastfm-widgets.com/.
 This is the default webpage shown when this project is deployed. However, you can [configure it](./services/README.md#local-development) to
 show the demo page instead.  
 
@@ -75,7 +75,7 @@ For full documentation on setting up backend proxies, see [services/README.md](s
 
 #### /main.ts file
 
-Application "entrypoint". Basically the "web-server" or "router" for https://lastfm-widgets.stignygaard.deno.net/,
+Application "entrypoint". Basically the "web-server" or "router" for https://lastfm-widgets.com/,
 serving the above-mentioned content (except `/cf-worker/`).
 
 ## Future updates?
@@ -85,3 +85,7 @@ What could future updates bring? _Maybe_:
 - Dark mode
 - A layout that adapts nicer to wider display dimensions of the widget
 - Another widget
+
+## Note!
+
+_The official demo-page is moving from https://lastfm-widgets.stignygaard.deno.net/ to https://lastfm-widgets.com/ !_

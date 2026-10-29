@@ -14,7 +14,7 @@ const myHeaders = {
     'X-Content-Type-Options': 'nosniff'
 };
 const myHeadersArr = Object.entries(myHeaders).map(([k, v]) => `${k}: ${v}`);
-const webpage = Deno.env.get('webpage_show')?.toLocaleLowerCase() === 'demo' ? 'demo' : 'promo';
+let webpage = Deno.env.get('webpage_show')?.toLocaleLowerCase() === 'demo' ? 'demo' : 'promo';
 const cachetype = Deno.env.get('proxy_use')?.toLocaleLowerCase() === 'mem' ? 'in-memory' : 'KV';
 const serveOptions = {};
 const proxyKVPath = Deno.env.get('proxy_kv_path')?.trim();
@@ -41,15 +41,15 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
     // The "Router"...
     let response: Response;
     if (/^\/proxy-api\/?$/.test(pathname) && req.method === 'GET') {
-        // The "proxy API" - https://lastfm-widgets.stignygaard.deno.net/proxy-api
+        // The "proxy API" - https://lastfm-widgets.com/proxy-api
         const result = await ProxyApi.serve(url.searchParams, req.headers, info);
         response = new Response(result.body, { headers: myHeaders, ...result.options });
     } else if (/^\/log\/?$/.test(pathname) && req.method === 'POST') {
-        // Simple "post object" log-endpoint - https://lastfm-widgets.stignygaard.deno.net/log
+        // Simple "post object" log-endpoint - https://lastfm-widgets.com/log
         log(url.searchParams, req, info);
         response = new Response(null, { status: 200, statusText: 'OK', headers: myHeaders });
     } else if (pathname.startsWith('/widgets/') && req.method === 'GET') {
-        // The statically served widgets code - https://lastfm-widgets.stignygaard.deno.net/widgets/*
+        // The statically served widgets code - https://lastfm-widgets.com/widgets/*
         response = await serveDir(req, {
             urlRoot: 'widgets',
             fsRoot: 'widgets',
@@ -66,11 +66,20 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
         response = new Response(sitemap, { status: 200, statusText: 'OK', headers: myHeaders, 'Content-Type': 'text/plain' });
     } else if (req.method === 'GET') {
 
+
         // Temporary while migrating demo-page to new lastfm-widgets.com domain/address
-        if (webpage==='demo' && !(['localhost', 'lastfm-widgets.com'].includes(hostname))) {
-            console.log('Demo on old domain - use legacy-demo');
+        if (webpage==='demo' && hostname === 'lastfm-widgets.stignygaard.deno.net') {
+            // console.log('Demo on old domain - use legacy-demo');
             webpage = 'demo-legacy';
+            /* TODO?
+            Deno.serve((_req) => {
+                const destination = "https://lastfm-widgets.com";
+                // 301 marks it as a permanent redirect
+                return Response.redirect(destination, 301);
+            });
+             */
         }
+
 
         // The statically served demo or promo-page
         response = await serveDir(req, {

@@ -55,6 +55,11 @@ p, li {
   text-wrap: pretty;
 }
 
+mark, .highlight, .yellowmarker {
+  color: #111;
+  background-color: #FFFF66;
+}
+
 .nobr {
   white-space: nowrap;
 }
