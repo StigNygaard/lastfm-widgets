@@ -14,7 +14,7 @@ const myHeaders = {
     'X-Content-Type-Options': 'nosniff'
 };
 const myHeadersArr = Object.entries(myHeaders).map(([k, v]) => `${k}: ${v}`);
-let webpage = Deno.env.get('webpage_show')?.toLocaleLowerCase() === 'demo' ? 'demo' : 'promo';
+const webpage = Deno.env.get('webpage_show')?.toLocaleLowerCase() === 'demo' ? 'demo' : 'promo';
 const cachetype = Deno.env.get('proxy_use')?.toLocaleLowerCase() === 'mem' ? 'in-memory' : 'KV';
 const serveOptions = {};
 const proxyKVPath = Deno.env.get('proxy_kv_path')?.trim();
@@ -66,27 +66,11 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
         response = new Response(sitemap, { status: 200, statusText: 'OK', headers: myHeaders, 'Content-Type': 'text/plain' });
     } else if (req.method === 'GET') {
 
-
-        // Temporary while migrating demo-page to new lastfm-widgets.com domain/address
-        if (webpage==='demo' && hostname === 'lastfm-widgets.stignygaard.deno.net' && pathname.length < 2) { // '' '/' '?' ... THIS IS AN UGLY HACK, I KNOW...
-            // console.log('Demo on old domain - use legacy-demo');
-
-            // webpage = 'demo-legacy';
-
-            /*
-            Deno.serve((_req) => {
-                const destination = "https://lastfm-widgets.com";
-                // 301 marks it as a permanent redirect
-                return Response.redirect(destination, 301);
-            });
-             */
-
+        if (webpage==='demo' && hostname === 'lastfm-widgets.stignygaard.deno.net' && pathname.length < 2) { // '' '/' '?' '#' ... THIS IS AN UGLY HACK, I KNOW...
+            // Temporary while migrating demo-page from lastfm-widgets.stignygaard.deno.net to lastfm-widgets.com...
             const destination = "https://lastfm-widgets.com";
-            // 301 marks it as a permanent redirect
-            response = Response.redirect(destination, 301);
+            response = Response.redirect(destination, 301); // 301 marks it as a permanent redirect
         } else {
-
-
             // The statically served demo or promo-page
             response = await serveDir(req, {
                 urlRoot: '',
@@ -98,7 +82,6 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
                 quiet: true, // logging of errors
                 headers: myHeadersArr
             });
-
         }
     } else {
         response = new Response('Not found', {
