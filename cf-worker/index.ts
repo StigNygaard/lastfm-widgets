@@ -185,7 +185,7 @@ export default {
         try {
             result = await fetch(fUrl.href, {
                 headers: {
-                    'User-Agent': 'Proxy-api (https://github.com/StigNygaard/lastfm-widgets/cloudflare-worker)'
+                    'User-Agent': 'Proxy-api (https://github.com/StigNygaard/lastfm-widgets/tree/main/cf-worker)'
                 }
             });
         } catch (e) {
