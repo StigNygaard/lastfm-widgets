@@ -86,7 +86,7 @@ What could future updates bring? _Maybe_:
 - A layout that adapts nicer to wider display dimensions of the widget
 - Another widget
 
-## _Notices!_
+## _Notice!_
 
-1. The official demo-page has moved from _lastfm-widgets.stignygaard.deno.net_ to _[lastfm-widgets.com](https://lastfm-widgets.com)_ !
-2. With the [latest news on _Deno_ and _Deno Deploy_](https://deno.com/blog/cloudflare), I'm currently looking into alternatives to _Deno Deploy_ for hosting demo-page and the Deno-version of the proxy-API. Update with suggestions coming soon to [services/README.md](services/README.md "How to set up a proxy-API for the Tracks widget").
+1. The address of the official demo-site has changed from _lastfm-widgets.stignygaard.deno.net_ to [lastfm-widgets.com](https://lastfm-widgets.com)! The new address is independent of the hosting provider chosen, which is convenient, because... 
+2. With the [latest news on _Deno_ and _Deno Deploy_](https://deno.com/blog/cloudflare), I'm moving away from _Deno Deploy_ for the hosting of [lastfm-widgets.com](https://lastfm-widgets.com). Probably moving it to [velixir.net](https://velixir.net/r/g6xs4f89). I still believe there is a [future for Deno](https://github.com/denoland/deno/issues/37030). Update also _coming soon_ to [services/README.md](services/README.md "How to set up a proxy-API for the Tracks widget") for others interested in options for setting up a proxy-API.
