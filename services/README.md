@@ -2,7 +2,7 @@
 
 Running the Last.fm widget purely client-side means exposing your Last.fm API key to the public. A backend proxy sits between the frontend widget and Last.fm's Audioscrobbler API to avoid that, along with a few other practical problems.
 
-You should pretty easily be able to get your own proxy API up and running on [Deno Deploy](https://deno.com/deploy) by following the instructions here.
+( *Note, I'm in the process of restructuring and hopefully also simplifying this page a bit. But I think all needed information is here.* ) 
 
 ## Why a proxy is strongly recommended
 
@@ -10,42 +10,92 @@ You should pretty easily be able to get your own proxy API up and running on [De
 2. **CORS handling** — Last.fm's API does not return permissive CORS headers by default. The proxy injects `Access-Control-Allow-Origin` based on a configurable hostname whitelist.
 3. **Caching and throttling** — Last.fm's API has intermittent downtime and aggressive rate limiting. The proxy caches the last successful response and serves it (stale-while-revalidate) when upstream requests fail. A hibernate mode also pauses outgoing requests entirely after a rate-limit response, to avoid getting the API key banned.
 
-There are two implementations in this repository, functionally identical: The default Deno proxy and a Cloudflare Workers (Node.js) version.
+There are two proxy-API implementations in this repository, functionally identical: A Deno version and a Cloudflare Workers (Node.js) version. The latter is kindly contributed to this project by [burnblazter](https://github.com/burnblazter).
+
+Bellow follows how to set up proxy-API on various hosting options:
+
+1. Deno proxy-API
+   
+    a) On _[Deno Deploy](https://deno.com/deploy)_ ("deprecated")
+
+    b) On _[Velixir](https://velixir.net/r/g6xs4f89)_
+
+    c) On other hosting options
+
+    d) Running locally (the "developer setup")
+
+2. Node.js proxy-API as Cloudflare Workers
 
 ---
 
-## Option 1: Deno KV or in-memory
+## 1. Deno proxy-API
 
-A Deno proxy-API implementation is located in `proxy-api.ts`. It is by default using _Deno KV_ (A Key-Value storage in Deno) for caching. Alternatively, you can configure it to use in-memory cache instead. But KV should be the preferred cache when possible. There are however monthly read and write limits for KV-values if you are hosting on for example Deno Deploy. And if the limits become a problem, the in-memory variant is good to have as a fallback option.
+Originally the _Deno proxy-API_ was primarily made with the intention to be hosted on _Deno Deploy_. With the [latest news about Deno and Deno Deploy](https://deno.com/blog/cloudflare) that is no longer a long-time solution. But the Deno runtime is _open source_, so even if the original team abandons the runtime in October 2027, I expect the runtime will [continue to live on in some form](https://github.com/denoland/deno/issues/37030 "The Deno runtime will continue to live on in some form"). Maybe only with a small team of volunteers maintaining it, but if we are lucky a larger investor or interessent sees a reason to invest in further development of the runtime. I love Deno for its simple tooling/setup, security by default design and the commitment to align with webstandards whenever possible, so I have no plan to panic and stop using Deno. But _Deno Deploy_ is expected to shut down some time in Spring 2027 (April 2027?), so better look at alternatives...
 
-Also, KV is still considered an 'in development' technology. But it has existed for a while and seems reliable – at least for non-critical use.
+The Deno proxy-API implementation is located in `proxy-api.ts`. It is either using _Deno KV_ (A Key-Value storage) for caching, or simply holding data in-memory. KV is preferred for apps running in short living processes, like on Deno Deploy. But for long-living processes on for example Velixir and Koyeb, "in-memory" is a practical choice. Deno KV is still considered an 'in development' technology, but it has existed for a while and seems reliable – at least for non-critical use.
 
-### Setup using Deno Deploy
+When it has been set up, the proxy-service is served from `/proxy-api` on the deployed site. Set the `backend` attribute on your widget to point to this address. There's no need to set attributes `user`, `apikey` or `tracks` on the widget, those values are controlled from the backend/proxy only.
+
+### a) On Deno Deploy ("deprecated")
+
+**Notice, _Deno Deploy_ will be shut down, probably in Spring or Summer 2027.** 
+
+Processes lives relatively short on Deno Deploy, so Deno KV is generally the preferred cache type to choose. There are however monthly read and write limits for KV-values on Deno Deploy. And if the limits become a problem, the in-memory variant is good to have as a fallback option.
+
+Setup steps:
 
 1. Fork/clone this repository and push it to your own GitHub account.
 2. Create a new project on [Deno Deploy](https://deno.com/deploy) linked to your repository.
 3. Set the entrypoint to `main.ts`.
-4. *Only needed for KV:* Go to "Databases" configuration for the created Deno Deploy project and attach a Deno KV database to the project.
-5. Set the following environment variables in the Deno Deploy project settings:
+4. Go to "Databases" configuration for the created Deno Deploy project and attach a Deno KV database to the project.
+5. Set the needed environment variables in the Deno Deploy project settings:
 
 | Variable | Required | Description                                                                                                                                                                                                                                      |
 | --- | --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `audioscrobbler_apikey` | Yes | Your Last.fm API key. Get one [here](https://www.last.fm/api/account/create).                                                                                                                                                                    |
 | `audioscrobbler_user` | No | Username to fetch scrobbles for. Defaults to `rockland` if unset.                                                                                                                                                                                |
-| `audioscrobbler_trackslimit` | No | Number of recent tracks to fetch per request. Using the Last.fm default if unset (currently 50).                                                                                                                                                 |
+| `audioscrobbler_trackslimit` | No | Number of recent tracks to fetch per request. Using the Last.fm default (50) if unset.                                                                                                                                                 |
 | `audioscrobbler_cors_allow_hostnames` | No | Semicolon-separated list of allowed origins (e.g. `example.com;localhost`). If unset, no CORS headers are injected.                                                                                                                              |
-| `proxy_use` | No | If set to `mem`, the *in-memory* proxy-cache is used. If unset, *Deno KV* proxy-cache is used (default and generally recommended).                                                                                                               |
-| `webpage_show` | No | If set to `demo`, the demo-page is shown on the deployed site. If unset, a "promotion page" pointing to [the *official* demo site/page](https://lastfm-widgets.com/) is shown (default and recommended for public deployments). |
+| `proxy_use` | No | If set to `mem`, the *in-memory* proxy-cache is used. If unset, *Deno KV* proxy-cache is used.                                                                                                               |
+| `webpage_show` | No | If set to `demo`, the demo-page is shown on the deployed site. If unset, a "promotion page" pointing to [the *official* demo site/page](https://lastfm-widgets.com/) is shown. To avoid confusion about where the official demo-page for the widget is located, I appreciate if you for public deployments, only enable demo-page _temporarily_ for test and verification. |
 
-Actually, the proxy in "KV-mode" uses a "two-level cache" implementation. KV is the "primary cache", but in-memory cache is also used for a non-persistent - possibly very short-living - "first-level cache".
+Actually, the proxy in "KV-mode" uses a "two-level cache" implementation. KV is the "primary cache", but in-memory cache is also used for a non-persistent - possibly _very_ short-living - "first-level cache".
 
-The proxy-service is served from `/proxy-api` on the deployed site. Set the `backend` attribute on your widget to point to this address. There's no need to set attributes `user`, `apikey` or `tracks` on the widget, those values are controlled from the backend/proxy only. 
+With this setup, any changes to the main-branch of your Git-repository, is auto-deployed to your Deno Deploy project.
 
-To avoid confusion about where the official demo-page for the widget is located, I appreciate if you for public deployments, only enable demo-page _temporarily_ for test and verification.
+### b) On Velixir
 
-Notice, it is recommended to use widget [v1.13 or newer](https://github.com/StigNygaard/lastfm-widgets/releases "Get latest version of the Tracks widget"). If you are using version 1.11 or older, it is [a good idea](https://github.com/StigNygaard/lastfm-widgets/issues/4) to set the `ignorebots` attribute on the widget.
+On [Velixir](https://velixir.net/r/g6xs4f89) apps generally runs in "long processes". On a free plan "semi-long processes", but still long enough to make in-memory caching a perfect choice for your proxy-API. Setting it up is also pretty easy...
 
-### Local development
+You do ___NOT__ need_ to create your own fork/clone of this project on GitHub. If you want to, you can deploy code directly from the [official lastfm-widgets repository](https://github.com/StigNygaard/lastfm-widgets) to your _own_ site/project on Velixir. To deploy the latest version from the official lastfm-widgets repository, create an account on [Velixir](https://velixir.net/r/g6xs4f89) and:
+
+1. Go to https://velixir.net/new
+2. Choose "Deploy a public GitHub repo" and enter "https://github.com/StigNygaard/lastfm-widgets"...
+3. Choose a plan ("Free" is fine) and enter needed environment variables:
+   ```
+   audioscrobbler_apikey=<your-api-key>
+   audioscrobbler_user=<lastfm-username>
+   proxy_use=mem
+   serve_port=8080
+   ```
+   and you probably also want to - at least temporary - add `webpage_show=demo` to easily be able to verify a successful deployment.
+4. Create the app
+
+With this setup, deploying is triggered _as-needed_ from the "Deploys"-tab on your Velixir project's Dashboard ("Deploy latest commit" button). BUT _if_ you have created your own fork/clone on GitHub, setting up "auto-deploy" on new commits is also an option: https://velixir.net/blog/push-to-deploy-from-github-with-pr-previews.
+
+The trade-off for the free plan, is that it takes a little time to wake up the proxy-API when it has been "sleeping" (The app does a "cold" start). So initializing a widget that uses the proxy-API is sometimes a little slower. But I _don't_ find it annoyingly slow. Currently [lastfm-widgets.com](https://lastfm-widgets.com/), including the proxy-API used by widgets on [rockland.dk](https://www.rockland.dk/), runs on a "Free" plan at Velixir, and I think it performs very well.
+
+Would you like to use KV? The Deno runtime has built-in KV support, but on Velixir it lives in a container that is re-created on restarts. So there's no advantage in using that instead of the simple in-memory caching. You can however use a SQLite database on an attached Volume or an external database for KV instead. You can tell the app which database to use, by setting path in environment-variable `proxy_kv_path`. You might however also need to update the permissions of the "start" task in [deno.json](https://github.com/StigNygaard/lastfm-widgets/blob/main/deno.json) before it works. 
+
+You can read more about the [Deno support on Velixir](https://velixir.net/languages/deno).
+
+### c) On other hosting options
+
+Have you tried other hosting options? I would love to hear about it!
+
+I'm considering at least to also give [Koyeb](https://www.koyeb.com/) a try. Maybe also [Railway](https://railway.com/) or other options if they can be done without altering the codebase (too much?) - and without too high hosting expenses.
+
+### d) Running locally (the developer setup)
 To run a local clone of this project, you need to have [Deno installed](https://docs.deno.com/runtime/getting_started/installation/ "Install Deno"). Next, make sure you have the relevants of above-mentioned environment variables defined (including `webpage_show=demo` if you want the demo-page to play with). The easiest way to define these variables in a local setup, is to add them in a `.env` file in the root of the project-folder (see `.env.example`). Then...
 
 Run locally with:
@@ -64,7 +114,7 @@ deno task dev
 
 ---
 
-## Option 2: Cloudflare Workers (Node.js)
+## 2. Cloudflare Workers (Node.js)
 
 Port located in `cf-worker/index.ts`. This version uses the native **Cloudflare Cache API**. This makes the fallback cache behavior consistent across Cloudflare's edge network.
 
@@ -109,10 +159,3 @@ npm install -g wrangler
 
 To serve the proxy from your own domain instead of `*.workers.dev`, add a route in `wrangler.toml` or bind a custom domain via the Cloudflare dashboard under Workers & Pages → your worker → Triggers → Custom Domains.
 
----
-
-## Choosing which proxy to use
-
-All options expose the same request/response contract, so the frontend widget works identically regardless of which backend is used. If you ain't already using either platform, Deno KV solution on Deno Deploy is probably an easy and free way to get a backend-proxy for your widget. Deno Deploy has monthly read and write limits for the KV storage. If that could be an issue depends on factors like activity (usage) of widget, how often your scrobble new tracks, your widget's update-interval and length of widget's shown playlist. For most, I think a free-tier Deno Deploy account is plenty if only used for the Tracks proxy. 
-
-The in-memory cache can be very short-living. Also, In-memory cache is per-node in an "edge network" like Deno Deploy. The in-memory option is better than nothing, but Deno KV or Cloudflare Workers are better choices when possible to use.    

@@ -162,6 +162,9 @@ function isLocalhost() {
     return window.location.href.startsWith('http://localhost');
 }
 
+// const proxyApiUrl = 'https://lastfm-widgets.stignygaard.deno.net/';
+// const proxyApiUrl = 'https://lastfmwidgets.velixir.run/proxy-api';
+// const proxyApiUrl = 'https://lastfm-widgets.com/';
 const proxyApiUrl = '/proxy-api';
 window.addEventListener(
     'DOMContentLoaded',
