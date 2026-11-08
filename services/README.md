@@ -111,16 +111,6 @@ To serve the proxy from your own domain instead of `*.workers.dev`, add a route 
 
 ---
 
-## Internals
-
-- **Method whitelisting** — only `user.getinfo` and `user.getrecenttracks` are accepted. Any other method parameter is rejected before reaching Last.fm.
-- **Error codes** — internal failures return proxy-specific JSON error codes rather than raw exceptions:
-  - `{error: 3}` — method not allowed (requested method is outside the whitelist).
-  - `{error: 6}` — no method specified in the request.
-  - `{error: 8}` — API key missing from environment/secrets.
-  - `{error: 16}` — not ready; upstream fetch failed and no cached response exists yet to fall back on.
-- **Hibernate mode** — triggered by Last.fm error `26` (suspended API key) or `29` (rate limit exceeded). While active, the proxy stops issuing upstream requests and serves cached data only, until the cooldown period elapses.
-
 ## Choosing which proxy to use
 
 All options expose the same request/response contract, so the frontend widget works identically regardless of which backend is used. If you ain't already using either platform, Deno KV solution on Deno Deploy is probably an easy and free way to get a backend-proxy for your widget. Deno Deploy has monthly read and write limits for the KV storage. If that could be an issue depends on factors like activity (usage) of widget, how often your scrobble new tracks, your widget's update-interval and length of widget's shown playlist. For most, I think a free-tier Deno Deploy account is plenty if only used for the Tracks proxy. 

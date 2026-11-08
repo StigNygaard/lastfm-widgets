@@ -29,6 +29,18 @@ import * as kvBlobTool from "@kitsonk/kv-toolbox/blob";
 /*   (I'm still learning and experimenting here)                              */
 /******************************************************************************/
 
+/**
+ * ## Internals
+ *
+ * - **Method whitelisting** — only `user.getinfo` and `user.getrecenttracks` are accepted. Any other method parameter is rejected before reaching Last.fm.
+ * - **Error codes** — internal failures return proxy-specific JSON error codes rather than raw exceptions:
+ *   - `{error: 3}` — method not allowed (requested method is outside the whitelist).
+ *   - `{error: 6}` — no method specified in the request.
+ *   - `{error: 8}` — API key missing from environment/secrets.
+ *   - `{error: 16}` — not ready; upstream fetch failed and no cached response exists yet to fall back on.
+ * - **Hibernate mode** — triggered by Last.fm error `26` (suspended API key) or `29` (rate limit exceeded). While active, the proxy stops issuing upstream requests and serves cached data only, until the cooldown period elapses.
+ */
+
 // Get the fixed values from .env file or environment variables
 const apikey = Deno.env.get('audioscrobbler_apikey');
 const user = Deno.env.get('audioscrobbler_user') || 'rockland';
