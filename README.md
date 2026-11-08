@@ -17,7 +17,7 @@ As name of this repository hints, I might have more than one Last.fm widget plan
 Using the widget in any HTML file is straightforward because it's a standard web component. You only need to import the script and place the custom HTML tag where you want it to appear.
 You can configure the widget by adding attributes to the custom HTML tag. Get the details and play with the customization options on the [interactive demo site](https://lastfm-widgets.com/ "The demo-page is an interactive playground for widget customization").
 
-_Optionally_, you can also [add a "proxy-API" to your setup](https://github.com/StigNygaard/lastfm-widgets/blob/main/services/README.md "How to set up a proxy-API for the Tracks widget"). If you have your own GitHub account and know how to fork/clone this project, it is actually pretty straight forward to set up using [Deno Deploy](https://deno.com/deploy). A [_free_](https://deno.com/deploy/pricing "Deno Deploy plans and prices") Deno Deploy account should be sufficient for most users.
+_Optionally_, you can also [add a "proxy-API" to your setup](https://github.com/StigNygaard/lastfm-widgets/blob/main/services/README.md "How to set up a proxy-API for the Tracks widget").
 
 ## The technical...
 
@@ -30,10 +30,7 @@ This repository not only holds the widget code, but also code for demo-site (htt
 and [_two_ different backend proxy-api implementations](services/README.md "How to set up a proxy-API for the Tracks widget").
 The default/primary proxy-API is implemented in [Deno]([Deno](https://deno.com/)) and uses either Deno KV or just
 memory for caching. But there's also an alternative Cloudflare Workers (Node.js) proxy-api implementation made
-by [burnblazter](https://github.com/burnblazter). 
-Also, [this repository](https://github.com/StigNygaard/lastfm-widgets "StigNygaard/lastfm-widgets") is connected to a
-[Deno Deploy](https://deno.com/deploy) project. Any updates to the main-branch (widget, demo-page and the
-Deno proxy-api) are immediately deployed to the associated website on Deno Deploy.
+by [burnblazter](https://github.com/burnblazter).
 
 I don't have the setup to test it anymore, but I believe the widget is compatible back to Firefox 115 and
 Chromium 109 based web-browsers (so it also works for Windows 7/8 users stuck on these versions). It should
