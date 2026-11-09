@@ -12,7 +12,7 @@ Running the Last.fm widget purely client-side means exposing your Last.fm API ke
 
 There are two proxy-API implementations in this repository, functionally identical: A Deno version and a Cloudflare Workers (Node.js) version. The latter is kindly contributed to this project by [burnblazter](https://github.com/burnblazter).
 
-Bellow follows how to set up proxy-API on various hosting options:
+Bellow follows suggestions and instructions to host this project (including the proxy-API to serve your widget):
 
 1. Deno proxy-API
    
@@ -30,7 +30,7 @@ Bellow follows how to set up proxy-API on various hosting options:
 
 ## 1. Deno proxy-API
 
-Originally the _Deno proxy-API_ was primarily made with the intention to be hosted on _Deno Deploy_. With the [latest news about Deno and Deno Deploy](https://deno.com/blog/cloudflare) that is no longer a long-time solution. But the Deno runtime is _open source_, so even if the original team abandons the runtime in October 2027, I expect the runtime will [continue to live on in some form](https://github.com/denoland/deno/issues/37030 "The Deno runtime will continue to live on in some form"). Maybe only with a small team of volunteers maintaining it, but if we are lucky a larger investor or interessent sees a reason to invest in further development of the runtime. I love Deno for its simple tooling/setup, security by default design and the commitment to align with webstandards whenever possible, so I have no plan to panic and stop using Deno. But _Deno Deploy_ is expected to shut down some time in Spring 2027 (April 2027?), so better look at alternatives...
+Originally the _Deno proxy-API_ (and demo-site) was made with hosting on _Deno Deploy_ in the mind. With the [latest news about Deno and Deno Deploy](https://deno.com/blog/cloudflare) Deno Deploy is no longer a long-time solution. But the Deno runtime is _open source_, so even if the original team abandons the runtime in October 2027, I expect the runtime will [continue to live on in some form](https://github.com/denoland/deno/issues/37030 "The Deno runtime will continue to live on in some form"). Maybe only with a small team of volunteers maintaining it, but if we are lucky a larger investor or interessent sees a reason to invest in further development of the runtime. I love Deno for its simple tooling/setup, security by default design and the commitment to align with webstandards whenever possible, so I have no plan to panic and stop using Deno. But _Deno Deploy_ is expected to shut down some time in Spring 2027 (April 2027?), so better look at alternatives...
 
 The Deno proxy-API implementation is located in `proxy-api.ts`. It is either using _Deno KV_ (A Key-Value storage) for caching, or simply holding data in-memory. KV is preferred for apps running in short living processes, like on Deno Deploy. But for long-living processes on for example Velixir and Koyeb, "in-memory" is a practical choice. Deno KV is still considered an 'in development' technology, but it has existed for a while and seems reliable – at least for non-critical use.
 
@@ -81,13 +81,13 @@ You do ___NOT__ need_ to create your own fork/clone of this project on GitHub. I
    and you probably also want to - at least temporary - add `webpage_show=demo` to easily be able to verify a successful deployment.
 4. Create the app
 
-With this setup, deploying is triggered _as-needed_ from the "Deploys"-tab on your Velixir project's Dashboard ("Deploy latest commit" button). BUT _if_ you have created your own fork/clone on GitHub, setting up "auto-deploy" on new commits is also an option: https://velixir.net/blog/push-to-deploy-from-github-with-pr-previews.
+With this setup, deploying is triggered _as-needed_ from the "Deploys"-tab on your Velixir project's Dashboard ("Deploy latest commit" button). But _if_ you have created your own fork/clone on GitHub, setting up "auto-deploy" on new commits is also an option: https://velixir.net/blog/push-to-deploy-from-github-with-pr-previews.
 
-The trade-off for the free plan, is that it takes a little time to wake up the proxy-API when it has been "sleeping" (The app does a "cold" start). So initializing a widget that uses the proxy-API is sometimes a little slower. But I _don't_ find it annoyingly slow. Currently [lastfm-widgets.com](https://lastfm-widgets.com/), including the proxy-API used by widgets on [rockland.dk](https://www.rockland.dk/), runs on a "Free" plan at Velixir, and I think it performs very well.
+The trade-off for the free plan, is that app "sleeps" after a period (15 min?) of inactivity, and it takes a few seconds to wake up the proxy-API when it has been "sleeping" (The app does a "cold start" with empty cache). So initializing a widget that uses the proxy-API is sometimes a little slower. But I _don't_ find it annoyingly slow. Currently [lastfm-widgets.com](https://lastfm-widgets.com/), including the proxy-API used by widgets on [rockland.dk](https://www.rockland.dk/), runs on a "Free" plan at Velixir, and I think it performs very well.
 
-Would you like to use KV? The Deno runtime has built-in KV support, but on Velixir it lives in a container that is re-created on restarts. So there's no advantage in using that instead of the simple in-memory caching. You can however use a SQLite database on an attached Volume or an external database for KV instead. You can tell the app which database to use, by setting path in environment-variable `proxy_kv_path`. You might however also need to update the permissions of the "start" task in [deno.json](https://github.com/StigNygaard/lastfm-widgets/blob/main/deno.json) before it works. 
+Would you like to use KV? The Deno runtime has built-in KV support, but on Velixir the runtime lives in a container that is re-created on restarts. So there's no advantage in using Deno's built-in KV support instead of the simple in-memory caching. You can however use a SQLite database on an attached [Volume](https://velixir.net/docs/volumes) or an external managed Deno KV database instead, if you want a persistent KV storage. You can tell the app which database to use for KV, by setting path in the environment-variable `proxy_kv_path`. You might however also need to update the permissions of the "start" task in [deno.json](https://github.com/StigNygaard/lastfm-widgets/blob/main/deno.json) before it works.
 
-You can read more about the [Deno support on Velixir](https://velixir.net/languages/deno).
+You can read more about [running Deno on Velixir](https://velixir.net/languages/deno).
 
 ### c) On other hosting options
 
@@ -158,4 +158,3 @@ npm install -g wrangler
 ### Custom domain (optional)
 
 To serve the proxy from your own domain instead of `*.workers.dev`, add a route in `wrangler.toml` or bind a custom domain via the Cloudflare dashboard under Workers & Pages → your worker → Triggers → Custom Domains.
-

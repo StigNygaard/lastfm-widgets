@@ -18,7 +18,7 @@ const webpage = Deno.env.get('webpage_show')?.toLocaleLowerCase() === 'demo' ? '
 const cachetype = Deno.env.get('proxy_use')?.toLocaleLowerCase() === 'mem' ? 'in-memory' : 'KV';
 const serveOptions = {};
 const proxyKVPath = Deno.env.get('proxy_kv_path')?.trim();
-const servePort = Deno.env.get('serve_port')?.trim();
+const servePort = Deno.env.get('serve_port')?.trim() || Deno.env.get('PORT')?.trim();
 if (servePort?.length) {
     serveOptions.port = Number.parseInt(servePort, 10);
 }
