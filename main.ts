@@ -33,10 +33,10 @@ console.log(`${new Date().toISOString()} - 🏃‍♂️‍➡️ Running on Den
 
 async function handler(req: Request, info: Deno.ServeHandlerInfo) {
     const url = new URL(req.url);
-    const hostname = url.hostname;
+    const hostname = url.hostname; // like 'localhost' or 'lastfmwidgets-eu.velixir.run' (NOT 'lastfm-widgets.com'!)
     const pathname = url.pathname;
-    const robots = `User-agent: *\nDisallow:\nSitemap: ${url.origin}/sitemap.txt`;
-    const sitemap = `${url.origin}/`;
+    const robotsContent = `User-agent: *\nDisallow:\nSitemap: https://lastfm-widgets.com/sitemap.txt`;
+    const sitemapContent = `https://lastfm-widgets.com/`;
 
     // The "Router"...
     let response: Response;
@@ -61,9 +61,9 @@ async function handler(req: Request, info: Deno.ServeHandlerInfo) {
             headers: myHeadersArr
         });
     } else if (pathname === '/robots.txt' && req.method === 'GET') {
-        response = new Response(robots, { status: 200, statusText: 'OK', headers: myHeaders, 'Content-Type': 'text/plain' });
+        response = new Response(robotsContent, { status: 200, statusText: 'OK', headers: myHeaders, 'Content-Type': 'text/plain' });
     } else if (pathname === '/sitemap.txt' && req.method === 'GET') {
-        response = new Response(sitemap, { status: 200, statusText: 'OK', headers: myHeaders, 'Content-Type': 'text/plain' });
+        response = new Response(sitemapContent, { status: 200, statusText: 'OK', headers: myHeaders, 'Content-Type': 'text/plain' });
     } else if (req.method === 'GET') {
 
         if (webpage==='demo' && hostname === 'lastfm-widgets.stignygaard.deno.net' && pathname.length < 2) { // '' '/' '?' '#' ... THIS IS AN UGLY HACK, I KNOW...

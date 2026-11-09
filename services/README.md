@@ -71,7 +71,7 @@ You do ___NOT__ need_ to create your own fork/clone of this project on GitHub. I
 
 1. Go to https://velixir.net/new
 2. Choose "Deploy a public GitHub repo" and enter "https://github.com/StigNygaard/lastfm-widgets"...
-3. Choose a plan ("Free" is fine) and enter needed environment variables:
+3. Choose a plan for the app ("Free" is fine) and enter needed environment variables:
    ```
    audioscrobbler_apikey=<your-api-key>
    audioscrobbler_user=<lastfm-username>
@@ -81,7 +81,7 @@ You do ___NOT__ need_ to create your own fork/clone of this project on GitHub. I
    and you probably also want to - at least temporary - add `webpage_show=demo` to easily be able to verify a successful deployment.
 4. Create the app
 
-With this setup, deploying is triggered _as-needed_ from the "Deploys"-tab on your Velixir project's Dashboard ("Deploy latest commit" button). But _if_ you have created your own fork/clone on GitHub, setting up "auto-deploy" on new commits is also an option: https://velixir.net/blog/push-to-deploy-from-github-with-pr-previews.
+With this setup, deploying is triggered _as-needed_ from the "Deploys"-tab on your Velixir project's Dashboard ("Deploy latest commit" button). But if you have created your own fork/clone on GitHub, setting up "auto-deploy" on new commits is also an option: https://velixir.net/blog/push-to-deploy-from-github-with-pr-previews.
 
 The trade-off for the free plan, is that app "sleeps" after a period (15 min?) of inactivity, and it takes a few seconds to wake up the proxy-API when it has been "sleeping" (The app does a "cold start" with empty cache). So initializing a widget that uses the proxy-API is sometimes a little slower. But I _don't_ find it annoyingly slow. Currently [lastfm-widgets.com](https://lastfm-widgets.com/), including the proxy-API used by widgets on [rockland.dk](https://www.rockland.dk/), runs on a "Free" plan at Velixir, and I think it performs very well.
 
