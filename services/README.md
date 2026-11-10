@@ -16,9 +16,9 @@ Bellow follows suggestions and instructions to host this project (including the 
 
 1. Deno proxy-API
    
-    a) On _[Deno Deploy](https://deno.com/deploy)_ ("deprecated")
+    a) On _Deno Deploy_ ("deprecated")
 
-    b) On _[Velixir](https://velixir.net/r/g6xs4f89)_
+    b) On _Velixir_
 
     c) On other hosting options
 
@@ -65,6 +65,8 @@ With this setup, any changes to the main-branch of your Git-repository, is auto-
 
 ### b) On Velixir
 
+Currently [lastfm-widgets.com](https://lastfm-widgets.com/), including the proxy-API used by widgets on [rockland.dk](https://www.rockland.dk/), runs on Velixir.
+
 On [Velixir](https://velixir.net/r/g6xs4f89) apps generally runs in "long processes". On a free plan "semi-long processes", but still long enough to make in-memory caching a perfect choice for your proxy-API. Setting it up is also pretty easy...
 
 You do ___NOT__ need_ to create your own fork/clone of this project on GitHub. If you want to, you can deploy code directly from the [official lastfm-widgets repository](https://github.com/StigNygaard/lastfm-widgets) to your _own_ site/project on Velixir. To deploy the latest version from the official lastfm-widgets repository, create an account on [Velixir](https://velixir.net/r/g6xs4f89) and:
@@ -83,9 +85,9 @@ You do ___NOT__ need_ to create your own fork/clone of this project on GitHub. I
 
 With this setup, deploying is triggered _as-needed_ from the "Deploys"-tab on your Velixir project's Dashboard ("Deploy latest commit" button). But if you have created your own fork/clone on GitHub, setting up "auto-deploy" on new commits is also an option: https://velixir.net/blog/push-to-deploy-from-github-with-pr-previews.
 
-The trade-off for the free plan, is that app "sleeps" after a period (15 min?) of inactivity, and it takes a few seconds to wake up the proxy-API when it has been "sleeping" (The app does a "cold start" with empty cache). So initializing a widget that uses the proxy-API is sometimes a little slower. But I _don't_ find it annoyingly slow. Currently [lastfm-widgets.com](https://lastfm-widgets.com/), including the proxy-API used by widgets on [rockland.dk](https://www.rockland.dk/), runs on a "Free" plan at Velixir, and I think it performs very well.
+The trade-off for the free plan, is that app "sleeps" after a period (15 min?) of inactivity, and it takes a few seconds to wake up the proxy-API when it has been "sleeping" (The app does a "cold start" with empty cache). So initializing a widget that uses the proxy-API is sometimes a little slower. I _don't_ find it annoyingly slow. But if it annoys you, upgrading to any of the paid plans will fix it.
 
-Would you like to use KV? The Deno runtime has built-in KV support, but on Velixir the runtime lives in a container that is re-created on restarts. So there's no advantage in using Deno's built-in KV support instead of the simple in-memory caching. You can however use a SQLite database on an attached [Volume](https://velixir.net/docs/volumes?via=g6xs4f89) or an external managed Deno KV database instead, if you want a persistent KV storage. You can tell the app which database to use for KV, by setting path in the environment-variable `proxy_kv_path`. You might however also need to update the read/write permissions of the "start" task in [deno.json](https://github.com/StigNygaard/lastfm-widgets/blob/main/deno.json) before it works - Or you can add a `velixir.json` to the project with a "web" command that overrides the "start" task in `deno.json`. In a `velixir.json` file, you can even use environment variables ([See example from another Deno project](https://github.com/StigNygaard/feedbender/blob/main/velixir.json "A velixir.json file with a web command that gets location for read and write permissions from environment variables")).
+Would you like to use KV? The Deno runtime has built-in KV support, but on Velixir the runtime lives in the "app-container" that is re-created on restarts. So there's no advantage in using Deno's built-in KV support instead of the simple in-memory caching. You can however use a SQLite database on an attached [Volume](https://velixir.net/docs/volumes?via=g6xs4f89) or an external managed Deno KV database instead, if you want a persistent KV storage. You can tell the app which database to use for KV, by setting path in the environment-variable `proxy_kv_path`. You might however also need to update the read/write permissions of the "start" task in [deno.json](https://github.com/StigNygaard/lastfm-widgets/blob/main/deno.json) before it works - Or you can add a `velixir.json` to the project with a "web" command that overrides the "start" task in `deno.json`. In a `velixir.json` file, you can even use environment variables ([See example from another Deno project](https://github.com/StigNygaard/feedbender/blob/main/velixir.json "A velixir.json file with a web command that gets location for read and write permissions from environment variables")).
 
 You can read more about [running Deno on Velixir](https://velixir.net/languages/deno?via=g6xs4f89)... And get a little extra credit using code `g6xs4f89` on your first payment, if you decide to update to, or add, a paid plan on Velixir one day.
 
