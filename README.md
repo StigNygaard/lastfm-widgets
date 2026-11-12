@@ -28,7 +28,7 @@ implement throttling of requests to Last.fm's API.
 
 This repository not only holds the widget code, but also code for demo-site (https://lastfm-widgets.com/)
 and [_two_ different backend proxy-api implementations](services/README.md "How to set up a proxy-API for the Tracks widget").
-The default/primary proxy-API is implemented in [Deno]([Deno](https://deno.com/)) and uses either Deno KV or just
+The "original" proxy-API is implemented in [Deno]([Deno](https://deno.com/)) and uses either Deno KV or just
 memory for caching. But there's also an alternative Cloudflare Workers (Node.js) proxy-api implementation made
 by [burnblazter](https://github.com/burnblazter).
 
@@ -40,9 +40,9 @@ experiments/experience with Deno (and server-side Javascript in general).
 #### /widgets/ folder
 
 The widget frontend code. _Everything_ that is needed for widget to work in _Demo_ or _Basic_ mode. See
-[Releases](https://github.com/StigNygaard/lastfm-widgets/releases) to get the latest "release-version" of this folder's
-content. And see the demo page at https://lastfm-widgets.com/ for more about widget _modes_
-and how to use and customize the widget.
+[Releases](https://github.com/StigNygaard/lastfm-widgets/releases) to get the latest "release-version" of this
+folder's content. And see the demo page at https://lastfm-widgets.com/ for more about widget _modes_ and how to
+use and customize the widget.
 
 #### /website/demo/ folder
 
@@ -51,8 +51,8 @@ Frontend-code for the demo page seen on https://lastfm-widgets.com/.
 #### /website/promo/ folder
 
 Frontend-code for a simple promo page pointing to the demo page at https://lastfm-widgets.com/.
-This is the default webpage shown when this project is deployed. However, you can [configure it](./services/README.md#local-development) to
-show the demo page instead.  
+This is the default webpage shown when this project is deployed. However, you can
+[configure it](./services/README.md#d-running-locally-the-developer-setup) to show the demo page instead.  
 
 #### /services/ folder
 
