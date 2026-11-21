@@ -34,8 +34,7 @@ by [burnblazter](https://github.com/burnblazter).
 
 I don't have the setup to test it anymore, but I believe the widget is compatible back to Firefox 115 and
 Chromium 109 based web-browsers (so it also works for Windows 7/8 users stuck on these versions). It should
-also run in Safari versions going pretty far back. The backend code (Deno proxy-api) is my first simple
-experiments/experience with Deno (and server-side Javascript in general).
+also run in Safari versions going pretty far back.
 
 #### /widgets/ folder
 
