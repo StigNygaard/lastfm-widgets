@@ -260,7 +260,7 @@ export async function serve(
 
     async function fail(method: string, headers: Headers): Promise<{ body: string, options: object }> {
         const okResponse = await cache.get(`${method}-OkResponse`);
-        console.log(` *** ${nowStamp()} - Failing - Fallback value from cache has length ${okResponse.length}...`);
+        console.log(` *** ${nowStamp()} - Failing - Fallback value from cache has length ${okResponse?.length}...`);
         await cache.set(`${method}-FailTime`, Date.now().toString());
         if (okResponse) {
             await cache.set(`${method}-NextTime`, String(waitUntil(method).failedWithFallback));
