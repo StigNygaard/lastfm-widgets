@@ -127,7 +127,10 @@ const fetcher = (function () {
 
         return fetch(uri, {headers: {"Accept": "application/json"}})
             .then(function (response) {
-                if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
+                if (/* response.ok && */ response.headers.get('content-type')?.includes('application/json')) {
+                    if (!response.ok) {
+                        console.error(`Response status from [${uri}] was NOT ok: ${response.status} "${response.statusText}" \n- But it still looks like there's a json response, tries to handle that...`);
+                    }
                     return response.json();
                 }
                 console.warn(`[${uri}] did not successfully return expected json: ${response.status} - ${response.statusText} (content-type: ${response.headers.get('content-type')})`);
@@ -612,10 +615,10 @@ class Tracks extends HTMLElement {
                     return it.#fetcher(url.href) /* or '/widgets/test.json' */
                         .then((o) => {
                             if (o.error) {
-                                console.warn(`Tracks widget: Error fetching scrobbles: ${o.error} - ${o.message}`);
+                                console.warn(`Tracks widget: Error fetching scrobbles: ${o.error} "${o.message}"`);
                                 if ([10, 17, 26, 29].includes(o.error)) { // 17: "Login: User required to be logged in"
                                     updatesCanceled = true;
-                                    console.error(`Tracks widget: ⛔ Updates has stopped because error: ${o.error} - ${o.message} !`);
+                                    console.error(`Tracks widget: ⛔ Updates has stopped because error: ${o.error} "${o.message}" !`);
                                 }
                                 throw new Error(`${url.href} Returned: \n${JSON.stringify(o)}`); // TODO ignore if JSON.stringify throws (unlikely?) error exception
                             }
