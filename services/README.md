@@ -2,7 +2,9 @@
 
 Running the Last.fm widget purely client-side means exposing your Last.fm API key to the public. A backend proxy sits between the frontend widget and Last.fm's Audioscrobbler API to avoid that, along with a few other practical problems.
 
-( *Note, I'm in the process of restructuring and hopefully also simplifying this page a bit. But I think all needed information is here.* ) 
+⚠️ ***Notice this:***
+1) There's a [new Last.fm policy from December 1st 2026](https://support.last.fm/t/api-keys-will-require-pro-from-1st-december/121030): You now need an API-key from a Last.fm [_PRO-account_](https://www.last.fm/pro/benefits) to get your scrobbles!
+2) I'm in the process of restructuring and hopefully also simplifying this page a bit. But I think all needed information is here.
 
 ## Why a proxy is strongly recommended
 

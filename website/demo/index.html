@@ -51,6 +51,18 @@
         <p>You can also see the widget in practical use on
           <a href="https://www.rockland.dk/" title="Rockland - Homepage of Stig Nygaard, developer of the Tracks widget">Rockland</a>.</p>
 
+        <p><b>⚠️ Important news:</b> <mark>From <em>December 1st 2026</em>,
+          <a href="https://support.last.fm/t/api-keys-will-require-pro-from-1st-december/121030">a new Last.fm policy</a>
+          requires an API-key from a Pro-account to be able to fetch scrobbles. I have now updated my Last.fm account
+          to Pro (Under protest, I think it is too expensive for just getting your scrobbles from an API).
+          That means you can continue to use this widget in "Demo"-mode <em>for free</em>. The other modes ("Basic"
+          and "Backend-supported") using your own API-key, will only work if you also have
+          <a href="https://www.last.fm/pro/benefits">a Pro-account on Last.fm</a>.
+          In a future widget-version, I will probably change the modes in this widget to allow "tracklist refresh"
+          even when using the built-in API-key (Currently the "Demo" mode). <em><b>I expect to make that update soon(ish)</b></em>.
+          Looking further ahead, I <em>might</em> also make a "proxy-api" that can serve <em>any user's</em> scrobbles
+          for this widget for free, but that is <em>not</em> tomorrow.</mark></p>
+
         <h2>The essential</h2>
 
         <p>To use the widget on a webpage, get <code>lastfm.js</code> and <code>tracks.css</code> from latest
@@ -75,8 +87,9 @@
           <em><a href="https://www.last.fm/api/show/user.getRecentTracks">user.getrecenttracks</a></em>) from last.fm's
           audioscrobbler 2.0 api that the widget needs to function. Your own backend proxy-api is a very good idea if
           your widget is to be placed on a page with more than modest amounts of traffic, because you can implement
-          "throttling" in the proxy-api to prevent overwhelming numbers of requests being sent directly to
-          last.fm's API.</p>
+          "throttling" in the proxy-api to prevent overwhelming numbers of requests being sent directly to last.fm's
+          API. A proxy-api can also protect your widget against temporary operational disruptions in last.fm's api
+          - which <em>do</em> happen once in a while.</p>
 
         <ol>
           <li>
@@ -92,9 +105,9 @@
             <p>
               <code>&lt;lastfm-tracks user="your username" apikey="your own api key" interval="60"&gt;<wbr />&lt;/lastfm-tracks&gt;</code>
             </p>
-            <p>Adding your own API-key - which you can <a href="https://www.last.fm/api/authentication">get for free</a>
-              - puts the widget into the <em>Basic</em> mode where it supports periodical refresh of the tracks-list.
-              With the <code>interval</code> attribute, you can also set the track-list's refresh-rate in seconds.</p>
+            <p><a href="https://www.last.fm/api/authentication">Adding your own API-key</a> puts the widget into the
+              <em>Basic</em> mode where it supports periodical refresh of the tracks-list. With the
+              <code>interval</code> attribute, you can also set the track-list's refresh-rate in seconds.</p>
           </li>
           <li>
             <h3>"Backend-supported" mode</h3>
